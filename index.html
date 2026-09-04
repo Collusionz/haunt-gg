@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>home</title>
   <meta name="description" content="personal website" />
+  <link rel="prefetch" href="/valorant" />
   <meta name="theme-color" content="#5573f4" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -80,14 +81,14 @@
     <a href="/" class="active"><span class="nav-line"></span>Home</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
     <a href="#projects"><span class="nav-line"></span>Projects</a>
-    <a href="#home"><span class="nav-line"></span>Links</a>
+    <a href="#widgets"><span class="nav-line"></span>Widgets</a>
   </nav>
   <!-- Mobile Bottom Nav -->
   <nav class="mobile-nav">
     <a href="/" class="active">Home</a>
     <a href="/valorant">Valorant</a>
     <a href="#projects">Projects</a>
-    <a href="#home">Links</a>
+    <a href="#widgets">Widgets</a>
   </nav>
   <div class="dark contents">
     <!-- Audio -->
@@ -135,7 +136,7 @@
       </section>
 
       <!-- General Info / Widgets Section -->
-      <section class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
+      <section id="widgets" class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
         <div class="flex w-full flex-col gap-3 max-w-5xl">
           <header class="text-start">
             <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
@@ -258,8 +259,15 @@
       bgAudio.volume = 0.3;
       bgAudio.play().catch(() => {});
     }
-    overlay.addEventListener('click', dismissOverlay);
-    overlay.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') dismissOverlay(); });
+    if (window.location.hash) {
+      overlay.classList.add('hidden-overlay');
+      bgVideo.play().catch(() => {});
+      bgAudio.volume = 0.3;
+      bgAudio.play().catch(() => {});
+    } else {
+      overlay.addEventListener('click', dismissOverlay);
+      overlay.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') dismissOverlay(); });
+    }
 
     // ========== SCROLL ANIMATIONS ==========
     const observer = new IntersectionObserver(entries => {

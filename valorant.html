@@ -40,14 +40,14 @@
     <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/valorant" class="active"><span class="nav-line"></span>Valorant</a>
     <a href="/#projects"><span class="nav-line"></span>Projects</a>
-    <a href="/#home"><span class="nav-line"></span>Links</a>
+    <a href="/#widgets"><span class="nav-line"></span>Widgets</a>
   </nav>
   <!-- Mobile Bottom Nav -->
   <nav class="mobile-nav">
     <a href="/">Home</a>
     <a href="/valorant" class="active">Valorant</a>
     <a href="/#projects">Projects</a>
-    <a href="/#home">Links</a>
+    <a href="/#widgets">Widgets</a>
   </nav>
   <div class="dark contents">
     <!-- Video Background -->
@@ -157,6 +157,17 @@
       });
     }
 
+    const CACHE_KEY = 'val_data';
+    const CACHE_TTL = 5 * 60 * 1000;
+
+    function getCached() {
+      try { const d = JSON.parse(localStorage.getItem(CACHE_KEY)); if (d && Date.now() - d.ts < CACHE_TTL) return d; } catch(e) {}
+      return null;
+    }
+    function setCache(d) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...d, ts: Date.now() })); } catch(e) {}
+    }
+
     // ========== PROFILE ==========
     function renderProfile(mmrData, accountData) {
       const el = document.getElementById('profileCard');
@@ -219,9 +230,8 @@
         const agentId = player.agent?.id || '';
         const map = meta.map?.name || 'Unknown';
         const mode = meta.queue?.name || meta.queue?.id || 'Unknown';
-        const score = m.teams;
-        const playerTeam = score.find(t => t.team_id === player.team_id);
-        const enemyTeam = score.find(t => t.team_id !== player.team_id);
+        const playerTeam = m.teams.find(t => t.team_id === player.team_id);
+        const enemyTeam = m.teams.find(t => t.team_id !== player.team_id);
         const scoreStr = playerTeam && enemyTeam ? `${playerTeam.rounds.won}-${enemyTeam.rounds.won}` : '';
         const date = new Date(meta.started_at);
         const dateStr = date.toLocaleDateString('en-US', { month:'numeric', day:'numeric', year:'numeric' });
@@ -251,19 +261,23 @@
 
     // ========== INIT ==========
     (async function() {
+      const cached = getCached();
+      if (cached) {
+        renderProfile(cached.mmr.data, cached.account.data);
+        if (cached.matches) renderMatches(cached.matches.data, cached.puuid);
+        return;
+      }
       try {
         const [mmr, account] = await Promise.all([
           tryRegions(r => `https://api.henrikdev.xyz/valorant/v2/mmr/${r}/${VALORANT_NAME}/${VALORANT_TAG}`),
           tryFetch(`https://api.henrikdev.xyz/valorant/v2/account/${VALORANT_NAME}/${VALORANT_TAG}`)
         ]);
         renderProfile(mmr.data, account.data);
-
         const puuid = account.data?.puuid;
         if (!puuid) return;
-
-        const region = mmr.data?.region || 'ap';
         const matchData = await tryRegions(r => `https://api.henrikdev.xyz/valorant/v4/matches/${r}/pc/${VALORANT_NAME}/${VALORANT_TAG}?size=10`);
         renderMatches(matchData.data, puuid);
+        setCache({ mmr, account, matches: matchData, puuid });
       } catch (e) {
         document.getElementById('profileCard').innerHTML = '<div style="text-align:center;padding:24px;color:#6B7280">Unable to load Valorant data</div>';
         document.getElementById('matchList').innerHTML = '';
