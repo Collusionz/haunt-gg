@@ -135,14 +135,14 @@
     }
 
     // ========== PROFILE ==========
-    function renderProfile(mmr, account) {
+    function renderProfile(mmrData, accountData) {
       const el = document.getElementById('profileCard');
-      const rank = mmr.current_data?.currenttierpatched || 'Unranked';
-      const rr = mmr.current_data?.ranking_in_tier || 0;
-      const peak = mmr.highest_rank?.tierpatched || rank;
-      const elo = mmr.current_data?.elo || 0;
-      const level = account?.account_level || '?';
-      const rankIcon = RANK_LARGE[rank] || RANK_LARGE['Unranked'];
+      const rank = mmrData.current_data?.currenttierpatched || 'Unranked';
+      const rr = mmrData.current_data?.ranking_in_tier || 0;
+      const peak = mmrData.highest_rank?.patched_tier || rank;
+      const elo = mmrData.current_data?.elo || 0;
+      const level = accountData?.account_level || '?';
+      const rankIcon = mmrData.current_data?.images?.large || RANK_LARGE[rank] || RANK_LARGE['Unranked'];
       const peakIcon = RANK_ICONS[peak] || RANK_ICONS['Unranked'];
 
       el.innerHTML = `
@@ -233,7 +233,7 @@
           tryRegions(r => `https://api.henrikdev.xyz/valorant/v2/mmr/${r}/${VALORANT_NAME}/${VALORANT_TAG}`),
           tryFetch(`https://api.henrikdev.xyz/valorant/v2/account/${VALORANT_NAME}/${VALORANT_TAG}`)
         ]);
-        renderProfile(mmr, account.data);
+        renderProfile(mmr.data, account.data);
 
         const puuid = account.data?.puuid;
         if (!puuid) return;
