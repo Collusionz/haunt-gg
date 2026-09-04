@@ -136,6 +136,14 @@
                 </div>
               </div>
             </div>
+            <!-- Valorant Widget (tall) -->
+            <div class="min-w-0 h-full" style="grid-row:span 2;min-height:13rem">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
             <!-- Roblox Widget -->
             <div class="min-w-0 h-full">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
@@ -148,6 +156,23 @@
                 </div>
               </div>
             </div>
+          </div>
+          <!-- Row 2: Last.fm (wide) + Time + Weather -->
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-3" style="grid-auto-rows:minmax(5.5rem,auto)">
+            <!-- Last.fm Widget (tall, 2 cols) -->
+            <div class="min-w-0 h-full sm:col-span-2" style="min-height:16rem">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative h-full overflow-hidden" id="lastfmWidget">
+                  <div class="flex items-center gap-3 px-4 py-3">
+                    <div class="skeleton shrink-0 rounded-[14px]" style="width:64px;height:64px"></div>
+                    <div class="flex min-w-0 flex-1 flex-col gap-2">
+                      <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                      <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <!-- Time Widget -->
             <div class="min-w-0 h-full">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
@@ -156,30 +181,12 @@
                 </div>
               </div>
             </div>
-            <!-- Weather Widget -->
-            <div class="min-w-0 h-full">
+          </div>
+          <!-- Row 3: Weather (wide) -->
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+            <div class="min-w-0 h-full sm:col-span-3">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                </div>
-              </div>
-            </div>
-            <!-- Last.fm Widget -->
-            <div class="min-w-0 h-full">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="lastfmWidget">
-                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
-                  <div class="flex min-w-0 flex-1 flex-col gap-2">
-                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Valorant Widget -->
-            <div class="min-w-0 h-full">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
                   <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
                 </div>
               </div>
@@ -494,39 +501,71 @@
     }
 
     // ========== LAST.FM WIDGET ==========
-    function renderLastfm(data) {
-      const el = document.getElementById('lastfmWidget');
-      const track = data.recenttracks.track[0];
-      if (!track) { showError('lastfmWidget', 'No recent tracks'); return; }
+    let lastfmUserInfo = null;
 
-      const isNowPlaying = track['@attr'] && track['@attr'].nowplaying;
-      const img = track.image && track.image.length > 0 ? track.image[track.image.length - 1]['#text'] : '';
-      const artist = track.artist['#text'];
-      const name = track.name;
-      const album = track.album ? track.album['#text'] : '';
+    function renderLastfm(recentData, userInfo) {
+      const el = document.getElementById('lastfmWidget');
+      const tracks = recentData.recenttracks.track;
+      if (!tracks || tracks.length === 0) { showError('lastfmWidget', 'No recent tracks'); return; }
+
+      const nowPlaying = tracks.find(t => t['@attr'] && t['@attr'].nowplaying);
+      const playcount = userInfo ? userInfo.playcount : '—';
+      const artistCount = userInfo ? userInfo.artist_count : '—';
+
+      let tracksHtml = '';
+      const displayTracks = nowPlaying ? tracks : tracks.slice(0, 5);
+      displayTracks.slice(0, 5).forEach((t, i) => {
+        const isNP = t['@attr'] && t['@attr'].nowplaying;
+        const img = t.image && t.image.length > 0 ? t.image[t.image.length - 1]['#text'] : '';
+        const artist = t.artist['#text'];
+        const name = t.name;
+        const time = t.date ? t.date['#text'] : '';
+
+        tracksHtml += `
+          <div style="display:flex;align-items:center;gap:10px;padding:6px 14px;${i < 4 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : ''}">
+            <img src="${img}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333';this.src=''" />
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff">${name}</div>
+              <div style="font-size:0.75rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div>
+            </div>
+            <div style="font-size:0.7rem;color:#6B7280;flex-shrink:0;white-space:nowrap">${isNP ? '<span style="color:#1DB954">● now playing</span>' : time}</div>
+          </div>
+        `;
+      });
 
       el.innerHTML = `
-        <img src="${img}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
-        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
-          <div style="font-size:0.7rem;color:${isNowPlaying ? '#1DB954' : '#9CA3AF'};font-weight:${isNowPlaying ? '600' : '400'};margin-bottom:2px">${isNowPlaying ? '● NOW PLAYING' : 'Last scrobbled'}</div>
-          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
-          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div>
-          ${album ? `<div style="font-size:0.7rem;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">${album}</div>` : ''}
+        <div style="display:flex;flex-direction:column;height:100%">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Last.fm</div>
+              <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${LASTFM_USERNAME}</div>
+              <div style="font-size:0.75rem;color:#9CA3AF;margin-top:1px">${playcount} scrobbles · ${artistCount} artists</div>
+            </div>
+            <a href="https://www.last.fm/user/${LASTFM_USERNAME}" target="_blank" rel="noopener" style="font-size:0.7rem;color:#5573f4;text-decoration:none;flex-shrink:0">View Profile</a>
+          </div>
+          <!-- Tracks -->
+          <div style="flex:1;overflow:hidden">
+            ${tracksHtml}
+          </div>
         </div>
       `;
     }
 
     function loadLastfm() {
-      fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`)
-        .then(r => r.json())
-        .then(d => {
-          if (d.recenttracks && d.recenttracks.track && d.recenttracks.track.length > 0) {
-            renderLastfm(d);
+      const recentUrl = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;
+      const infoUrl = `https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json`;
+
+      Promise.all([fetch(recentUrl).then(r => r.json()), fetch(infoUrl).then(r => r.json())])
+        .then(([recent, info]) => {
+          if (recent.recenttracks && recent.recenttracks.track && recent.recenttracks.track.length > 0) {
+            renderLastfm(recent, info.user);
           } else {
             showError('lastfmWidget', 'No recent tracks');
           }
         })
         .catch(() => showError('lastfmWidget', 'Unable to load'));
+    }
     }
 
     // ========== VALORANT WIDGET (Henrik API) ==========
