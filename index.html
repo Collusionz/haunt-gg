@@ -50,31 +50,28 @@
     .anim-delay-3 { animation-delay: 0.3s; opacity: 0; }
     .anim-delay-4 { animation-delay: 0.4s; opacity: 0; }
     .anim-delay-5 { animation-delay: 0.5s; opacity: 0; }
-    .widget-discord { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
-    .widget-discord .avatar { width: 74px; height: 74px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
-    .widget-discord .info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-    .widget-discord .info .name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .widget-discord .info .status { font-size: 0.8rem; color: #9CA3AF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .widget-discord .info .detail { font-size: 0.75rem; color: #6B7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-    .widget-discord .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .widget-discord .activity-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
-    .widget-roblox { padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
-    .widget-roblox .avatar { width: 74px; height: 74px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
-    .widget-roblox .info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-    .widget-roblox .info .name { font-weight: 600; font-size: 0.95rem; }
-    .widget-roblox .info .detail { font-size: 0.8rem; color: #9CA3AF; }
     .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .clock-face { width: 120px; height: 120px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); position: relative; margin: 0 auto; }
+    .clock-hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 2px; }
+    .clock-hour { width: 3px; height: 30px; background: #fff; }
+    .clock-minute { width: 2px; height: 40px; background: rgba(255,255,255,0.8); }
+    .clock-second { width: 1px; height: 45px; background: #ff4466; }
+    .clock-center { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); z-index: 5; }
+    .clock-mark { position: absolute; width: 2px; height: 6px; background: rgba(255,255,255,0.3); top: 4px; left: 50%; transform-origin: bottom center; }
+    .weather-icon { width: 32px; height: 32px; }
   </style>
 </head>
 <body class="min-h-full flex flex-col">
   <div class="dark contents">
+    <!-- Audio -->
+    <audio id="bgAudio" src="https://r2.haunt.gg/audio/2dc1a59a-12c4-4850-9bdd-439432d9cabd.mp3" preload="auto" loop></audio>
+
     <!-- Video Background -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000000">
-      <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" id="bgVideo"></video>
+      <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
     </div>
 
     <main class="relative flex w-full flex-col items-center text-white font-satoshi">
-
       <!-- Hero / Profile Section -->
       <section class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
         <div class="relative flex w-full flex-col items-stretch gap-3" style="max-width:48rem">
@@ -88,61 +85,20 @@
               </div>
               <div class="flex flex-col gap-4">
                 <div class="flex items-start gap-4">
-                  <!-- Avatar -->
                   <div class="relative shrink-0 -mt-[60px]" style="width:120px;height:120px">
                     <img alt="Avatar" src="https://r2.haunt.gg/avatar/850dc5e6-1cc7-420a-9358-213ee2b2277a.jpg" class="w-full h-full object-cover rounded-full" />
                     <img alt="" src="https://r2.haunt.gg/decorations/pandoran_seas.png" class="pointer-events-none absolute top-1/2 left-1/2 z-10 w-full h-full object-contain" style="transform:translate(-50%,-50%) scale(1.2)" />
                   </div>
-                  <!-- Name -->
                   <div class="flex min-w-0 flex-1 flex-col items-start justify-center gap-1" style="height:120px;margin-top:-60px">
                     <div class="flex w-full flex-wrap items-center gap-x-3 gap-y-1">
-                      <span class="relative inline-block cursor-pointer">
-                        <span class="relative inline-block font-semibold tracking-tight text-3xl username-glow">collusionz</span>
-                      </span>
+                      <span class="relative inline-block font-semibold tracking-tight text-3xl username-glow">collusionz</span>
                     </div>
                   </div>
                 </div>
-                <!-- Bio -->
                 <div class="break-words w-full text-center text-xl" style="color:#5573f4">
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                   <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm 16</strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">in 9 months</span></p>
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
-                </div>
-                <!-- Widgets -->
-                <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
-                  <!-- Discord Presence Widget -->
-                  <div class="min-w-0 h-full">
-                    <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                      <div class="widget-discord h-full" id="discordWidget">
-                        <div class="skeleton" style="width:74px;height:74px;border-radius:14px;flex-shrink:0"></div>
-                        <div class="info">
-                          <div class="skeleton h-4 w-32 max-w-full rounded-md mb-2"></div>
-                          <div class="skeleton h-3 w-44 max-w-full rounded-md mb-1"></div>
-                          <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Roblox Widget -->
-                  <div class="min-w-0 h-full">
-                    <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                      <div class="widget-roblox h-full" id="robloxWidget">
-                        <div class="skeleton" style="width:74px;height:74px;border-radius:14px;flex-shrink:0"></div>
-                        <div class="info">
-                          <div class="skeleton h-4 w-32 max-w-full rounded-md mb-2"></div>
-                          <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Wide Widget -->
-                  <div class="min-w-0 h-full sm:col-span-2">
-                    <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden;min-height:5.5rem">
-                      <div class="relative flex h-full flex-col justify-center items-center px-4 py-3" id="wideWidget">
-                        <div class="skeleton h-4 w-48 max-w-full rounded-md"></div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -152,8 +108,81 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-[1.125rem]"><path fill="currentColor" d="M171.5 38.8C192.3 4 236.5-10 274 7.6l7.2 3.8C316 32.3 330 76.5 312.4 114l0 0-14.1 30 109.7 0 7.4 .4c36.3 3.7 64.6 34.4 64.6 71.6 0 13.2-3.6 25.4-9.8 36 6.1 10.6 9.7 22.8 9.8 36 0 18.3-6.9 34.8-18 47.5 1.3 5.3 2 10.8 2 16.5 0 25.1-12.9 47-32.2 59.9-1.9 35.5-29.4 64.2-64.4 67.7l-7.4 .4-104.1 0c-18 0-35.9-3.4-52.6-9.9l-7.1-3-.7-.3-6.6-3.2-.7-.3-12.2-6.5c-12.3-6.5-23.3-14.7-32.9-24.1-4.1 26.9-27.3 47.4-55.3 47.4l-32 0c-30.9 0-56-25.1-56-56L0 200c0-30.9 25.1-56 56-56l32 0c10.8 0 20.9 3.1 29.5 8.5l50.1-106.5 .6-1.2 2.7-5 .6-.9zM56 192c-4.4 0-8 3.6-8 8l0 224c0 4.4 3.6 8 8 8l32 0c4.4 0 8-3.6 8-8l0-224c0-4.4-3.6-8-8-8l-32 0zM253.6 51c-14.8-6.9-32.3-1.6-40.7 12l-2.2 4-56.8 120.9c-3.5 7.5-5.5 15.5-6 23.7l-.1 4.2 0 112.9 .2 7.9c2.4 32.7 21.4 62.1 50.7 77.7l11.5 6.1 6.3 3.1c12.4 5.6 25.8 8.5 39.4 8.5l104.1 0 2.4-.1c12.1-1.2 21.6-11.5 21.6-23.9l-.2-2.6c-.1-.9-.2-1.7-.4-2.6-2.7-12.1 4.3-24.2 16-28 9.7-3.1 16.6-12.2 16.6-22.8 0-4.3-1.1-8.2-3.1-11.8-6.3-11.1-2.8-25.2 8-32 6.8-4.3 11.2-11.8 11.2-20.2 0-7.1-3.1-13.5-8.2-18-5.2-4.6-8.2-11.1-8.2-18s3-13.4 8.2-18c5.1-4.5 8.2-10.9 8.2-18l-.1-2.4c-1.1-11.3-10.1-20.3-21.4-21.4l-2.4-.1-147.5 0c-8.2 0-15.8-4.2-20.2-11.1-4.4-6.9-5-15.7-1.5-23.1L269 93.6c7-15 1.4-32.7-12.5-41L253.6 51z"/></svg>
               </button>
               <button type="button" aria-label="Dislike" class="dislike-btn flex items-center gap-1.5" onclick="this.classList.toggle('active')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-[1.125rem]"><path fill="currentColor" d="M360 32l7.4 .4c35 3.6 62.5 32.2 64.4 67.7 17.8 11.8 30.1 31.4 32 53.9l.2 6c0 5.7-.7 11.2-2 16.5 10.2 11.5 16.8 26.3 17.8 42.7l.2 4.8c0 13.2-3.6 25.4-9.8 36 4.9 8.4 8.2 17.9 9.3 28l.4 8c0 37.3-28.3 67.9-64.6 71.6l-7.4 .4-109.7 0 14.1 30 3.1 7.6c12.5 35.7-1.8 75.5-34.2 95l-7.2 3.9c-37.5 17.6-81.7 3.6-102.6-31.2l-.6-.9-2.7-5-.6-1.2-30.1-64c-9.4 17.8-28 29.9-49.5 29.9l-32 0c-30.9 0-56-25.1-56-56L0 152c0-30.9 25.1-56 56-56l32 0c12.4 0 23.9 4.1 33.2 11 13.2-21.4 32-39.4 55-51.6l12.2-6.5 .7-.3 6.6-3.2 .7-.3 7.1-3c16.7-6.6 34.5-9.9 52.6-9.9L360 32zM255.9 80c-12 0-23.9 2.3-35.1 6.6l-4.7 2-5.3 2.6 0 0-12.2 6.5c-29.2 15.5-48.3 44.9-50.7 77.6l-.2 8 0 112.9 .1 4.1c.5 8.2 2.5 16.2 6 23.7l56.8 120.9 2.1 3.8c8.4 13.7 26 19.1 40.8 12.2l2.9-1.6c13-7.8 18.7-23.7 13.7-38l-1.2-3-30.2-64.2c-3.5-7.4-2.9-16.1 1.5-23.1s12-11.1 20.2-11.1l147.5 0 2.4-.1c11.3-1.1 20.3-10.1 21.4-21.4l.1-2.5c0-7.1-3.1-13.5-8.2-18-5.2-4.6-8.2-11.1-8.2-18s3-13.4 8.2-18c4.4-3.9 7.4-9.3 8-15.3l.2-2.7c0-8.4-4.4-15.9-11.2-20.2-10.7-6.9-14.2-20.9-8-32 1.5-2.6 2.5-5.6 2.9-8.6l.2-3.2c0-10.6-6.9-19.6-16.6-22.8-11.7-3.8-18.7-15.9-16-28 .2-.9 .3-1.8 .4-2.6l.2-2.6c0-12.4-9.5-22.6-21.6-23.8L360 80 255.9 80zM56 144c-4.4 0-8 3.6-8 8l0 224c0 4.4 3.6 8 8 8l32 0c4.4 0 8-3.6 8-8l0-224c0-4.4-3.6-8-8-8l-32 0z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-[1.125rem]"><path fill="currentColor" d="M360 32l7.4 .4c35 3.6 62.5 32.2 64.4 67.7 17.8 11.8 30.1 31.4 32 53.9l.2 6c0 5.7-.7 11.2-2 16.5 10.2 11.5 16.8 26.3 17.8 42.7l.2 4.8c0 13.2-3.6 25.4-9.8 36 4.9 8.4 8.2 17.9 9.3 28l.4 8c0 37.3-28.3 67.9-64.6 71.6l-7.4 .4-109.7 0 14.1 30 3.1 7.6c12.5 35.7-1.8 75.5-34.2 95l-7.2 3.9c-37.5 17.6-81.7 3.6-102.6-31.2l-.6-.9-2.7-5-.6-1.2-30.1-64c-9.4 17.8-28 29.9-49.5 29.9l-32 0c-30.9 0-56-25.1-56-56L0 152c0-30.9 25.1-56 56-56l32 0c12.4 0 23.9 4.1 33.2 11 13.2-21.4 32-39.4 55-51.6l12.2-6.5 .7-.3 6.6-3.2 .7-.3 7.1-3c16.7-6.6 34.5-9.9 52.6-9.9L360 32zM255.9 80c-12 0-23.9 2.3-35.1 6.6l-4.7 2-5.3 2.6 0 0-12.2 6.5c-29.2 15.5-48.3 44.9-50.7 77.6l-.2 8 0 112.9 .1 4.1c.5 8.2 2.5 16.2 6 23.7l56.8 120.9 2.1 3.8c8.4 13.7 18.7 23.7 13.7 38l-1.2 3-30.2 64.2c-3.5 7.4-2.9 16.1 1.5-23.1s12-11.1 20.2-11.1l147.5 0 2.4-.1c11.3-1.1 20.3-10.1 21.4-21.4l.1-2.5c0-7.1-3.1-13.5-8.2-18-5.2-4.6-8.2-11.1-8.2-18s3-13.4 8.2-18c4.4-3.9 7.4-9.3 8-15.3l.2-2.7c0-8.4-4.4-15.9-11.2-20.2-10.7-6.9-14.2-20.9-8-32 1.5-2.6 2.5-5.6 2.9-8.6l.2-3.2c0-10.6-6.9-19.6-16.6-22.8-11.7-3.8-18.7-15.9-16-28 .2-.9 .3-1.8 .4-2.6l.2-2.6c0-12.4-9.5-22.6-21.6-23.8L360 80 255.9 80z"/></svg>
               </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- General Info / Widgets Section -->
+      <section class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
+        <div class="flex w-full flex-col gap-3 max-w-5xl">
+          <header class="text-start">
+            <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
+            <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
+          </header>
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
+            <!-- Discord Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="discordWidget">
+                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+                  <div class="flex min-w-0 flex-1 flex-col gap-2">
+                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                    <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Roblox Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="robloxWidget">
+                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+                  <div class="flex min-w-0 flex-1 flex-col gap-2">
+                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Time Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
+                  <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Weather Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Last.fm Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="lastfmWidget">
+                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+                  <div class="flex min-w-0 flex-1 flex-col gap-2">
+                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Valorant Widget -->
+            <div class="min-w-0 h-full">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -186,7 +215,36 @@
   </div>
 
   <script>
-    // === PROJECTS DATA ===
+    // ========== CONFIG ==========
+    const DISCORD_USER_ID = '704140288716701737';
+    const ROBLOX_USERNAME = 'tripp_Thebest05';
+    const LASTFM_USERNAME = 'collusionz';
+    const LASTFM_API_KEY = '2e5b5823d8f5c2416b39bd8d26a6aa4f';
+    const VALORANT_NAME = 'collusionz';
+    const VALORANT_TAG = 'rival';
+    const TIMEZONE = 'Asia/Singapore';
+
+    // ========== ENTER OVERLAY ==========
+    const overlay = document.getElementById('enterOverlay');
+    const bgVideo = document.getElementById('bgVideo');
+    const bgAudio = document.getElementById('bgAudio');
+
+    function dismissOverlay() {
+      overlay.classList.add('hidden-overlay');
+      bgVideo.play().catch(() => {});
+      bgAudio.volume = 0.3;
+      bgAudio.play().catch(() => {});
+    }
+    overlay.addEventListener('click', dismissOverlay);
+    overlay.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') dismissOverlay(); });
+
+    // ========== SCROLL ANIMATIONS ==========
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.scroll-fade-in').forEach(el => observer.observe(el));
+
+    // ========== PROJECTS ==========
     const projects = [
       { role:"Adminstrator", title:"Rivals Competitive League", desc:"Leads the charge on moderation and addressing fair-play violations.", img:"https://r2.haunt.gg/project/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp", link:"https://discord.gg/BuDr9eYt9m" },
       { role:"Tester", title:"DUELISTS", desc:"Tasked with proposing ideas and ticket managing.", img:"https://r2.haunt.gg/project/029feceb-48da-4dd8-98e6-d22de74d1688.webp", link:"https://discord.gg/tGSH8649xR" },
@@ -226,128 +284,288 @@
       }).join('');
     }
 
-    // === DISCORD PRESENCE (Lanyard API) ===
-    const DISCORD_USER_ID = '704140288716701737';
-
+    // ========== DISCORD WIDGET (Lanyard) ==========
     function statusColor(status) {
-      const c = { online: '#23A55A', idle: '#F0B232', dnd: '#F23F43', offline: '#80848E' };
-      return c[status] || c.offline;
+      return { online: '#23A55A', idle: '#F0B232', dnd: '#F23F43', offline: '#80848E' }[status] || '#80848E';
     }
 
     function renderDiscord(data) {
       const el = document.getElementById('discordWidget');
       const u = data.discord_user;
-      const avatarUrl = u.avatar ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128` : `https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator || u.username) % 5}.png`;
+      const avatarUrl = u.avatar
+        ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`
+        : `https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator || '0') % 5}.png`;
       const status = data.discord_status || 'offline';
       const activities = data.activities || [];
-      const spotify = data.spotify;
+      const spotify = data.listening_to_spotify ? data.spotify : null;
 
       let detail = '';
-      if (spotify && activities.some(a => a.type === 1)) {
-        detail = `Listening to <strong>${spotify.track || 'Spotify'}</strong> by ${spotify.artist || ''}`;
-      } else if (activities.length > 0 && activities[0].name) {
-        detail = activities[0].details || activities[0].name;
+      if (spotify) {
+        detail = `<span style="color:#1DB954">Listening to</span> <strong>${spotify.track}</strong>`;
+        if (spotify.artist) detail += ` <span style="opacity:0.6">by ${spotify.artist}</span>`;
+      } else if (activities.length > 0 && activities[0].name !== 'Custom Status') {
+        const a = activities[0];
+        detail = a.details || a.state || a.name;
+      } else if (activities.length > 0 && activities[0].state) {
+        detail = activities[0].state;
       } else {
-        detail = status.charAt(0).toUpperCase() + status.slice(1);
+        detail = `<span style="opacity:0.5">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
       }
 
       let activityImg = '';
-      if (activities.length > 0 && activities[0].assets?.large_image) {
+      if (spotify && spotify.album_art_url) {
+        activityImg = `<img src="${spotify.album_art_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`;
+      } else if (activities.length > 0 && activities[0].assets?.large_image) {
         let img = activities[0].assets.large_image;
         if (img.startsWith('mp:external')) img = 'https://media.discordapp.net/external/' + img.replace('mp:external/', '');
-        activityImg = `<img src="${img}" class="activity-img" />`;
+        activityImg = `<img src="${img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`;
       }
 
       el.innerHTML = `
-        <img src="${avatarUrl}" class="avatar" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" />
-        <div class="info">
-          <div class="name">${u.global_name || u.username}</div>
-          <div class="status">${detail}</div>
-          ${activities.length > 0 && activities[0].state ? `<div class="detail">${activities[0].state}</div>` : ''}
+        <img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" />
+        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name || u.username}</div>
+          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${detail}</div>
         </div>
         ${activityImg}
-        <div class="status-dot" style="background-color:${statusColor(status)}"></div>
+        <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${statusColor(status)}"></div>
       `;
     }
 
     function loadDiscord() {
-      fetch(`https://api.lanyard.xyz/v1/users/${DISCORD_USER_ID}`)
+      fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`)
         .then(r => r.json())
-        .then(d => { if (d.success) renderDiscord(d.data); else showError('discordWidget'); })
-        .catch(() => showError('discordWidget'));
+        .then(d => { if (d.success) renderDiscord(d.data); else showError('discordWidget', 'Join discord.gg/lanyard to enable'); })
+        .catch(() => showError('discordWidget', 'Unable to load'));
     }
 
-    // === ROBLOX WIDGET ===
-    const ROBLOX_USERNAME = 'tripp_Thebest05';
-
-    function renderRoblox(user) {
+    // ========== ROBLOX WIDGET ==========
+    function renderRoblox(userId, username, displayName, avatarUrl) {
       const el = document.getElementById('robloxWidget');
-      const thumbUrl = user.avatarUrl || user.thumbnailUrl || `https://www.roblox.com/headshot/image?userId=${user.id}&width=150&height=150&format=png`;
       el.innerHTML = `
-        <img src="${thumbUrl}" class="avatar" onerror="this.style.background='#333';this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23333%22 width=%22100%22 height=%22100%22/></svg>'" />
-        <div class="info">
-          <div class="name">${user.displayName || user.name}</div>
-          <div class="detail">@${user.name}</div>
+        <img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
+        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayName || username}</div>
+          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@${username}</div>
+          <a href="https://roblox.com/users/${userId}/profile" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none;margin-top:2px">View Profile</a>
         </div>
       `;
     }
 
     function loadRoblox() {
-      fetch(`https://api.vchome.cloud/roblox/user/${ROBLOX_USERNAME}`)
+      // Step 1: Resolve username to userId
+      fetch('https://users.roblox.com/v1/usernames/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usernames: [ROBLOX_USERNAME] })
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.data && d.data.length > 0) {
+          const user = d.data[0];
+          // Step 2: Get avatar thumbnail
+          fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=150x150&format=Png&isCircular=false`)
+            .then(r => r.json())
+            .then(t => {
+              const thumb = t.data && t.data[0] ? t.data[0].imageUrl : '';
+              renderRoblox(user.id, user.name, user.displayName, thumb);
+            })
+            .catch(() => renderRoblox(user.id, user.name, user.displayName, ''));
+        } else {
+          showError('robloxWidget', 'User not found');
+        }
+      })
+      .catch(() => showError('robloxWidget', 'Unable to load'));
+    }
+
+    // ========== TIME WIDGET ==========
+    function renderTime() {
+      const el = document.getElementById('timeWidget');
+      const now = new Date();
+      const options = { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+      const dateOpts = { timeZone: TIMEZONE, weekday: 'short', month: 'short', day: 'numeric' };
+      const timeStr = now.toLocaleTimeString('en-US', options);
+      const dateStr = now.toLocaleDateString('en-US', dateOpts);
+
+      // Analog clock
+      const tzParts = now.toLocaleTimeString('en-US', { timeZone: TIMEZONE, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
+      const [h, m, s] = tzParts.split(':').map(Number);
+      const hourDeg = ((h % 12) + m / 60) * 30;
+      const minDeg = (m + s / 60) * 6;
+      const secDeg = s * 6;
+
+      let marks = '';
+      for (let i = 0; i < 12; i++) {
+        marks += `<div class="clock-mark" style="transform:translateX(-50%) rotate(${i * 30}deg);transform-origin:bottom center;top:4px;left:calc(50% - 1px);position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3)"></div>`;
+      }
+
+      el.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div class="clock-face">
+            <div class="clock-center"></div>
+            <div class="clock-hand clock-hour" style="transform:translateX(-50%) rotate(${hourDeg}deg)"></div>
+            <div class="clock-hand clock-minute" style="transform:translateX(-50%) rotate(${minDeg}deg)"></div>
+            <div class="clock-hand clock-second" style="transform:translateX(-50%) rotate(${secDeg}deg)"></div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:1.1rem;font-weight:600">${timeStr}</div>
+            <div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div>
+            <div style="font-size:0.7rem;color:#6B7280">${TIMEZONE}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadTime() {
+      renderTime();
+      setInterval(renderTime, 1000);
+    }
+
+    // ========== WEATHER WIDGET (Open-Meteo) ==========
+    const WMO_CODES = {
+      0: ['Clear', '☀️'], 1: ['Mainly Clear', '🌤️'], 2: ['Partly Cloudy', '⛅'], 3: ['Overcast', '☁️'],
+      45: ['Fog', '🌫️'], 48: ['Rime Fog', '🌫️'],
+      51: ['Light Drizzle', '🌦️'], 53: ['Drizzle', '🌦️'], 55: ['Heavy Drizzle', '🌧️'],
+      61: ['Light Rain', '🌧️'], 63: ['Rain', '🌧️'], 65: ['Heavy Rain', '🌧️'],
+      71: ['Light Snow', '🌨️'], 73: ['Snow', '🌨️'], 75: ['Heavy Snow', '❄️'],
+      80: ['Light Showers', '🌦️'], 81: ['Showers', '🌧️'], 82: ['Heavy Showers', '🌧️'],
+      95: ['Thunderstorm', '⛈️'], 96: ['Thunderstorm + Hail', '⛈️'], 99: ['Heavy T-storm + Hail', '⛈️']
+    };
+
+    function renderWeather(data, city) {
+      const el = document.getElementById('weatherWidget');
+      const temp = Math.round(data.current.temperature_2m);
+      const feelsLike = Math.round(data.current_apparent?.temperature_2m || temp);
+      const humidity = data.current.relative_humidity_2m;
+      const wind = Math.round(data.current.wind_speed_10m);
+      const code = data.current.weather_code;
+      const [label, icon] = WMO_CODES[code] || ['Unknown', '❓'];
+
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;width:100%">
+          <div style="font-size:2rem;flex-shrink:0">${icon}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:1.5rem;font-weight:700">${temp}°C</div>
+            <div style="font-size:0.8rem;color:#9CA3AF">${label} · Feels like ${feelsLike}°C</div>
+            <div style="font-size:0.7rem;color:#6B7280;margin-top:2px">💧 ${humidity}% · 💨 ${wind} km/h</div>
+          </div>
+          <div style="font-size:0.7rem;color:#6B7280;text-align:right;flex-shrink:0">${city}</div>
+        </div>
+      `;
+    }
+
+    function loadWeather() {
+      // Use browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const { latitude, longitude } = pos.coords;
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=auto`)
+              .then(r => r.json())
+              .then(d => {
+                // Try to get city name from reverse geocoding
+                fetch(`https://geocoding-api.open-meteo.com/v1/search?name=&latitude=${latitude}&longitude=${longitude}&count=1`)
+                  .then(r => r.json())
+                  .then(g => {
+                    const city = g.results && g.results[0] ? g.results[0].name : 'Your Location';
+                    renderWeather(d, city);
+                  })
+                  .catch(() => renderWeather(d, 'Your Location'));
+              })
+              .catch(() => showError('weatherWidget', 'Unable to load weather'));
+          },
+          () => {
+            // Fallback to Singapore
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
+              .then(r => r.json())
+              .then(d => renderWeather(d, 'Singapore'))
+              .catch(() => showError('weatherWidget', 'Unable to load weather'));
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        // Fallback to Singapore
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
+          .then(r => r.json())
+          .then(d => renderWeather(d, 'Singapore'))
+          .catch(() => showError('weatherWidget', 'Unable to load weather'));
+      }
+    }
+
+    // ========== LAST.FM WIDGET ==========
+    function renderLastfm(data) {
+      const el = document.getElementById('lastfmWidget');
+      const track = data.recenttracks.track[0];
+      if (!track) { showError('lastfmWidget', 'No recent tracks'); return; }
+
+      const isNowPlaying = track['@attr'] && track['@attr'].nowplaying;
+      const img = track.image && track.image.length > 0 ? track.image[track.image.length - 1]['#text'] : '';
+      const artist = track.artist['#text'];
+      const name = track.name;
+      const album = track.album ? track.album['#text'] : '';
+
+      el.innerHTML = `
+        <img src="${img}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
+        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+          <div style="font-size:0.7rem;color:${isNowPlaying ? '#1DB954' : '#9CA3AF'};font-weight:${isNowPlaying ? '600' : '400'};margin-bottom:2px">${isNowPlaying ? '● NOW PLAYING' : 'Last scrobbled'}</div>
+          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div>
+          ${album ? `<div style="font-size:0.7rem;color:#6B7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">${album}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function loadLastfm() {
+      fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=1`)
         .then(r => r.json())
         .then(d => {
-          if (d && d.id) {
-            renderRoblox({ id: d.id, name: d.name || ROBLOX_USERNAME, displayName: d.displayName || d.name || ROBLOX_USERNAME, avatarUrl: d.avatarUrl });
+          if (d.recenttracks && d.recenttracks.track && d.recenttracks.track.length > 0) {
+            renderLastfm(d);
           } else {
-            renderRoblox({ id: 0, name: ROBLOX_USERNAME, displayName: ROBLOX_USERNAME });
+            showError('lastfmWidget', 'No recent tracks');
           }
         })
-        .catch(() => {
-          // Fallback: use Roblox avatar API
-          fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`)
-            .then(r => r.json())
-            .then(d => {
-              if (d.Id) {
-                renderRoblox({ id: d.Id, name: d.Name || ROBLOX_USERNAME, displayName: d.Name || ROBLOX_USERNAME, avatarUrl: `https://www.roblox.com/headshot/image?userId=${d.Id}&width=150&height=150&format=png` });
-              } else {
-                renderRoblox({ id: 0, name: ROBLOX_USERNAME, displayName: ROBLOX_USERNAME });
-              }
-            })
-            .catch(() => renderRoblox({ id: 0, name: ROBLOX_USERNAME, displayName: ROBLOX_USERNAME }));
-        });
+        .catch(() => showError('lastfmWidget', 'Unable to load'));
     }
 
-    // === WIDE WIDGET (Currently playing / status) ===
-    function loadWideWidget() {
-      const el = document.getElementById('wideWidget');
-      // Show current time
-      function updateTime() {
-        const now = new Date();
-        el.innerHTML = `<div class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4" style="color:#9CA3AF"><path fill="currentColor" d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10m0-2c4.4 0 8-3.6 8-8s-3.6-8-8-8-8 3.6-8 8 3.6 8 8 8m.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7z"/></svg><span style="color:#9CA3AF;font-size:0.875rem">${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span></div>`;
-      }
-      updateTime();
-      setInterval(updateTime, 1000);
+    // ========== VALORANT WIDGET ==========
+    function renderValorantStatic() {
+      const el = document.getElementById('valorantWidget');
+      el.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center">
+          <div style="font-size:1.5rem">🎯</div>
+          <div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div>
+          <div style="font-size:0.8rem;color:#9CA3AF">Valorant</div>
+          <a href="https://tracker.gg/valorant/profile/riot/${VALORANT_NAME}%23${VALORANT_TAG}/overview" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none">View on Tracker.gg</a>
+        </div>
+      `;
     }
 
-    function showError(widgetId) {
+    function loadValorant() {
+      // Try Henrik API (requires API key - show static fallback)
+      renderValorantStatic();
+    }
+
+    // ========== HELPER ==========
+    function showError(widgetId, msg) {
       const el = document.getElementById(widgetId);
-      el.innerHTML = `<div class="relative flex h-full flex-col justify-center items-center px-4 py-6"><p class="text-sm opacity-40">Unable to load</p></div>`;
+      if (!el) return;
+      const hasImg = el.querySelector('img');
+      if (hasImg) {
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`;
+      } else {
+        el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`;
+      }
     }
 
-    // === INIT ===
-    const overlay = document.getElementById('enterOverlay');
-    const bgVideo = document.getElementById('bgVideo');
-    function dismissOverlay() { overlay.classList.add('hidden-overlay'); bgVideo.play().catch(()=>{}); }
-    overlay.addEventListener('click', dismissOverlay);
-    overlay.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') dismissOverlay(); });
-
-    const observer = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
-    document.querySelectorAll('.scroll-fade-in').forEach(el => observer.observe(el));
-
+    // ========== INIT ==========
     renderProjects();
     loadDiscord();
     loadRoblox();
-    loadWideWidget();
+    loadTime();
+    loadWeather();
+    loadLastfm();
+    loadValorant();
   </script>
 </body>
 </html>
