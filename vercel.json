@@ -10,6 +10,13 @@
     { "src": "/valorant", "dest": "/valorant.html" },
     { "src": "/widgets", "dest": "/widgets.html" },
     { "src": "/projects", "dest": "/projects.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/skills", "dest": "/skills.html" },
+    { "src": "/gallery", "dest": "/gallery.html" },
+    { "src": "/music", "dest": "/music.html" },
+    { "src": "/gaming", "dest": "/gaming.html" },
+    { "src": "/awards", "dest": "/awards.html" },
+    { "src": "/friends", "dest": "/friends.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

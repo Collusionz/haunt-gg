@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music | home</title>
+  <meta name="description" content="music preferences" />
+  <meta name="theme-color" content="#5573f4" />
+  <meta property="og:title" content="Music | collusionz" />
+  <meta property="og:description" content="what I listen to" />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{satoshi:['"Satoshi"','sans-serif']}}}}</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;padding:0;font-family:'Satoshi',sans-serif;background:#000;color:#ccd8ec;min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s}
+    body.light{background:#f5f5f5;color:#1a1a2e}
+    .enter-overlay{position:fixed;inset:0;z-index:50;cursor:pointer;transition:opacity 0.6s ease,visibility 0.6s ease}
+    .enter-overlay.hidden-overlay{opacity:0;visibility:hidden;pointer-events:none}
+    .enter-overlay .bg{position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .enter-overlay .text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.25rem;font-weight:500;letter-spacing:0.05em}
+    .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+    @media(min-width:768px){.side-nav{display:flex}}
+    .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+    .side-nav a:hover{color:rgba(255,255,255,0.7)}
+    .side-nav a.active{color:#fff}
+    .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+    .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+    .side-nav a.active .nav-line{width:16px;background:#fff}
+    .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+    @media(min-width:768px){.mobile-nav{display:none}}
+    .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+    .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+    @media(min-width:768px){#mainContent{padding-left:80px}}
+    .scroll-progress{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#5573f4,#4764ec);z-index:100;transition:width 0.1s}
+    #cursorSpotlight{position:fixed;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(71,100,236,0.08) 0%,transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.3s}
+    .cursor-trail{position:fixed;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:2;transition:opacity 0.5s}
+    .theme-toggle{position:fixed;top:20px;right:20px;z-index:50;width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;transition:all 0.3s}
+    .theme-toggle:hover{background:rgba(255,255,255,0.1);transform:rotate(30deg)}
+    body.light .theme-toggle{border-color:rgba(0,0,0,0.15);background:rgba(0,0,0,0.05);color:#1a1a2e}
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:8px 20px;border-radius:12px;background:rgba(71,100,236,0.9);color:#fff;font-size:0.8rem;font-weight:500;backdrop-filter:blur(8px);z-index:200;opacity:0;transition:all 0.3s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    .page-header{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+    .page-header .accent-bar{width:4px;height:32px;border-radius:4px;background:linear-gradient(180deg,#ff4466,#cc2244)}
+    .page-header h1{font-size:2rem;font-weight:700;letter-spacing:-0.02em;color:#fff}
+    .page-header .subtitle{font-size:0.85rem;font-weight:300;opacity:0.5;margin-left:8px}
+
+    .widget-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px;backdrop-filter:blur(8px);transition:all 0.3s}
+    .widget-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12)}
+    body.light .widget-card{background:rgba(255,255,255,0.8);border-color:rgba(0,0,0,0.08)}
+
+    .artist-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px 16px;text-align:center;backdrop-filter:blur(8px);transition:all 0.3s ease;cursor:default}
+    .artist-card:hover{transform:scale(1.03);box-shadow:0 0 30px rgba(85,115,244,0.2);border-color:rgba(85,115,244,0.3);background:rgba(255,255,255,0.06)}
+    body.light .artist-card{background:rgba(255,255,255,0.8);border-color:rgba(0,0,0,0.08)}
+    body.light .artist-card:hover{box-shadow:0 0 30px rgba(85,115,244,0.15);border-color:rgba(85,115,244,0.25)}
+
+    .artist-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff}
+
+    .genre-pill{display:inline-flex;align-items:center;padding:8px 18px;border-radius:20px;font-size:0.8rem;font-weight:500;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);transition:all 0.25s;cursor:default}
+    .genre-pill:hover{background:rgba(85,115,244,0.15);border-color:rgba(85,115,244,0.3);transform:translateY(-2px)}
+    body.light .genre-pill{background:rgba(0,0,0,0.03);border-color:rgba(0,0,0,0.1)}
+    body.light .genre-pill:hover{background:rgba(85,115,244,0.08);border-color:rgba(85,115,244,0.2)}
+
+    .track-row{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:12px;transition:background 0.2s}
+    .track-row:nth-child(odd){background:rgba(255,255,255,0.02)}
+    .track-row:nth-child(even){background:rgba(255,255,255,0.04)}
+    .track-row:hover{background:rgba(255,255,255,0.07)}
+    body.light .track-row:nth-child(odd){background:rgba(0,0,0,0.02)}
+    body.light .track-row:nth-child(even){background:rgba(0,0,0,0.04)}
+    body.light .track-row:hover{background:rgba(0,0,0,0.06)}
+
+    .track-art{width:44px;height:44px;border-radius:8px;flex-shrink:0}
+
+    .now-playing{display:flex;align-items:center;gap:6px;font-size:0.7rem;color:#23A55A;font-weight:500}
+    .now-playing .dot{width:8px;height:8px;border-radius:50%;background:#23A55A;animation:pulse-dot 1.5s ease-in-out infinite}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+    .stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 24px;text-align:center;backdrop-filter:blur(8px);transition:all 0.3s}
+    .stat-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(85,115,244,0.2);transform:translateY(-2px)}
+    body.light .stat-card{background:rgba(255,255,255,0.8);border-color:rgba(0,0,0,0.08)}
+
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .anim-reveal{animation:fadeInUp 0.5s ease forwards}
+    .anim-delay-1{animation-delay:0.1s;opacity:0}
+    .anim-delay-2{animation-delay:0.2s;opacity:0}
+    .anim-delay-3{animation-delay:0.3s;opacity:0}
+    .anim-delay-4{animation-delay:0.4s;opacity:0}
+    .anim-delay-5{animation-delay:0.5s;opacity:0}
+
+    .haunt-line{height:1px;background-image:linear-gradient(to right,transparent,currentColor,transparent);filter:drop-shadow(0 0 3.5px currentColor)}
+  </style>
+</head>
+<body class="min-h-full flex flex-col">
+  <nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/about"><span class="nav-line"></span>About</a>
+    <a href="/skills"><span class="nav-line"></span>Skills</a>
+    <a href="/gaming"><span class="nav-line"></span>Gaming</a>
+    <a href="/music" class="active"><span class="nav-line"></span>Music</a>
+    <a href="/gallery"><span class="nav-line"></span>Gallery</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/friends"><span class="nav-line"></span>Friends</a>
+    <a href="/awards"><span class="nav-line"></span>Awards</a>
+    <a href="/widgets"><span class="nav-line"></span>Widgets</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+  </nav>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/skills">Skills</a>
+    <a href="/gaming">Gaming</a>
+    <a href="/music" class="active">Music</a>
+    <a href="/projects">Projects</a>
+    <a href="/friends">Friends</a>
+    <a href="/widgets">Widgets</a>
+    <a href="/valorant">Valorant</a>
+  </nav>
+  <button class="theme-toggle" id="themeToggle" title="Toggle theme">&#9728;</button>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div id="cursorSpotlight"></div>
+  <div id="toast" class="toast"></div>
+
+  <div class="dark contents">
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
+      <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+    </div>
+
+    <main class="relative flex w-full flex-col font-satoshi" id="mainContent">
+      <section class="relative w-full py-12 px-4 md:px-8">
+        <div class="mx-auto" style="max-width:64rem">
+
+          <!-- Header -->
+          <div class="page-header anim-reveal">
+            <div class="accent-bar"></div>
+            <div>
+              <h1>Music</h1>
+              <span class="subtitle">what I listen to</span>
+            </div>
+          </div>
+
+          <!-- Top Artists -->
+          <div class="mb-10 anim-reveal anim-delay-1">
+            <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Top Artists</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">TW</div>
+                <p class="text-white font-semibold text-sm mb-1">The Weeknd</p>
+                <span class="text-xs opacity-40">R&amp;B / Pop</span>
+              </div>
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#8e44ad,#6c3483)">TS</div>
+                <p class="text-white font-semibold text-sm mb-1">Travis Scott</p>
+                <span class="text-xs opacity-40">Hip-Hop</span>
+              </div>
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#e67e22,#d35400)">PM</div>
+                <p class="text-white font-semibold text-sm mb-1">Post Malone</p>
+                <span class="text-xs opacity-40">Hip-Hop / Pop</span>
+              </div>
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#2980b9,#1a5276)">JW</div>
+                <p class="text-white font-semibold text-sm mb-1">Juice WRLD</p>
+                <span class="text-xs opacity-40">Emo Rap</span>
+              </div>
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#27ae60,#1e8449)">DK</div>
+                <p class="text-white font-semibold text-sm mb-1">Drake</p>
+                <span class="text-xs opacity-40">Hip-Hop / Pop</span>
+              </div>
+              <div class="artist-card">
+                <div class="artist-avatar" style="background:linear-gradient(135deg,#f39c12,#b7950b)">KL</div>
+                <p class="text-white font-semibold text-sm mb-1">Kendrick Lamar</p>
+                <span class="text-xs opacity-40">Hip-Hop</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Genres I Like -->
+          <div class="mb-10 anim-reveal anim-delay-2">
+            <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Genres I Like</h2>
+            <div class="flex flex-wrap gap-3">
+              <span class="genre-pill">Hip-Hop</span>
+              <span class="genre-pill">R&amp;B</span>
+              <span class="genre-pill">Pop</span>
+              <span class="genre-pill">Lo-fi</span>
+              <span class="genre-pill">Electronic</span>
+              <span class="genre-pill">Rock</span>
+              <span class="genre-pill">Indie</span>
+              <span class="genre-pill">Jazz</span>
+            </div>
+          </div>
+
+          <!-- Recent Plays -->
+          <div class="mb-10 anim-reveal anim-delay-3">
+            <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Recent Plays</h2>
+            <div class="widget-card">
+              <div class="flex flex-col gap-1">
+                <div class="track-row" style="border-radius:12px">
+                  <div class="track-art" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-medium text-sm truncate">Starboy</p>
+                    <p class="text-xs opacity-40">The Weeknd</p>
+                  </div>
+                  <div class="now-playing">
+                    <span class="dot"></span>
+                    <span>now playing</span>
+                  </div>
+                </div>
+                <div class="track-row">
+                  <div class="track-art" style="background:linear-gradient(135deg,#8e44ad,#6c3483)"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-medium text-sm truncate">SICKO MODE</p>
+                    <p class="text-xs opacity-40">Travis Scott</p>
+                  </div>
+                  <span class="text-xs opacity-30 shrink-0">3:12</span>
+                </div>
+                <div class="track-row">
+                  <div class="track-art" style="background:linear-gradient(135deg,#e67e22,#d35400)"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-medium text-sm truncate">Circles</p>
+                    <p class="text-xs opacity-40">Post Malone</p>
+                  </div>
+                  <span class="text-xs opacity-30 shrink-0">3:35</span>
+                </div>
+                <div class="track-row">
+                  <div class="track-art" style="background:linear-gradient(135deg,#2980b9,#1a5276)"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-medium text-sm truncate">Lucid Dreams</p>
+                    <p class="text-xs opacity-40">Juice WRLD</p>
+                  </div>
+                  <span class="text-xs opacity-30 shrink-0">3:34</span>
+                </div>
+                <div class="track-row">
+                  <div class="track-art" style="background:linear-gradient(135deg,#27ae60,#1e8449)"></div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-medium text-sm truncate">God's Plan</p>
+                    <p class="text-xs opacity-40">Drake</p>
+                  </div>
+                  <span class="text-xs opacity-30 shrink-0">3:18</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Music Stats -->
+          <div class="mb-10 anim-reveal anim-delay-4">
+            <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Music Stats</h2>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="stat-card">
+                <p class="text-2xl font-bold text-white">2,099</p>
+                <p class="text-xs opacity-40 mt-1">Scrobbles</p>
+              </div>
+              <div class="stat-card">
+                <p class="text-2xl font-bold text-white">604</p>
+                <p class="text-xs opacity-40 mt-1">Artists</p>
+              </div>
+              <div class="stat-card">
+                <p class="text-2xl font-bold text-white">12</p>
+                <p class="text-xs opacity-40 mt-1">Albums</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <footer class="relative flex w-full justify-center py-8 px-4 text-white anim-reveal anim-delay-5">
+        <p class="text-sm opacity-40">made with care</p>
+      </footer>
+    </main>
+
+    <div role="button" tabindex="0" aria-label="enter" class="enter-overlay" id="enterOverlay">
+      <div class="bg"></div>
+      <div class="text"><div class="flex flex-col items-center"><div class="break-words px-6 text-center text-4xl font-medium tracking-wide"><p class="mb-2 leading-relaxed last:mb-0">enter</p></div></div></div>
+    </div>
+  </div>
+
+  <script>
+    const overlay=document.getElementById('enterOverlay'),bgVideo=document.getElementById('bgVideo');
+    function dismissOverlay(){overlay.classList.add('hidden-overlay');bgVideo.play().catch(()=>{})}
+    if(window.location.hash){dismissOverlay()}else{overlay.addEventListener('click',dismissOverlay);overlay.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')dismissOverlay()})}
+
+    const themeToggle=document.getElementById('themeToggle');
+    const savedTheme=localStorage.getItem('theme')||'dark';
+    if(savedTheme==='light'){document.body.classList.add('light');themeToggle.textContent='\u263E'}
+    themeToggle.addEventListener('click',()=>{
+      document.body.classList.toggle('light');
+      const isLight=document.body.classList.contains('light');
+      themeToggle.textContent=isLight?'\u263E':'\u2600';
+      localStorage.setItem('theme',isLight?'light':'dark');
+    });
+
+    window.addEventListener('scroll',()=>{
+      const h=document.documentElement.scrollHeight-window.innerHeight;
+      document.getElementById('scrollProgress').style.width=h>0?(window.scrollY/h*100)+'%':'0';
+    });
+
+    const spotlight=document.getElementById('cursorSpotlight');
+    document.addEventListener('mousemove',e=>{spotlight.style.left=e.clientX+'px';spotlight.style.top=e.clientY+'px'});
+
+    const trailColors=['#5573f4','#4764ec','#ff4466','#23A55A','#F0B232'];
+    let trailIdx=0;
+    document.addEventListener('mousemove',e=>{
+      const t=document.createElement('div');
+      t.className='cursor-trail';
+      t.style.left=e.clientX+'px';t.style.top=e.clientY+'px';
+      t.style.background=trailColors[trailIdx%trailColors.length];
+      t.style.opacity='0.6';
+      document.body.appendChild(t);
+      setTimeout(()=>{t.style.opacity='0'},50);
+      setTimeout(()=>t.remove(),500);
+      trailIdx++;
+    });
+
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+  </script>
+</body>
+</html>
