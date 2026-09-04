@@ -149,34 +149,32 @@
               </div>
             </div>
           </div>
-          <!-- Time + Weather + Last.fm Row -->
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
-            <!-- Time: col 1, row 1 -->
-            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
+          <!-- Time + Weather row -->
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
+            <div class="min-w-0 h-full">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
                   <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
                 </div>
               </div>
             </div>
-            <!-- Weather: col 2, row 1 -->
-            <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 1">
+            <div class="min-w-0 h-full">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
                   <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
                 </div>
               </div>
             </div>
-            <!-- Last.fm: col 1-2, row 2 (wide) -->
-            <div class="min-w-0 h-full" style="grid-column:1/span 2;grid-row:2/span 1;min-height:16rem">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative h-full overflow-hidden" id="lastfmWidget">
-                  <div class="flex items-center gap-3 px-4 py-3">
-                    <div class="skeleton shrink-0 rounded-[14px]" style="width:64px;height:64px"></div>
-                    <div class="flex min-w-0 flex-1 flex-col gap-2">
-                      <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                      <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                    </div>
+          </div>
+          <!-- Last.fm full width -->
+          <div class="w-full" style="min-height:16rem">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative h-full overflow-hidden" id="lastfmWidget">
+                <div class="flex items-center gap-3 px-4 py-3">
+                  <div class="skeleton shrink-0 rounded-[14px]" style="width:64px;height:64px"></div>
+                  <div class="flex min-w-0 flex-1 flex-col gap-2">
+                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
                   </div>
                 </div>
               </div>
@@ -361,31 +359,22 @@
     }
 
     function loadRoblox() {
-      fetch('https://users.roblox.com/v1/usernames/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernames: [ROBLOX_USERNAME] })
-      })
+      fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`)
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(d => {
-        if (d.data && d.data.length > 0) {
-          const user = d.data[0];
-          fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=150x150&format=Png&isCircular=false`)
+      .then(user => {
+        if (user && user.Id) {
+          fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.Id}&size=150x150&format=Png&isCircular=false`)
             .then(r => r.json())
             .then(t => {
               const thumb = t.data && t.data[0] ? t.data[0].imageUrl : '';
-              renderRoblox(user.id, user.name, user.displayName, thumb);
+              renderRoblox(user.Id, user.Name, user.DisplayName, thumb);
             })
-            .catch(() => renderRoblox(user.id, user.name, user.displayName, ''));
+            .catch(() => renderRoblox(user.Id, user.Name, user.DisplayName, ''));
         } else {
           showError('robloxWidget', 'User not found');
         }
       })
-      .catch(() => {
-        fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1&size=150x150&format=Png&isCircular=false`)
-          .then(() => showError('robloxWidget', 'CORS blocked — try again'))
-          .catch(() => showError('robloxWidget', 'Unable to load'));
-      });
+      .catch(() => showError('robloxWidget', 'Unable to load'));
     }
 
     // ========== TIME WIDGET ==========
@@ -410,17 +399,17 @@
       }
 
       el.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
-          <div class="clock-face">
+        <div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center">
+          <div class="clock-face" style="width:80px;height:80px;flex-shrink:0">
             <div class="clock-center"></div>
-            <div class="clock-hand clock-hour" style="transform:translateX(-50%) rotate(${hourDeg}deg)"></div>
-            <div class="clock-hand clock-minute" style="transform:translateX(-50%) rotate(${minDeg}deg)"></div>
-            <div class="clock-hand clock-second" style="transform:translateX(-50%) rotate(${secDeg}deg)"></div>
+            <div class="clock-hand clock-hour" style="transform:translateX(-50%) rotate(${hourDeg}deg);height:22px"></div>
+            <div class="clock-hand clock-minute" style="transform:translateX(-50%) rotate(${minDeg}deg);height:30px"></div>
+            <div class="clock-hand clock-second" style="transform:translateX(-50%) rotate(${secDeg}deg);height:33px"></div>
           </div>
-          <div style="text-align:center">
+          <div style="text-align:left">
             <div style="font-size:1.1rem;font-weight:600">${timeStr}</div>
             <div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div>
-            <div style="font-size:0.7rem;color:#6B7280">${TIMEZONE}</div>
+            <div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div>
           </div>
         </div>
       `;
