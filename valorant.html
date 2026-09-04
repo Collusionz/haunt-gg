@@ -19,23 +19,46 @@
     .match-win{border-left:3px solid #23A55A}
     .match-loss{border-left:3px solid #F23F43}
     .haunt-line{height:1px;background-image:linear-gradient(to right,transparent,currentColor,transparent);filter:drop-shadow(0 0 3.5px currentColor)}
+    .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+    @media(min-width:768px){.side-nav{display:flex}}
+    .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+    .side-nav a:hover{color:rgba(255,255,255,0.7)}
+    .side-nav a.active{color:#fff}
+    .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+    .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+    .side-nav a.active .nav-line{width:16px;background:#fff}
+    .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+    @media(min-width:768px){.mobile-nav{display:none}}
+    .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+    .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+    @media(min-width:768px){#mainContent{padding-left:80px}}
   </style>
 </head>
 <body class="min-h-full flex flex-col">
+  <!-- Desktop Side Nav -->
+  <nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/valorant" class="active"><span class="nav-line"></span>Valorant</a>
+    <a href="/#projects"><span class="nav-line"></span>Projects</a>
+    <a href="/#home"><span class="nav-line"></span>Links</a>
+  </nav>
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/valorant" class="active">Valorant</a>
+    <a href="/#projects">Projects</a>
+    <a href="/#home">Links</a>
+  </nav>
   <div class="dark contents">
     <!-- Video Background -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
       <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
     </div>
 
-    <main class="relative flex w-full flex-col items-center text-white font-satoshi">
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
       <!-- Header -->
       <section class="relative flex w-full flex-col items-center px-4" style="padding-top:48px;padding-bottom:16px">
         <div class="w-full max-w-3xl">
-          <a href="/" style="font-size:0.85rem;color:#5573f4;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to profile
-          </a>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
             <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
             <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Valorant</h1>

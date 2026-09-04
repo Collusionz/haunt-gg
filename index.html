@@ -59,9 +59,36 @@
     .clock-center { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); z-index: 5; }
     .clock-mark { position: absolute; width: 2px; height: 6px; background: rgba(255,255,255,0.3); top: 4px; left: 50%; transform-origin: bottom center; }
     .weather-icon { width: 32px; height: 32px; }
+    .side-nav { position: fixed; left: 24px; top: 50%; z-index: 50; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; }
+    @media (min-width: 768px) { .side-nav { display: flex; } }
+    .side-nav a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 300; letter-spacing: 0.05em; text-decoration: none; transition: color 0.2s; color: rgba(255,255,255,0.4); }
+    .side-nav a:hover { color: rgba(255,255,255,0.7); }
+    .side-nav a.active { color: #fff; }
+    .side-nav a .nav-line { height: 1px; width: 8px; background: rgba(255,255,255,0.4); transition: all 0.2s; flex-shrink: 0; }
+    .side-nav a:hover .nav-line { width: 12px; background: rgba(255,255,255,0.7); }
+    .side-nav a.active .nav-line { width: 16px; background: #fff; }
+    .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; }
+    @media (min-width: 768px) { .mobile-nav { display: none; } }
+    .mobile-nav a { flex: 1; text-align: center; padding: 12px 4px; font-size: 0.625rem; font-weight: 300; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .mobile-nav a.active, .mobile-nav a:hover { color: #fff; }
+    @media (min-width: 768px) { #mainContent { padding-left: 80px; } }
   </style>
 </head>
 <body class="min-h-full flex flex-col">
+  <!-- Desktop Side Nav -->
+  <nav class="side-nav">
+    <a href="/" class="active"><span class="nav-line"></span>Home</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="#projects"><span class="nav-line"></span>Projects</a>
+    <a href="#home"><span class="nav-line"></span>Links</a>
+  </nav>
+  <!-- Mobile Bottom Nav -->
+  <nav class="mobile-nav">
+    <a href="/" class="active">Home</a>
+    <a href="/valorant">Valorant</a>
+    <a href="#projects">Projects</a>
+    <a href="#home">Links</a>
+  </nav>
   <div class="dark contents">
     <!-- Audio -->
     <audio id="bgAudio" src="https://r2.haunt.gg/audio/2dc1a59a-12c4-4850-9bdd-439432d9cabd.mp3" preload="auto" loop></audio>
@@ -71,9 +98,9 @@
       <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
     </div>
 
-    <main class="relative flex w-full flex-col items-center text-white font-satoshi">
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
       <!-- Hero / Profile Section -->
-      <section class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
+      <section id="home" class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
         <div class="relative flex w-full flex-col items-stretch gap-3" style="max-width:48rem">
           <div class="profile-card relative z-10 w-full px-8 py-8 will-change-transform anim-reveal">
             <div class="profile-card-inner" style="margin:-2rem;margin-bottom:0;padding:2rem;padding-bottom:0">
@@ -184,7 +211,7 @@
       </section>
 
       <!-- Affiliations Section -->
-      <section class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
+      <section id="projects" class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
         <div class="flex w-full flex-col gap-3 max-w-5xl">
           <header class="text-start">
             <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">Affilations</p></div>
