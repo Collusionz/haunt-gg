@@ -222,6 +222,7 @@
     const LASTFM_API_KEY = '2e5b5823d8f5c2416b39bd8d26a6aa4f';
     const VALORANT_NAME = 'collusionz';
     const VALORANT_TAG = 'rival';
+    const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
     const TIMEZONE = 'Asia/Singapore';
 
     // ========== ENTER OVERLAY ==========
@@ -528,22 +529,85 @@
         .catch(() => showError('lastfmWidget', 'Unable to load'));
     }
 
-    // ========== VALORANT WIDGET ==========
-    function renderValorantStatic() {
+    // ========== VALORANT WIDGET (Henrik API) ==========
+    const RANK_ICONS = {
+      'Iron 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png',
+      'Iron 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png',
+      'Iron 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png',
+      'Bronze 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png',
+      'Bronze 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png',
+      'Bronze 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png',
+      'Silver 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png',
+      'Silver 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png',
+      'Silver 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png',
+      'Gold 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png',
+      'Gold 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png',
+      'Gold 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png',
+      'Platinum 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png',
+      'Platinum 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png',
+      'Platinum 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png',
+      'Diamond 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png',
+      'Diamond 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png',
+      'Diamond 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png',
+      'Ascendant 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png',
+      'Ascendant 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png',
+      'Ascendant 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png',
+      'Immortal 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png',
+      'Immortal 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png',
+      'Immortal 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png',
+      'Radiant': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png',
+    };
+
+    function renderValorant(data) {
       const el = document.getElementById('valorantWidget');
+      const mmr = data.data;
+      const rank = mmr.current_data?.currenttierpatched || 'Unranked';
+      const rr = mmr.current_data?.ranking_in_tier || 0;
+      const peak = mmr.highest_rank?.tierpatched || rank;
+      const elo = mmr.current_data?.elo || 0;
+      const rankIcon = RANK_ICONS[rank] || RANK_ICONS['Iron 1'];
+
       el.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center">
-          <div style="font-size:1.5rem">🎯</div>
-          <div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div>
-          <div style="font-size:0.8rem;color:#9CA3AF">Valorant</div>
-          <a href="https://tracker.gg/valorant/profile/riot/${VALORANT_NAME}%23${VALORANT_TAG}/overview" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none">View on Tracker.gg</a>
+        <div style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px">
+          <img src="${rankIcon}" style="width:56px;height:56px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'" />
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div>
+            <div style="font-size:0.85rem;color:#9CA3AF;margin-top:2px">${rank}</div>
+            <div style="font-size:0.75rem;color:#6B7280;margin-top:1px">${rr} RR · ELO ${elo}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:0.7rem;color:#6B7280">Peak</div>
+            <div style="font-size:0.8rem;color:#9CA3AF;font-weight:500">${peak}</div>
+          </div>
         </div>
+        <a href="https://tracker.gg/valorant/profile/riot/${VALORANT_NAME}%23${VALORANT_TAG}/overview" target="_blank" rel="noopener" style="display:block;text-align:center;padding:4px;font-size:0.75rem;color:#5573f4;text-decoration:none;border-top:1px solid rgba(255,255,255,0.05)">View on Tracker.gg</a>
       `;
     }
 
     function loadValorant() {
-      // Try Henrik API (requires API key - show static fallback)
-      renderValorantStatic();
+      const regions = ['ap', 'na', 'eu', 'kr'];
+      let found = false;
+
+      function tryRegion(idx) {
+        if (idx >= regions.length || found) return;
+        const region = regions[idx];
+        fetch(`https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${VALORANT_NAME}/${VALORANT_TAG}`, {
+          headers: { 'Authorization': VALORANT_KEY }
+        })
+        .then(r => {
+          if (!r.ok) throw new Error('not found');
+          return r.json();
+        })
+        .then(d => {
+          if (d && d.data && !found) {
+            found = true;
+            renderValorant(d);
+          }
+        })
+        .catch(() => tryRegion(idx + 1));
+      }
+
+      tryRegion(0);
     }
 
     // ========== HELPER ==========
