@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valorant | home</title>
+  <meta name="theme-color" content="#ff4655"/>
+  <link rel="preconnect" href="https://api.fontshare.com"/>
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin/>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{satoshi:['"Satoshi"','sans-serif']}}}}</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;padding:0;font-family:'Satoshi',sans-serif;background:#000;color:#ccd8ec;min-height:100vh;overflow-x:hidden}
+    .widget-card{background:rgba(255,255,255,0.05);color:#fff;border:2px solid rgba(255,255,255,0.1);border-radius:25px}
+    .skeleton{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;background:rgba(255,255,255,0.1);border-radius:0.375rem}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+    .match-win{border-left:3px solid #23A55A}
+    .match-loss{border-left:3px solid #F23F43}
+    .haunt-line{height:1px;background-image:linear-gradient(to right,transparent,currentColor,transparent);filter:drop-shadow(0 0 3.5px currentColor)}
+  </style>
+</head>
+<body class="min-h-full flex flex-col">
+  <div class="dark contents">
+    <!-- Video Background -->
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
+      <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+    </div>
+
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi">
+      <!-- Header -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:48px;padding-bottom:16px">
+        <div class="w-full max-w-3xl">
+          <a href="/" style="font-size:0.85rem;color:#5573f4;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back to profile
+          </a>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
+            <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Valorant</h1>
+          </div>
+          <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">competitive stats and recent match history</p>
+        </div>
+      </section>
+
+      <!-- Profile Card -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:16px;padding-bottom:16px">
+        <div class="w-full max-w-3xl">
+          <div class="widget-card" style="padding:24px;overflow:hidden" id="profileCard">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
+              <div class="skeleton" style="width:80px;height:80px;border-radius:50%"></div>
+              <div class="skeleton h-4 w-48 rounded-md"></div>
+              <div class="skeleton h-3 w-32 rounded-md"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Match History -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:48px">
+        <div class="w-full max-w-3xl">
+          <h2 style="font-size:1.1rem;font-weight:600;color:#f4f7f8;margin:0 0 12px 4px">Match History</h2>
+          <div id="matchList" style="display:flex;flex-direction:column;gap:8px">
+            <div class="skeleton" style="height:72px;border-radius:16px"></div>
+            <div class="skeleton" style="height:72px;border-radius:16px"></div>
+            <div class="skeleton" style="height:72px;border-radius:16px"></div>
+            <div class="skeleton" style="height:72px;border-radius:16px"></div>
+            <div class="skeleton" style="height:72px;border-radius:16px"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const VALORANT_NAME = 'collusionz';
+    const VALORANT_TAG = 'rival';
+    const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
+    const REGIONS = ['ap','na','eu','kr'];
+
+    const RANK_ICONS = {
+      'Unranked':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png',
+      'Iron 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png',
+      'Iron 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png',
+      'Iron 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png',
+      'Bronze 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png',
+      'Bronze 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png',
+      'Bronze 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png',
+      'Silver 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png',
+      'Silver 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png',
+      'Silver 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png',
+      'Gold 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png',
+      'Gold 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png',
+      'Gold 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png',
+      'Platinum 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png',
+      'Platinum 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png',
+      'Platinum 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png',
+      'Diamond 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png',
+      'Diamond 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png',
+      'Diamond 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png',
+      'Ascendant 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png',
+      'Ascendant 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png',
+      'Ascendant 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png',
+      'Immortal 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png',
+      'Immortal 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png',
+      'Immortal 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png',
+      'Radiant':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/25/smallicon.png',
+    };
+
+    const RANK_LARGE = {};
+    Object.keys(RANK_ICONS).forEach(k => { RANK_LARGE[k] = RANK_ICONS[k].replace('smallicon','largeicon'); });
+
+    function agentIcon(id) {
+      return `https://media.valorant-api.com/agents/${id}/displayicon.png`;
+    }
+
+    function tryFetch(url) {
+      return fetch(url, { headers: { 'Authorization': VALORANT_KEY } })
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    }
+
+    function tryRegions(pathFn) {
+      let found = false;
+      return new Promise((resolve, reject) => {
+        function tryNext(i) {
+          if (i >= REGIONS.length || found) return;
+          tryFetch(pathFn(REGIONS[i]))
+            .then(d => { if (!found && d && d.data) { found = true; resolve(d); } })
+            .catch(() => tryNext(i + 1));
+        }
+        tryNext(0);
+        setTimeout(() => { if (!found) reject(new Error('not found')); }, 8000);
+      });
+    }
+
+    // ========== PROFILE ==========
+    function renderProfile(mmr, account) {
+      const el = document.getElementById('profileCard');
+      const rank = mmr.current_data?.currenttierpatched || 'Unranked';
+      const rr = mmr.current_data?.ranking_in_tier || 0;
+      const peak = mmr.highest_rank?.tierpatched || rank;
+      const elo = mmr.current_data?.elo || 0;
+      const level = account?.account_level || '?';
+      const rankIcon = RANK_LARGE[rank] || RANK_LARGE['Unranked'];
+      const peakIcon = RANK_ICONS[peak] || RANK_ICONS['Unranked'];
+
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center">
+          <img src="${rankIcon}" style="width:80px;height:80px;object-fit:contain" onerror="this.style.display='none'" />
+          <div style="text-align:center;min-width:0">
+            <div style="font-size:1.3rem;font-weight:700;white-space:nowrap">${VALORANT_NAME}#${VALORANT_TAG}</div>
+            <div style="font-size:0.8rem;color:#9CA3AF;margin-top:2px">Level ${level}</div>
+          </div>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center">
+            <div style="text-align:center">
+              <div style="font-size:1.5rem;font-weight:700;color:#fff">${rank}</div>
+              <div style="font-size:0.7rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Rank</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:1.5rem;font-weight:700;color:#fff">${rr} <span style="font-size:0.8rem;font-weight:400;color:#9CA3AF">RR</span></div>
+              <div style="font-size:0.7rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Rating</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:1.5rem;font-weight:700;color:#fff">${elo}</div>
+              <div style="font-size:0.7rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">ELO</div>
+            </div>
+            <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <img src="${peakIcon}" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'" />
+                <span style="font-size:0.95rem;font-weight:600;color:#fff">${peak}</span>
+              </div>
+              <div style="font-size:0.7rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Peak</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========== MATCH HISTORY ==========
+    function renderMatches(matches, puuid) {
+      const el = document.getElementById('matchList');
+      if (!matches || matches.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:32px;color:#6B7280">No matches found</div>';
+        return;
+      }
+
+      el.innerHTML = matches.map(m => {
+        const meta = m.metadata;
+        const player = m.players.find(p => p.puuid === puuid);
+        if (!player) return '';
+
+        const won = m.teams.find(t => t.team_id === player.team_id)?.won || false;
+        const stats = player.stats;
+        const agent = player.agent?.name || 'Unknown';
+        const agentId = player.agent?.id || '';
+        const map = meta.map?.name || 'Unknown';
+        const mode = meta.queue?.name || meta.queue?.id || 'Unknown';
+        const score = m.teams;
+        const playerTeam = score.find(t => t.team_id === player.team_id);
+        const enemyTeam = score.find(t => t.team_id !== player.team_id);
+        const scoreStr = playerTeam && enemyTeam ? `${playerTeam.rounds.won}-${enemyTeam.rounds.won}` : '';
+        const date = new Date(meta.started_at);
+        const dateStr = date.toLocaleDateString('en-US', { month:'numeric', day:'numeric', year:'numeric' });
+
+        return `
+          <div class="widget-card ${won ? 'match-win' : 'match-loss'}" style="padding:12px 16px;border-radius:16px;display:flex;align-items:center;gap:14px;overflow:hidden">
+            <img src="${agentIcon(agentId)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${won ? 'background:rgba(35,165,90,0.15);color:#23A55A' : 'background:rgba(242,63,67,0.15);color:#F23F43'}">${won ? 'WIN' : 'LOSS'}</span>
+                <span style="font-size:0.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${agent}</span>
+                <span style="font-size:0.7rem;color:#6B7280">${mode}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:#9CA3AF">
+                <span>${stats.kills}/${stats.deaths}/${stats.assists}</span>
+                <span style="color:#6B7280">·</span>
+                <span>${scoreStr}</span>
+                <span style="color:#6B7280">·</span>
+                <span>${map}</span>
+              </div>
+            </div>
+            <div style="font-size:0.7rem;color:#6B7280;white-space:nowrap;flex-shrink:0">${dateStr}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ========== INIT ==========
+    (async function() {
+      try {
+        const [mmr, account] = await Promise.all([
+          tryRegions(r => `https://api.henrikdev.xyz/valorant/v2/mmr/${r}/${VALORANT_NAME}/${VALORANT_TAG}`),
+          tryFetch(`https://api.henrikdev.xyz/valorant/v2/account/${VALORANT_NAME}/${VALORANT_TAG}`)
+        ]);
+        renderProfile(mmr, account.data);
+
+        const puuid = account.data?.puuid;
+        if (!puuid) return;
+
+        const region = mmr.data?.region || 'ap';
+        const matchData = await tryRegions(r => `https://api.henrikdev.xyz/valorant/v4/matches/${r}/pc/${VALORANT_NAME}/${VALORANT_TAG}?size=10`);
+        renderMatches(matchData.data, puuid);
+      } catch (e) {
+        document.getElementById('profileCard').innerHTML = '<div style="text-align:center;padding:24px;color:#6B7280">Unable to load Valorant data</div>';
+        document.getElementById('matchList').innerHTML = '';
+      }
+    })();
+  </script>
+</body>
+</html>
