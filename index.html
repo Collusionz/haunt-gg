@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>home</title>
   <meta name="description" content="personal website" />
-  <link rel="prefetch" href="/valorant" />
   <meta name="theme-color" content="#5573f4" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -26,40 +25,10 @@
     .enter-overlay .text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.25rem; font-weight: 500; letter-spacing: 0.05em; }
     .profile-card { background: rgba(218,220,247,0); background-clip: padding-box; color: #ccd8ec; border: 2px solid rgba(110,184,236,0.13); border-radius: 44px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); position: relative; }
     .profile-card-inner { border-radius: 42px; overflow: hidden; }
-    .widget-card { background: rgba(255,255,255,0.05); background-clip: padding-box; color: #fff; border: 2px solid rgba(255,255,255,0.1); border-radius: 25px; }
     .username-glow { color: #4764ec; text-shadow: 0 0 16.5px #4764ec; }
     .haunt-line { height: 1px; background-image: linear-gradient(to right, transparent, currentColor, transparent); filter: drop-shadow(0 0 3.5px currentColor); }
-    .affiliation-card { position: relative; height: 100%; overflow: hidden; border-radius: 42px; cursor: pointer; transition: transform 0.5s ease; }
-    .affiliation-card:hover .affiliation-bg { transform: scale(1.05); }
-    .affiliation-bg { position: absolute; inset: 0; background-size: cover; background-position: center; background-color: rgba(10,10,10,0.8); transition: transform 0.5s ease; }
-    .affiliation-gradient { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.4), transparent); }
-    .btn-badge { background-color: rgba(218,220,247,0.1); border: 1px solid rgba(110,184,236,0.23); border-radius: 26px; color: #ccd8ec; padding: 0.25rem 0.625rem; font-size: 0.875rem; font-weight: 500; backdrop-filter: blur(12px); display: inline-flex; align-items: center; gap: 0.25rem; }
-    .like-btn, .dislike-btn { color: #c1c8ec; transition: color 0.2s ease; cursor: pointer; background: none; border: none; padding: 4px; }
-    .like-btn:hover, .dislike-btn:hover { color: #fff; }
-    .like-btn.active { color: #ff4466; }
-    .dislike-btn.active { color: #4488ff; }
-    .social-link { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 50%; border: 2px solid rgba(110,184,236,0.13); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); color: #ccd8ec; transition: background 0.2s, color 0.2s, transform 0.2s; text-decoration: none; }
-    .social-link:hover { background: rgba(255,255,255,0.08); color: #fff; transform: translateY(-2px); }
-    .skeleton { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; background: rgba(255,255,255,0.1); border-radius: 0.375rem; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .scroll-fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .scroll-fade-in.visible { opacity: 1; transform: translateY(0); }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .anim-reveal { animation: fadeInUp 0.5s ease forwards; }
-    .anim-delay-1 { animation-delay: 0.1s; opacity: 0; }
-    .anim-delay-2 { animation-delay: 0.2s; opacity: 0; }
-    .anim-delay-3 { animation-delay: 0.3s; opacity: 0; }
-    .anim-delay-4 { animation-delay: 0.4s; opacity: 0; }
-    .anim-delay-5 { animation-delay: 0.5s; opacity: 0; }
-    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .clock-face { width: 120px; height: 120px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); position: relative; margin: 0 auto; }
-    .clock-hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 2px; }
-    .clock-hour { width: 3px; height: 30px; background: #fff; }
-    .clock-minute { width: 2px; height: 40px; background: rgba(255,255,255,0.8); }
-    .clock-second { width: 1px; height: 45px; background: #ff4466; }
-    .clock-center { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); z-index: 5; }
-    .clock-mark { position: absolute; width: 2px; height: 6px; background: rgba(255,255,255,0.3); top: 4px; left: 50%; transform-origin: bottom center; }
-    .weather-icon { width: 32px; height: 32px; }
     .side-nav { position: fixed; left: 24px; top: 50%; z-index: 50; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; }
     @media (min-width: 768px) { .side-nav { display: flex; } }
     .side-nav a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 300; letter-spacing: 0.05em; text-decoration: none; transition: color 0.2s; color: rgba(255,255,255,0.4); }
@@ -76,36 +45,29 @@
   </style>
 </head>
 <body class="min-h-full flex flex-col">
-  <!-- Desktop Side Nav -->
   <nav class="side-nav">
     <a href="/" class="active"><span class="nav-line"></span>Home</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
-    <a href="#projects"><span class="nav-line"></span>Projects</a>
-    <a href="#widgets"><span class="nav-line"></span>Widgets</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/widgets"><span class="nav-line"></span>Widgets</a>
   </nav>
-  <!-- Mobile Bottom Nav -->
   <nav class="mobile-nav">
     <a href="/" class="active">Home</a>
     <a href="/valorant">Valorant</a>
-    <a href="#projects">Projects</a>
-    <a href="#widgets">Widgets</a>
+    <a href="/projects">Projects</a>
+    <a href="/widgets">Widgets</a>
   </nav>
   <div class="dark contents">
-    <!-- Audio -->
     <audio id="bgAudio" src="https://r2.haunt.gg/audio/2dc1a59a-12c4-4850-9bdd-439432d9cabd.mp3" preload="auto" loop></audio>
-
-    <!-- Video Background -->
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000000">
       <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
     </div>
 
     <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
-      <!-- Hero / Profile Section -->
-      <section id="home" class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
+      <section class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
         <div class="relative flex w-full flex-col items-stretch gap-3" style="max-width:48rem">
           <div class="profile-card relative z-10 w-full px-8 py-8 will-change-transform anim-reveal">
             <div class="profile-card-inner" style="margin:-2rem;margin-bottom:0;padding:2rem;padding-bottom:0">
-              <!-- Banner -->
               <div class="-mx-8 -mt-8 overflow-hidden" style="border-top-left-radius:42px;border-top-right-radius:42px">
                 <div class="relative w-full overflow-hidden" style="height:160px;mask-image:linear-gradient(to top,transparent 0%,black 100%);-webkit-mask-image:linear-gradient(to top,transparent 0%,black 100%)">
                   <img alt="Banner" src="https://r2.haunt.gg/banner/ac6de097-e866-496a-8bc2-93c3f1e5bcef.jpg" class="absolute inset-0 w-full h-full object-cover" />
@@ -130,107 +92,14 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
-
-      <!-- General Info / Widgets Section -->
-      <section id="widgets" class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
-        <div class="flex w-full flex-col gap-3 max-w-5xl">
-          <header class="text-start">
-            <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
-            <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
-          </header>
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
-            <!-- Discord: col 1, row 1 -->
-            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="discordWidget">
-                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
-                  <div class="flex min-w-0 flex-1 flex-col gap-2">
-                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                    <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Valorant: col 2, rows 1-2 (tall) -->
-            <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 2;min-height:13rem">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                </div>
-              </div>
-            </div>
-            <!-- Roblox: col 1, row 2 -->
-            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:2/span 1">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center gap-3 px-4 py-3" id="robloxWidget">
-                  <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
-                  <div class="flex min-w-0 flex-1 flex-col gap-2">
-                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Time + Weather row -->
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
-            <div class="min-w-0 h-full">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
-                  <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
-                </div>
-              </div>
-            </div>
-            <div class="min-w-0 h-full">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Last.fm full width -->
-          <div class="w-full" style="min-height:16rem">
-            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-              <div class="relative h-full overflow-hidden" id="lastfmWidget">
-                <div class="flex items-center gap-3 px-4 py-3">
-                  <div class="skeleton shrink-0 rounded-[14px]" style="width:64px;height:64px"></div>
-                  <div class="flex min-w-0 flex-1 flex-col gap-2">
-                    <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                    <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Affiliations Section -->
-      <section id="projects" class="relative flex w-full flex-col items-center px-4 text-white scroll-fade-in" style="padding-top:48px;padding-bottom:48px">
-        <div class="flex w-full flex-col gap-3 max-w-5xl">
-          <header class="text-start">
-            <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">Affilations</p></div>
-            <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Servers or projects i am actively involved in</p></div>
-          </header>
-          <div class="flex w-full flex-col gap-4">
-            <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:14rem" id="projectsGrid"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="relative flex w-full justify-center py-8 px-4 text-white scroll-fade-in">
+      <footer class="relative flex w-full justify-center py-8 px-4 text-white">
         <p class="text-sm opacity-40">made with care</p>
       </footer>
     </main>
 
-    <!-- Enter Overlay -->
     <div role="button" tabindex="0" aria-label="enter" class="enter-overlay" id="enterOverlay">
       <div class="bg"></div>
       <div class="text"><div class="flex flex-col items-center"><div class="break-words px-6 text-center text-4xl font-medium tracking-wide"><p class="mb-2 leading-relaxed last:mb-0">enter</p></div></div></div>
@@ -238,17 +107,6 @@
   </div>
 
   <script>
-    // ========== CONFIG ==========
-    const DISCORD_USER_ID = '704140288716701737';
-    const ROBLOX_USERNAME = 'tripp_Thebest05';
-    const LASTFM_USERNAME = 'collusionz';
-    const LASTFM_API_KEY = '2e5b5823d8f5c2416b39bd8d26a6aa4f';
-    const VALORANT_NAME = 'collusionz';
-    const VALORANT_TAG = 'rival';
-    const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
-    const TIMEZONE = 'Asia/Singapore';
-
-    // ========== ENTER OVERLAY ==========
     const overlay = document.getElementById('enterOverlay');
     const bgVideo = document.getElementById('bgVideo');
     const bgAudio = document.getElementById('bgAudio');
@@ -260,409 +118,11 @@
       bgAudio.play().catch(() => {});
     }
     if (window.location.hash) {
-      overlay.classList.add('hidden-overlay');
-      bgVideo.play().catch(() => {});
-      bgAudio.volume = 0.3;
-      bgAudio.play().catch(() => {});
+      dismissOverlay();
     } else {
       overlay.addEventListener('click', dismissOverlay);
       overlay.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') dismissOverlay(); });
     }
-
-    // ========== SCROLL ANIMATIONS ==========
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.scroll-fade-in').forEach(el => observer.observe(el));
-
-    // ========== PROJECTS ==========
-    const projects = [
-      { role:"Adminstrator", title:"Rivals Competitive League", desc:"Leads the charge on moderation and addressing fair-play violations.", img:"https://r2.haunt.gg/project/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp", link:"https://discord.gg/BuDr9eYt9m" },
-      { role:"Tester", title:"DUELISTS", desc:"Tasked with proposing ideas and ticket managing.", img:"https://r2.haunt.gg/project/029feceb-48da-4dd8-98e6-d22de74d1688.webp", link:"https://discord.gg/tGSH8649xR" },
-      { role:"Moderator", title:"ALCHEMY", desc:"Handled moderation tickets, resolving user reports, while keeping chat engaged.", img:"https://r2.haunt.gg/project/d90e60cf-dab9-4f16-8164-98e3913f1b4c.webp", link:"https://discord.gg/sFFSJAQhBs" },
-      { role:"Manager", title:"MRC", desc:"Oversaw moderation staff, enforced rules, managed channels and roles, handled reports, and ensured smooth daily server operations.", img:"https://r2.haunt.gg/project/d4b066e4-b243-4802-a52d-24a1d9427267.png", link:"https://discord.gg/BTdpkjQQbu" },
-      { role:"Tester", title:"lu studiosT", desc:"Roblox game tester responsible for playtesting new features, identifying bugs and exploits, providing feedback on gameplay balance, and reporting issues to developers before public release.", img:"https://r2.haunt.gg/project/a7ed631c-c7f0-46f2-992c-150f4d3da784.webp", link:"https://discord.gg/GXgSEXB3tY" },
-      { role:"Moderator", title:"Muz Crew", desc:"Managed support ticket systems, reviewed applications, handled user reports, enforced rules, and helped maintain an organized and safe community.", img:"https://r2.haunt.gg/project/f90a300b-af49-4b59-952a-2fc472a77302.webp", link:"https://discord.gg/wQwkDQrhNa" },
-      { role:"Manager", title:"Rivals Competitive Hangout", desc:"Handled moderation tickets, reviewed user reports, managed rule enforcement, and helped keep the server active and well-organized.", img:"https://r2.haunt.gg/project/be758949-e82a-4192-8e65-fac3ed198848.gif", link:"https://discord.gg/H5QhfZAjKr" },
-      { role:"Moderator", title:"Rivals Media", desc:"Assisted in posting people!", img:"https://r2.haunt.gg/project/53c9fd80-34e1-4533-9d87-80996c5d7e8b.webp", link:"https://discord.gg/rivalstv" },
-      { role:"Moderator", title:"Fang", desc:"Played a key role in establishing server structure, rules, and staff systems, while supporting moderation operations and helping manage and grow the community.", img:"https://r2.haunt.gg/project/108d058f-8092-4cff-83a1-c533188c53aa.webp", link:"https://discord.gg/vXuZwWT2F4" },
-      { role:"Moderator", title:"Xorf's", desc:"Responsible for enforcing rules, monitoring chats, handling reports, resolving conflicts, and maintaining a safe and friendly community.", img:"https://r2.haunt.gg/project/28e02af9-af3e-4190-908c-d64ae165df91.webp", link:"https://discord.gg/xedkKawmxZ" },
-      { role:"Manager", title:"Holds", desc:"Responsible for overseeing moderators, managing channels and roles, handling tickets and escalations, and ensuring smooth server operations.", img:"https://r2.haunt.gg/project/39e6974b-73ce-481e-9314-66037a4fa619.webp", link:"https://discord.gg/yjv5qbg2fN" },
-      { role:"Server Manager", title:"Arko's Kingdom", desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.", img:"https://r2.haunt.gg/project/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp", link:"https://discord.gg/jZyGa3dJA" },
-    ];
-
-    function renderProjects() {
-      const grid = document.getElementById('projectsGrid');
-      grid.innerHTML = projects.map((p, i) => {
-        const isWide = (i === 2);
-        return `<div class="min-w-0 relative min-h-0 ${isWide ? 'sm:col-span-2' : 'col-span-1'}">
-          <a href="${p.link}" target="_blank" rel="noreferrer noopener" class="block size-full">
-            <div class="group relative h-full affiliation-card profile-card">
-              <div class="relative size-full overflow-hidden" style="border-radius:42px">
-                <div class="affiliation-bg" style="background-image:url(${p.img})"></div>
-                <div class="affiliation-gradient"></div>
-                <div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10">
-                  <span class="btn-badge">${p.role}</span>
-                </div>
-                <div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10">
-                  <h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${p.title}</h3>
-                  <p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${p.desc}</p>
-                </div>
-              </div>
-            </div>
-          </a>
-        </div>`;
-      }).join('');
-    }
-
-    // ========== DISCORD WIDGET (Lanyard) ==========
-    function statusColor(status) {
-      return { online: '#23A55A', idle: '#F0B232', dnd: '#F23F43', offline: '#80848E' }[status] || '#80848E';
-    }
-
-    function renderDiscord(data) {
-      const el = document.getElementById('discordWidget');
-      const u = data.discord_user;
-      const avatarUrl = u.avatar
-        ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`
-        : `https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator || '0') % 5}.png`;
-      const status = data.discord_status || 'offline';
-      const activities = data.activities || [];
-      const spotify = data.listening_to_spotify ? data.spotify : null;
-
-      let detail = '';
-      if (spotify && (spotify.track || spotify.song)) {
-        const track = spotify.track || spotify.song || '';
-        const artist = spotify.artist || '';
-        detail = `<span style="color:#1DB954">Listening to</span> <strong>${track}</strong>`;
-        if (artist) detail += ` <span style="opacity:0.6">by ${artist}</span>`;
-      } else if (activities.length > 0) {
-        const playing = activities.find(a => a.type === 3 || (a.name && a.name !== 'Custom Status' && a.name !== 'Spotify'));
-        const custom = activities.find(a => a.name === 'Custom Status');
-        if (playing) {
-          const name = playing.name || '';
-          const details = playing.details || '';
-          const state = playing.state || '';
-          detail = details || state || name;
-        } else if (custom && custom.state) {
-          detail = custom.state;
-        } else {
-          detail = `<span style="opacity:0.5">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
-        }
-      } else {
-        detail = `<span style="opacity:0.5">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
-      }
-
-      let activityImg = '';
-      if (spotify && spotify.album_art_url) {
-        activityImg = `<img src="${spotify.album_art_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`;
-      } else if (activities.length > 0 && activities[0].assets?.large_image) {
-        let img = activities[0].assets.large_image;
-        if (img.startsWith('mp:external')) img = 'https://media.discordapp.net/external/' + img.replace('mp:external/', '');
-        activityImg = `<img src="${img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`;
-      }
-
-      el.innerHTML = `
-        <img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" />
-        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
-          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name || u.username}</div>
-          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${detail}</div>
-        </div>
-        ${activityImg}
-        <div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${statusColor(status)}"></div>
-      `;
-    }
-
-    function loadDiscord() {
-      fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`)
-        .then(r => r.json())
-        .then(d => { if (d.success) renderDiscord(d.data); else showError('discordWidget', 'Join discord.gg/lanyard to enable'); })
-        .catch(() => showError('discordWidget', 'Unable to load'));
-    }
-
-    // ========== ROBLOX WIDGET ==========
-    function renderRoblox(userId, username, displayName, avatarUrl) {
-      const el = document.getElementById('robloxWidget');
-      el.innerHTML = `
-        <img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
-        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
-          <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayName || username}</div>
-          <div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@${username}</div>
-          <a href="https://roblox.com/users/${userId}/profile" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none;margin-top:2px">View Profile</a>
-        </div>
-      `;
-    }
-
-    function loadRoblox() {
-      fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`)
-      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(user => {
-        if (user && user.Id) {
-          fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.Id}&size=150x150&format=Png&isCircular=false`)
-            .then(r => r.json())
-            .then(t => {
-              const thumb = t.data && t.data[0] ? t.data[0].imageUrl : '';
-              renderRoblox(user.Id, user.Name, user.DisplayName, thumb);
-            })
-            .catch(() => renderRoblox(user.Id, user.Name, user.DisplayName, ''));
-        } else {
-          showError('robloxWidget', 'User not found');
-        }
-      })
-      .catch(() => showError('robloxWidget', 'Unable to load'));
-    }
-
-    // ========== TIME WIDGET ==========
-    function renderTime() {
-      const el = document.getElementById('timeWidget');
-      const now = new Date();
-      const options = { timeZone: TIMEZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-      const dateOpts = { timeZone: TIMEZONE, weekday: 'short', month: 'short', day: 'numeric' };
-      const timeStr = now.toLocaleTimeString('en-US', options);
-      const dateStr = now.toLocaleDateString('en-US', dateOpts);
-
-      // Analog clock
-      const tzParts = now.toLocaleTimeString('en-US', { timeZone: TIMEZONE, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
-      const [h, m, s] = tzParts.split(':').map(Number);
-      const hourDeg = ((h % 12) + m / 60) * 30;
-      const minDeg = (m + s / 60) * 6;
-      const secDeg = s * 6;
-
-      let marks = '';
-      for (let i = 0; i < 12; i++) {
-        marks += `<div class="clock-mark" style="transform:translateX(-50%) rotate(${i * 30}deg);transform-origin:bottom center;top:4px;left:calc(50% - 1px);position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3)"></div>`;
-      }
-
-      el.innerHTML = `
-        <div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center">
-          <div class="clock-face" style="width:80px;height:80px;flex-shrink:0">
-            <div class="clock-center"></div>
-            <div class="clock-hand clock-hour" style="transform:translateX(-50%) rotate(${hourDeg}deg);height:22px"></div>
-            <div class="clock-hand clock-minute" style="transform:translateX(-50%) rotate(${minDeg}deg);height:30px"></div>
-            <div class="clock-hand clock-second" style="transform:translateX(-50%) rotate(${secDeg}deg);height:33px"></div>
-          </div>
-          <div style="text-align:left">
-            <div style="font-size:1.1rem;font-weight:600">${timeStr}</div>
-            <div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div>
-            <div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div>
-          </div>
-        </div>
-      `;
-    }
-
-    function loadTime() {
-      renderTime();
-      setInterval(renderTime, 1000);
-    }
-
-    // ========== WEATHER WIDGET (Open-Meteo) ==========
-    const WMO_CODES = {
-      0: ['Clear', '☀️'], 1: ['Mainly Clear', '🌤️'], 2: ['Partly Cloudy', '⛅'], 3: ['Overcast', '☁️'],
-      45: ['Fog', '🌫️'], 48: ['Rime Fog', '🌫️'],
-      51: ['Light Drizzle', '🌦️'], 53: ['Drizzle', '🌦️'], 55: ['Heavy Drizzle', '🌧️'],
-      61: ['Light Rain', '🌧️'], 63: ['Rain', '🌧️'], 65: ['Heavy Rain', '🌧️'],
-      71: ['Light Snow', '🌨️'], 73: ['Snow', '🌨️'], 75: ['Heavy Snow', '❄️'],
-      80: ['Light Showers', '🌦️'], 81: ['Showers', '🌧️'], 82: ['Heavy Showers', '🌧️'],
-      95: ['Thunderstorm', '⛈️'], 96: ['Thunderstorm + Hail', '⛈️'], 99: ['Heavy T-storm + Hail', '⛈️']
-    };
-
-    function renderWeather(data, city) {
-      const el = document.getElementById('weatherWidget');
-      const temp = Math.round(data.current.temperature_2m);
-      const feelsLike = Math.round(data.current_apparent?.temperature_2m || temp);
-      const humidity = data.current.relative_humidity_2m;
-      const wind = Math.round(data.current.wind_speed_10m);
-      const code = data.current.weather_code;
-      const [label, icon] = WMO_CODES[code] || ['Unknown', '❓'];
-
-      el.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;width:100%">
-          <div style="font-size:2rem;flex-shrink:0">${icon}</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:1.5rem;font-weight:700">${temp}°C</div>
-            <div style="font-size:0.8rem;color:#9CA3AF">${label} · Feels like ${feelsLike}°C</div>
-            <div style="font-size:0.7rem;color:#6B7280;margin-top:2px">💧 ${humidity}% · 💨 ${wind} km/h</div>
-          </div>
-          <div style="font-size:0.7rem;color:#6B7280;text-align:right;flex-shrink:0">${city}</div>
-        </div>
-      `;
-    }
-
-    function loadWeather() {
-      fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
-        .then(r => r.json())
-        .then(d => renderWeather(d, 'Singapore'))
-        .catch(() => showError('weatherWidget', 'Unable to load weather'));
-    }
-
-    // ========== LAST.FM WIDGET ==========
-    let lastfmUserInfo = null;
-
-    function renderLastfm(recentData, userInfo) {
-      const el = document.getElementById('lastfmWidget');
-      const tracks = recentData.recenttracks.track;
-      if (!tracks || tracks.length === 0) { showError('lastfmWidget', 'No recent tracks'); return; }
-
-      const nowPlaying = tracks.find(t => t['@attr'] && t['@attr'].nowplaying);
-      const playcount = userInfo ? userInfo.playcount : '—';
-      const artistCount = userInfo ? userInfo.artist_count : '—';
-
-      let tracksHtml = '';
-      const displayTracks = nowPlaying ? tracks : tracks.slice(0, 5);
-      displayTracks.slice(0, 5).forEach((t, i) => {
-        const isNP = t['@attr'] && t['@attr'].nowplaying;
-        const img = t.image && t.image.length > 0 ? t.image[t.image.length - 1]['#text'] : '';
-        const artist = typeof t.artist === 'object' ? (t.artist['#text'] || '') : (t.artist || '');
-        const name = t.name || '';
-        const time = t.date ? (t.date['#text'] || '') : '';
-
-        tracksHtml += `
-          <div style="display:flex;align-items:center;gap:10px;padding:6px 14px;${i < 4 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : ''}">
-            <img src="${img}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333';this.src=''" />
-            <div style="flex:1;min-width:0">
-              <div style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff">${name}</div>
-              <div style="font-size:0.75rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div>
-            </div>
-            <div style="font-size:0.7rem;color:#6B7280;flex-shrink:0;white-space:nowrap">${isNP ? '<span style="color:#1DB954">● now playing</span>' : time}</div>
-          </div>
-        `;
-      });
-
-      el.innerHTML = `
-        <div style="display:flex;flex-direction:column;height:100%">
-          <!-- Header -->
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05)">
-            <div style="flex:1;min-width:0">
-              <div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Last.fm</div>
-              <div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${LASTFM_USERNAME}</div>
-              <div style="font-size:0.75rem;color:#9CA3AF;margin-top:1px">${playcount} scrobbles · ${artistCount} artists</div>
-            </div>
-            <a href="https://www.last.fm/user/${LASTFM_USERNAME}" target="_blank" rel="noopener" style="font-size:0.7rem;color:#5573f4;text-decoration:none;flex-shrink:0">View Profile</a>
-          </div>
-          <!-- Tracks -->
-          <div style="flex:1;overflow:hidden">
-            ${tracksHtml}
-          </div>
-        </div>
-      `;
-    }
-
-    function loadLastfm() {
-      const recentUrl = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;
-      const infoUrl = `https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json`;
-
-      Promise.all([fetch(recentUrl).then(r => r.json()), fetch(infoUrl).then(r => r.json())])
-        .then(([recent, info]) => {
-          if (recent.recenttracks && recent.recenttracks.track && recent.recenttracks.track.length > 0) {
-            renderLastfm(recent, info.user);
-          } else {
-            showError('lastfmWidget', 'No recent tracks');
-          }
-        })
-        .catch(() => showError('lastfmWidget', 'Unable to load'));
-    }
-
-    // ========== VALORANT WIDGET (Henrik API) ==========
-    const RANK_ICONS = {
-      'Iron 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png',
-      'Iron 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png',
-      'Iron 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png',
-      'Bronze 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png',
-      'Bronze 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png',
-      'Bronze 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png',
-      'Silver 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png',
-      'Silver 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png',
-      'Silver 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png',
-      'Gold 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png',
-      'Gold 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png',
-      'Gold 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png',
-      'Platinum 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png',
-      'Platinum 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png',
-      'Platinum 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png',
-      'Diamond 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png',
-      'Diamond 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png',
-      'Diamond 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png',
-      'Ascendant 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png',
-      'Ascendant 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png',
-      'Ascendant 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png',
-      'Immortal 1': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png',
-      'Immortal 2': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png',
-      'Immortal 3': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png',
-      'Radiant': 'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png',
-    };
-
-    function renderValorant(data) {
-      const el = document.getElementById('valorantWidget');
-      const mmr = data.data;
-      const rank = mmr.current_data?.currenttierpatched || 'Unranked';
-      const rr = mmr.current_data?.ranking_in_tier || 0;
-      const peak = mmr.highest_rank?.tierpatched || rank;
-      const elo = mmr.current_data?.elo || 0;
-      const rankIcon = RANK_ICONS[rank] || RANK_ICONS['Iron 1'];
-
-      el.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px">
-          <img src="${rankIcon}" style="width:56px;height:56px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'" />
-          <div style="flex:1;min-width:0">
-            <div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div>
-            <div style="font-size:0.85rem;color:#9CA3AF;margin-top:2px">${rank}</div>
-            <div style="font-size:0.75rem;color:#6B7280;margin-top:1px">${rr} RR · ELO ${elo}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:0.7rem;color:#6B7280">Peak</div>
-            <div style="font-size:0.8rem;color:#9CA3AF;font-weight:500">${peak}</div>
-          </div>
-        </div>
-        <a href="https://tracker.gg/valorant/profile/riot/${VALORANT_NAME}%23${VALORANT_TAG}/overview" target="_blank" rel="noopener" style="display:block;text-align:center;padding:4px;font-size:0.75rem;color:#5573f4;text-decoration:none;border-top:1px solid rgba(255,255,255,0.05)">View on Tracker.gg</a>
-      `;
-    }
-
-    function loadValorant() {
-      const regions = ['ap', 'na', 'eu', 'kr'];
-      let found = false;
-
-      function tryRegion(idx) {
-        if (idx >= regions.length || found) return;
-        const region = regions[idx];
-        fetch(`https://api.henrikdev.xyz/valorant/v2/mmr/${region}/${VALORANT_NAME}/${VALORANT_TAG}`, {
-          headers: { 'Authorization': VALORANT_KEY }
-        })
-        .then(r => {
-          if (!r.ok) throw new Error('not found');
-          return r.json();
-        })
-        .then(d => {
-          if (d && d.data && !found) {
-            found = true;
-            renderValorant(d);
-          }
-        })
-        .catch(() => tryRegion(idx + 1));
-      }
-
-      tryRegion(0);
-    }
-
-    // ========== HELPER ==========
-    function showError(widgetId, msg) {
-      const el = document.getElementById(widgetId);
-      if (!el) return;
-      const hasImg = el.querySelector('img');
-      if (hasImg) {
-        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`;
-      } else {
-        el.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`;
-      }
-    }
-
-    // ========== INIT ==========
-    renderProjects();
-    loadDiscord();
-    loadRoblox();
-    loadTime();
-    loadWeather();
-    loadLastfm();
-    loadValorant();
   </script>
 </body>
 </html>

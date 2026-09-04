@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widgets | home</title>
+  <meta name="description" content="live widgets" />
+  <meta name="theme-color" content="#5573f4" />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { satoshi: ['"Satoshi"', 'sans-serif'] } } }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Satoshi', sans-serif; background: #000; color: #ccd8ec; min-height: 100vh; overflow-x: hidden; }
+    .widget-card { background: rgba(255,255,255,0.05); background-clip: padding-box; color: #fff; border: 2px solid rgba(255,255,255,0.1); border-radius: 25px; }
+    .skeleton { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; background: rgba(255,255,255,0.1); border-radius: 0.375rem; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .clock-face { width: 120px; height: 120px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.15); position: relative; margin: 0 auto; }
+    .clock-hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 2px; }
+    .clock-hour { width: 3px; height: 30px; background: #fff; }
+    .clock-minute { width: 2px; height: 40px; background: rgba(255,255,255,0.8); }
+    .clock-second { width: 1px; height: 45px; background: #ff4466; }
+    .clock-center { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%,-50%); z-index: 5; }
+    .side-nav { position: fixed; left: 24px; top: 50%; z-index: 50; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; }
+    @media (min-width: 768px) { .side-nav { display: flex; } }
+    .side-nav a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 300; letter-spacing: 0.05em; text-decoration: none; transition: color 0.2s; color: rgba(255,255,255,0.4); }
+    .side-nav a:hover { color: rgba(255,255,255,0.7); }
+    .side-nav a.active { color: #fff; }
+    .side-nav a .nav-line { height: 1px; width: 8px; background: rgba(255,255,255,0.4); transition: all 0.2s; flex-shrink: 0; }
+    .side-nav a:hover .nav-line { width: 12px; background: rgba(255,255,255,0.7); }
+    .side-nav a.active .nav-line { width: 16px; background: #fff; }
+    .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; }
+    @media (min-width: 768px) { .mobile-nav { display: none; } }
+    .mobile-nav a { flex: 1; text-align: center; padding: 12px 4px; font-size: 0.625rem; font-weight: 300; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .mobile-nav a.active, .mobile-nav a:hover { color: #fff; }
+    @media (min-width: 768px) { #mainContent { padding-left: 80px; } }
+  </style>
+</head>
+<body class="min-h-full flex flex-col">
+  <nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/widgets" class="active"><span class="nav-line"></span>Widgets</a>
+  </nav>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/valorant">Valorant</a>
+    <a href="/projects">Projects</a>
+    <a href="/widgets" class="active">Widgets</a>
+  </nav>
+  <div class="dark contents">
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
+      <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+    </div>
+
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent" style="padding-top:48px;padding-bottom:48px">
+      <div class="flex w-full flex-col gap-3 max-w-5xl px-4">
+        <header class="text-start">
+          <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
+          <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
+        </header>
+        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
+          <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative flex h-full items-center gap-3 px-4 py-3" id="discordWidget">
+                <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+                <div class="flex min-w-0 flex-1 flex-col gap-2">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                  <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                  <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 2;min-height:13rem">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
+                <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+              </div>
+            </div>
+          </div>
+          <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:2/span 1">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative flex h-full items-center gap-3 px-4 py-3" id="robloxWidget">
+                <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+                <div class="flex min-w-0 flex-1 flex-col gap-2">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                  <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
+          <div class="min-w-0 h-full">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
+                <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
+              </div>
+            </div>
+          </div>
+          <div class="min-w-0 h-full">
+            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+              <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
+                <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-full" style="min-height:16rem">
+          <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+            <div class="relative h-full overflow-hidden" id="lastfmWidget">
+              <div class="flex items-center gap-3 px-4 py-3">
+                <div class="skeleton shrink-0 rounded-[14px]" style="width:64px;height:64px"></div>
+                <div class="flex min-w-0 flex-1 flex-col gap-2">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                  <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="relative flex w-full justify-center py-8 px-4 text-white" style="margin-top:48px">
+        <p class="text-sm opacity-40">made with care</p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const DISCORD_USER_ID = '704140288716701737';
+    const ROBLOX_USERNAME = 'tripp_Thebest05';
+    const LASTFM_USERNAME = 'collusionz';
+    const LASTFM_API_KEY = '2e5b5823d8f5c2416b39bd8d26a6aa4f';
+    const VALORANT_NAME = 'collusionz';
+    const VALORANT_TAG = 'rival';
+    const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
+    const TIMEZONE = 'Asia/Singapore';
+
+    function statusColor(s){return{online:'#23A55A',idle:'#F0B232',dnd:'#F23F43',offline:'#80848E'}[s]||'#80848E'}
+    function showError(id,msg){const e=document.getElementById(id);if(!e)return;e.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`}
+
+    function renderDiscord(data){
+      const el=document.getElementById('discordWidget'),u=data.discord_user;
+      const av=u.avatar?`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator||'0')%5}.png`;
+      const status=data.discord_status||'offline',activities=data.activities||[],spotify=data.listening_to_spotify?data.spotify:null;
+      let detail='';
+      if(spotify&&(spotify.track||spotify.song)){const t=spotify.track||spotify.song||'',a=spotify.artist||'';detail=`<span style="color:#1DB954">Listening to</span> <strong>${t}</strong>`;if(a)detail+=` <span style="opacity:0.6">by ${a}</span>`}
+      else if(activities.length>0){const p=activities.find(a=>a.type===3||(a.name&&a.name!=='Custom Status'&&a.name!=='Spotify')),c=activities.find(a=>a.name==='Custom Status');if(p){const n=p.name||'',d=p.details||'',s=p.state||'';detail=d||s||n}else if(c&&c.state){detail=c.state}else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}}
+      else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
+      let aImg='';if(spotify&&spotify.album_art_url){aImg=`<img src="${spotify.album_art_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}else if(activities.length>0&&activities[0].assets?.large_image){let img=activities[0].assets.large_image;if(img.startsWith('mp:external'))img='https://media.discordapp.net/external/'+img.replace('mp:external/','');aImg=`<img src="${img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}
+      el.innerHTML=`<img src="${av}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name||u.username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${detail}</div></div>${aImg}<div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${statusColor(status)}"></div>`
+    }
+    function loadDiscord(){fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`).then(r=>r.json()).then(d=>{if(d.success)renderDiscord(d.data);else showError('discordWidget','Join discord.gg/lanyard to enable')}).catch(()=>showError('discordWidget','Unable to load'))}
+
+    function renderRoblox(userId,username,displayName,avatarUrl){const el=document.getElementById('robloxWidget');el.innerHTML=`<img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayName||username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@${username}</div><a href="https://roblox.com/users/${userId}/profile" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none;margin-top:2px">View Profile</a></div>`}
+    function loadRoblox(){fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(user=>{if(user&&user.Id){fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.Id}&size=150x150&format=Png&isCircular=false`).then(r=>r.json()).then(t=>{const thumb=t.data&&t.data[0]?t.data[0].imageUrl:'';renderRoblox(user.Id,user.Name,user.DisplayName,thumb)}).catch(()=>renderRoblox(user.Id,user.Name,user.DisplayName,''))}else showError('robloxWidget','User not found')}).catch(()=>showError('robloxWidget','Unable to load'))}
+
+    function renderTime(){const el=document.getElementById('timeWidget'),now=new Date();const opts={timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true};const dOpts={timeZone:TIMEZONE,weekday:'short',month:'short',day:'numeric'};const timeStr=now.toLocaleTimeString('en-US',opts),dateStr=now.toLocaleDateString('en-US',dOpts);const tzParts=now.toLocaleTimeString('en-US',{timeZone:TIMEZONE,hour:'numeric',minute:'numeric',second:'numeric',hour12:false});const[h,m,s]=tzParts.split(':').map(Number);const hDeg=((h%12)+m/60)*30,mDeg=(m+s/60)*6,sDeg=s*6;let marks='';for(let i=0;i<12;i++)marks+=`<div style="position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3);top:4px;left:calc(50% - 1px);transform-origin:bottom center;transform:translateX(-50%) rotate(${i*30}deg)"></div>`;el.innerHTML=`<div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center"><div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);position:relative;flex-shrink:0">${marks}<div style="position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);z-index:5"></div><div style="position:absolute;bottom:50%;left:50%;width:3px;height:22px;background:#fff;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${hDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:2px;height:30px;background:rgba(255,255,255,0.8);border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${mDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:1px;height:33px;background:#ff4466;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${sDeg}deg)"></div></div><div style="text-align:left"><div style="font-size:1.1rem;font-weight:600">${timeStr}</div><div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div><div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div></div></div>`}
+    function loadTime(){renderTime();setInterval(renderTime,1000)}
+
+    const WMO_CODES={0:['Clear','☀️'],1:['Mainly Clear','🌤️'],2:['Partly Cloudy','⛅'],3:['Overcast','☁️'],45:['Fog','🌫️'],48:['Rime Fog','🌫️'],51:['Light Drizzle','🌦️'],53:['Drizzle','🌦️'],55:['Heavy Drizzle','🌧️'],61:['Light Rain','🌧️'],63:['Rain','🌧️'],65:['Heavy Rain','🌧️'],71:['Light Snow','🌨️'],73:['Snow','🌨️'],75:['Heavy Snow','❄️'],80:['Light Showers','🌦️'],81:['Showers','🌧️'],82:['Heavy Showers','🌧️'],95:['Thunderstorm','⛈️'],96:['Thunderstorm + Hail','⛈️'],99:['Heavy T-storm + Hail','⛈️']};
+    function renderWeather(data,city){const el=document.getElementById('weatherWidget');const temp=Math.round(data.current.temperature_2m),feelsLike=Math.round(data.current_apparent?.temperature_2m||temp),humidity=data.current.relative_humidity_2m,wind=Math.round(data.current.wind_speed_10m),code=data.current.weather_code;const[label,icon]=WMO_CODES[code]||['Unknown','❓'];el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;width:100%"><div style="font-size:2rem;flex-shrink:0">${icon}</div><div style="flex:1;min-width:0"><div style="font-size:1.5rem;font-weight:700">${temp}°C</div><div style="font-size:0.8rem;color:#9CA3AF">${label} · Feels like ${feelsLike}°C</div><div style="font-size:0.7rem;color:#6B7280;margin-top:2px">💧 ${humidity}% · 💨 ${wind} km/h</div></div><div style="font-size:0.7rem;color:#6B7280;text-align:right;flex-shrink:0">${city}</div></div>`}
+    function loadWeather(){fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore').then(r=>r.json()).then(d=>renderWeather(d,'Singapore')).catch(()=>showError('weatherWidget','Unable to load weather'))}
+
+    function renderLastfm(recentData,userInfo){const el=document.getElementById('lastfmWidget');const tracks=recentData.recenttracks.track;if(!tracks||tracks.length===0){showError('lastfmWidget','No recent tracks');return}const nowPlaying=tracks.find(t=>t['@attr']&&t['@attr'].nowplaying);const playcount=userInfo?userInfo.playcount:'—';const artistCount=userInfo?userInfo.artist_count:'—';let tracksHtml='';const displayTracks=nowPlaying?tracks:tracks.slice(0,5);displayTracks.slice(0,5).forEach((t,i)=>{const isNP=t['@attr']&&t['@attr'].nowplaying;const img=t.image&&t.image.length>0?t.image[t.image.length-1]['#text']:'';const artist=typeof t.artist==='object'?(t.artist['#text']||''):(t.artist||'');const name=t.name||'';const time=t.date?(t.date['#text']||''):'';tracksHtml+=`<div style="display:flex;align-items:center;gap:10px;padding:6px 14px;${i<4?'border-bottom:1px solid rgba(255,255,255,0.05);':''}"><img src="${img}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333';this.src=''" /><div style="flex:1;min-width:0"><div style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff">${name}</div><div style="font-size:0.75rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div></div><div style="font-size:0.7rem;color:#6B7280;flex-shrink:0;white-space:nowrap">${isNP?'<span style="color:#1DB954">● now playing</span>':time}</div></div>`});el.innerHTML=`<div style="display:flex;flex-direction:column;height:100%"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05)"><div style="flex:1;min-width:0"><div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Last.fm</div><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${LASTFM_USERNAME}</div><div style="font-size:0.75rem;color:#9CA3AF;margin-top:1px">${playcount} scrobbles · ${artistCount} artists</div></div><a href="https://www.last.fm/user/${LASTFM_USERNAME}" target="_blank" rel="noopener" style="font-size:0.7rem;color:#5573f4;text-decoration:none;flex-shrink:0">View Profile</a></div><div style="flex:1;overflow:hidden">${tracksHtml}</div></div>`}
+    function loadLastfm(){const recentUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;const infoUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json`;Promise.all([fetch(recentUrl).then(r=>r.json()),fetch(infoUrl).then(r=>r.json())]).then(([recent,info])=>{if(recent.recenttracks&&recent.recenttracks.track&&recent.recenttracks.track.length>0){renderLastfm(recent,info.user)}else showError('lastfmWidget','No recent tracks')}).catch(()=>showError('lastfmWidget','Unable to load'))}
+
+    const RANK_ICONS={'Iron 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png','Iron 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png','Iron 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png','Bronze 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png','Bronze 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png','Bronze 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png','Silver 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png','Silver 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png','Silver 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png','Gold 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png','Gold 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png','Gold 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png','Platinum 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png','Platinum 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png','Platinum 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png','Diamond 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png','Diamond 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png','Diamond 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png','Ascendant 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png','Ascendant 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png','Ascendant 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png','Immortal 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png','Immortal 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png','Immortal 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png','Radiant':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png'};
+    function renderValorant(data){const el=document.getElementById('valorantWidget'),mmr=data.data;const rank=mmr.current_data?.currenttierpatched||'Unranked',rr=mmr.current_data?.ranking_in_tier||0,peak=mmr.highest_rank?.tierpatched||rank,elo=mmr.current_data?.elo||0;const rankIcon=RANK_ICONS[rank]||RANK_ICONS['Iron 1'];el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px"><img src="${rankIcon}" style="width:56px;height:56px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'" /><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div><div style="font-size:0.85rem;color:#9CA3AF;margin-top:2px">${rank}</div><div style="font-size:0.75rem;color:#6B7280;margin-top:1px">${rr} RR · ELO ${elo}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:0.7rem;color:#6B7280">Peak</div><div style="font-size:0.8rem;color:#9CA3AF;font-weight:500">${peak}</div></div></div><a href="/valorant" style="display:block;text-align:center;padding:4px;font-size:0.75rem;color:#5573f4;text-decoration:none;border-top:1px solid rgba(255,255,255,0.05)">View Full Stats</a>`}
+    function loadValorant(){const regions=['ap','na','eu','kr'];let found=false;function tryRegion(idx){if(idx>=regions.length||found)return;fetch(`https://api.henrikdev.xyz/valorant/v2/mmr/${regions[idx]}/${VALORANT_NAME}/${VALORANT_TAG}`,{headers:{'Authorization':VALORANT_KEY}}).then(r=>{if(!r.ok)throw new Error('not found');return r.json()}).then(d=>{if(d&&d.data&&!found){found=true;renderValorant(d)}}).catch(()=>tryRegion(idx+1))}tryRegion(0)}
+
+    loadDiscord();loadRoblox();loadTime();loadWeather();loadLastfm();loadValorant();
+  </script>
+</body>
+</html>

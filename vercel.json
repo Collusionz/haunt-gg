@@ -7,13 +7,9 @@
     }
   ],
   "routes": [
-    {
-      "src": "/valorant",
-      "dest": "/valorant.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/valorant", "dest": "/valorant.html" },
+    { "src": "/widgets", "dest": "/widgets.html" },
+    { "src": "/projects", "dest": "/projects.html" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
