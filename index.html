@@ -102,15 +102,7 @@
                 </div>
               </div>
             </div>
-            <!-- Like/Dislike -->
-            <div class="absolute bottom-4 end-4 z-10 flex items-center gap-3 text-sm">
-              <button type="button" aria-label="Like" class="like-btn flex items-center gap-1.5" onclick="this.classList.toggle('active')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-[1.125rem]"><path fill="currentColor" d="M171.5 38.8C192.3 4 236.5-10 274 7.6l7.2 3.8C316 32.3 330 76.5 312.4 114l0 0-14.1 30 109.7 0 7.4 .4c36.3 3.7 64.6 34.4 64.6 71.6 0 13.2-3.6 25.4-9.8 36 6.1 10.6 9.7 22.8 9.8 36 0 18.3-6.9 34.8-18 47.5 1.3 5.3 2 10.8 2 16.5 0 25.1-12.9 47-32.2 59.9-1.9 35.5-29.4 64.2-64.4 67.7l-7.4 .4-104.1 0c-18 0-35.9-3.4-52.6-9.9l-7.1-3-.7-.3-6.6-3.2-.7-.3-12.2-6.5c-12.3-6.5-23.3-14.7-32.9-24.1-4.1 26.9-27.3 47.4-55.3 47.4l-32 0c-30.9 0-56-25.1-56-56L0 200c0-30.9 25.1-56 56-56l32 0c10.8 0 20.9 3.1 29.5 8.5l50.1-106.5 .6-1.2 2.7-5 .6-.9zM56 192c-4.4 0-8 3.6-8 8l0 224c0 4.4 3.6 8 8 8l32 0c4.4 0 8-3.6 8-8l0-224c0-4.4-3.6-8-8-8l-32 0zM253.6 51c-14.8-6.9-32.3-1.6-40.7 12l-2.2 4-56.8 120.9c-3.5 7.5-5.5 15.5-6 23.7l-.1 4.2 0 112.9 .2 7.9c2.4 32.7 21.4 62.1 50.7 77.7l11.5 6.1 6.3 3.1c12.4 5.6 25.8 8.5 39.4 8.5l104.1 0 2.4-.1c12.1-1.2 21.6-11.5 21.6-23.9l-.2-2.6c-.1-.9-.2-1.7-.4-2.6-2.7-12.1 4.3-24.2 16-28 9.7-3.1 16.6-12.2 16.6-22.8 0-4.3-1.1-8.2-3.1-11.8-6.3-11.1-2.8-25.2 8-32 6.8-4.3 11.2-11.8 11.2-20.2 0-7.1-3.1-13.5-8.2-18-5.2-4.6-8.2-11.1-8.2-18s3-13.4 8.2-18c5.1-4.5 8.2-10.9 8.2-18l-.1-2.4c-1.1-11.3-10.1-20.3-21.4-21.4l-2.4-.1-147.5 0c-8.2 0-15.8-4.2-20.2-11.1-4.4-6.9-5-15.7-1.5-23.1L269 93.6c7-15 1.4-32.7-12.5-41L253.6 51z"/></svg>
-              </button>
-              <button type="button" aria-label="Dislike" class="dislike-btn flex items-center gap-1.5" onclick="this.classList.toggle('active')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="size-[1.125rem]"><path fill="currentColor" d="M360 32l7.4 .4c35 3.6 62.5 32.2 64.4 67.7 17.8 11.8 30.1 31.4 32 53.9l.2 6c0 5.7-.7 11.2-2 16.5 10.2 11.5 16.8 26.3 17.8 42.7l.2 4.8c0 13.2-3.6 25.4-9.8 36 4.9 8.4 8.2 17.9 9.3 28l.4 8c0 37.3-28.3 67.9-64.6 71.6l-7.4 .4-109.7 0 14.1 30 3.1 7.6c12.5 35.7-1.8 75.5-34.2 95l-7.2 3.9c-37.5 17.6-81.7 3.6-102.6-31.2l-.6-.9-2.7-5-.6-1.2-30.1-64c-9.4 17.8-28 29.9-49.5 29.9l-32 0c-30.9 0-56-25.1-56-56L0 152c0-30.9 25.1-56 56-56l32 0c12.4 0 23.9 4.1 33.2 11 13.2-21.4 32-39.4 55-51.6l12.2-6.5 .7-.3 6.6-3.2 .7-.3 7.1-3c16.7-6.6 34.5-9.9 52.6-9.9L360 32zM255.9 80c-12 0-23.9 2.3-35.1 6.6l-4.7 2-5.3 2.6 0 0-12.2 6.5c-29.2 15.5-48.3 44.9-50.7 77.6l-.2 8 0 112.9 .1 4.1c.5 8.2 2.5 16.2 6 23.7l56.8 120.9 2.1 3.8c8.4 13.7 18.7 23.7 13.7 38l-1.2 3-30.2 64.2c-3.5 7.4-2.9 16.1 1.5-23.1s12-11.1 20.2-11.1l147.5 0 2.4-.1c11.3-1.1 20.3-10.1 21.4-21.4l.1-2.5c0-7.1-3.1-13.5-8.2-18-5.2-4.6-8.2-11.1-8.2-18s3-13.4 8.2-18c4.4-3.9 7.4-9.3 8-15.3l.2-2.7c0-8.4-4.4-15.9-11.2-20.2-10.7-6.9-14.2-20.9-8-32 1.5-2.6 2.5-5.6 2.9-8.6l.2-3.2c0-10.6-6.9-19.6-16.6-22.8-11.7-3.8-18.7-15.9-16-28 .2-.9 .3-1.8 .4-2.6l.2-2.6c0-12.4-9.5-22.6-21.6-23.8L360 80 255.9 80z"/></svg>
-              </button>
-            </div>
+
           </div>
         </div>
       </section>
@@ -122,9 +114,9 @@
             <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
             <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
           </header>
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:minmax(5.5rem,auto)">
-            <!-- Discord Widget -->
-            <div class="min-w-0 h-full">
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
+            <!-- Discord: col 1, row 1 -->
+            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center gap-3 px-4 py-3" id="discordWidget">
                   <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
@@ -136,16 +128,16 @@
                 </div>
               </div>
             </div>
-            <!-- Valorant Widget (tall) -->
-            <div class="min-w-0 h-full" style="grid-row:span 2;min-height:13rem">
+            <!-- Valorant: col 2, rows 1-2 (tall) -->
+            <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 2;min-height:13rem">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
                   <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
                 </div>
               </div>
             </div>
-            <!-- Roblox Widget -->
-            <div class="min-w-0 h-full">
+            <!-- Roblox: col 1, row 2 -->
+            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:2/span 1">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative flex h-full items-center gap-3 px-4 py-3" id="robloxWidget">
                   <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
@@ -157,10 +149,26 @@
               </div>
             </div>
           </div>
-          <!-- Row 2: Last.fm (wide) + Time + Weather -->
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-3" style="grid-auto-rows:minmax(5.5rem,auto)">
-            <!-- Last.fm Widget (tall, 2 cols) -->
-            <div class="min-w-0 h-full sm:col-span-2" style="min-height:16rem">
+          <!-- Time + Weather + Last.fm Row -->
+          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
+            <!-- Time: col 1, row 1 -->
+            <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
+                  <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Weather: col 2, row 1 -->
+            <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 1">
+              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+                <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
+                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Last.fm: col 1-2, row 2 (wide) -->
+            <div class="min-w-0 h-full" style="grid-column:1/span 2;grid-row:2/span 1;min-height:16rem">
               <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
                 <div class="relative h-full overflow-hidden" id="lastfmWidget">
                   <div class="flex items-center gap-3 px-4 py-3">
@@ -170,24 +178,6 @@
                       <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <!-- Time Widget -->
-            <div class="min-w-0 h-full">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="timeWidget">
-                  <div class="skeleton" style="width:120px;height:120px;border-radius:50%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Row 3: Weather (wide) -->
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
-            <div class="min-w-0 h-full sm:col-span-3">
-              <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-                <div class="relative flex h-full items-center justify-center px-4 py-3" id="weatherWidget">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
                 </div>
               </div>
             </div>
@@ -308,14 +298,24 @@
       const spotify = data.listening_to_spotify ? data.spotify : null;
 
       let detail = '';
-      if (spotify) {
-        detail = `<span style="color:#1DB954">Listening to</span> <strong>${spotify.track}</strong>`;
-        if (spotify.artist) detail += ` <span style="opacity:0.6">by ${spotify.artist}</span>`;
-      } else if (activities.length > 0 && activities[0].name !== 'Custom Status') {
-        const a = activities[0];
-        detail = a.details || a.state || a.name;
-      } else if (activities.length > 0 && activities[0].state) {
-        detail = activities[0].state;
+      if (spotify && (spotify.track || spotify.song)) {
+        const track = spotify.track || spotify.song || '';
+        const artist = spotify.artist || '';
+        detail = `<span style="color:#1DB954">Listening to</span> <strong>${track}</strong>`;
+        if (artist) detail += ` <span style="opacity:0.6">by ${artist}</span>`;
+      } else if (activities.length > 0) {
+        const playing = activities.find(a => a.type === 3 || (a.name && a.name !== 'Custom Status' && a.name !== 'Spotify'));
+        const custom = activities.find(a => a.name === 'Custom Status');
+        if (playing) {
+          const name = playing.name || '';
+          const details = playing.details || '';
+          const state = playing.state || '';
+          detail = details || state || name;
+        } else if (custom && custom.state) {
+          detail = custom.state;
+        } else {
+          detail = `<span style="opacity:0.5">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
+        }
       } else {
         detail = `<span style="opacity:0.5">${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
       }
@@ -361,17 +361,15 @@
     }
 
     function loadRoblox() {
-      // Step 1: Resolve username to userId
       fetch('https://users.roblox.com/v1/usernames/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usernames: [ROBLOX_USERNAME] })
       })
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(d => {
         if (d.data && d.data.length > 0) {
           const user = d.data[0];
-          // Step 2: Get avatar thumbnail
           fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.id}&size=150x150&format=Png&isCircular=false`)
             .then(r => r.json())
             .then(t => {
@@ -383,7 +381,11 @@
           showError('robloxWidget', 'User not found');
         }
       })
-      .catch(() => showError('robloxWidget', 'Unable to load'));
+      .catch(() => {
+        fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1&size=150x150&format=Png&isCircular=false`)
+          .then(() => showError('robloxWidget', 'CORS blocked — try again'))
+          .catch(() => showError('robloxWidget', 'Unable to load'));
+      });
     }
 
     // ========== TIME WIDGET ==========
@@ -463,41 +465,10 @@
     }
 
     function loadWeather() {
-      // Use browser geolocation
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            const { latitude, longitude } = pos.coords;
-            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=auto`)
-              .then(r => r.json())
-              .then(d => {
-                // Try to get city name from reverse geocoding
-                fetch(`https://geocoding-api.open-meteo.com/v1/search?name=&latitude=${latitude}&longitude=${longitude}&count=1`)
-                  .then(r => r.json())
-                  .then(g => {
-                    const city = g.results && g.results[0] ? g.results[0].name : 'Your Location';
-                    renderWeather(d, city);
-                  })
-                  .catch(() => renderWeather(d, 'Your Location'));
-              })
-              .catch(() => showError('weatherWidget', 'Unable to load weather'));
-          },
-          () => {
-            // Fallback to Singapore
-            fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
-              .then(r => r.json())
-              .then(d => renderWeather(d, 'Singapore'))
-              .catch(() => showError('weatherWidget', 'Unable to load weather'));
-          },
-          { timeout: 5000 }
-        );
-      } else {
-        // Fallback to Singapore
-        fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
-          .then(r => r.json())
-          .then(d => renderWeather(d, 'Singapore'))
-          .catch(() => showError('weatherWidget', 'Unable to load weather'));
-      }
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=1.29&longitude=103.85&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&current_apparent=temperature_2m&timezone=Asia/Singapore')
+        .then(r => r.json())
+        .then(d => renderWeather(d, 'Singapore'))
+        .catch(() => showError('weatherWidget', 'Unable to load weather'));
     }
 
     // ========== LAST.FM WIDGET ==========
@@ -517,9 +488,9 @@
       displayTracks.slice(0, 5).forEach((t, i) => {
         const isNP = t['@attr'] && t['@attr'].nowplaying;
         const img = t.image && t.image.length > 0 ? t.image[t.image.length - 1]['#text'] : '';
-        const artist = t.artist['#text'];
-        const name = t.name;
-        const time = t.date ? t.date['#text'] : '';
+        const artist = typeof t.artist === 'object' ? (t.artist['#text'] || '') : (t.artist || '');
+        const name = t.name || '';
+        const time = t.date ? (t.date['#text'] || '') : '';
 
         tracksHtml += `
           <div style="display:flex;align-items:center;gap:10px;padding:6px 14px;${i < 4 ? 'border-bottom:1px solid rgba(255,255,255,0.05);' : ''}">
