@@ -264,7 +264,13 @@
               <input type="color" class="input" id="fBg2" value="#4764ec" style="height:46px;padding:4px" />
             </div>
           </div>
-          <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add friend</button>
+<label class="fld">Avatar image</label>
+          <div class="flex gap-2">
+            <input class="input" id="fImg" placeholder="https://... (link or import)" />
+            <input type="file" id="fImgFile" accept="image/*" style="display:none" />
+            <button class="btn" id="fImgImport" style="flex-shrink:0">Import</button>
+          </div>
+          <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add acquaintance</button>
 <div id="friendList" style="margin-top:18px"></div>
         </div>
 
@@ -569,12 +575,17 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
       renderProjectList();renderDefaultProjectList();
     });
 
-    /* ---------------- FRIENDS ---------------- */
+/* ---------------- FRIENDS ---------------- */
+    function avatarHtml(f){
+      var b1=esc(f.bg1||'#5573f4'),b2=esc(f.bg2||'#4764ec'),init=esc(f.initial||(f.name||'?')[0]);
+      if(f.img)return '<div class="item-avatar" style="overflow:hidden;background:linear-gradient(135deg,'+b1+','+b2+')"><img src="'+esc(f.img)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div>';
+      return '<div class="item-avatar" style="background:linear-gradient(135deg,'+b1+','+b2+')">'+init+'</div>';
+    }
     function renderFriendList(){
       var list=load(STORAGE.friends),box=document.getElementById('friendList');
       if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom acquaintances yet</p>';return}
       box.innerHTML=list.map(function(f,i){
-        return '<div class="item-row"><div class="item-avatar" style="background:linear-gradient(135deg,'+f.bg1+','+f.bg2+')">'+esc(f.initial||(f.name||'?')[0])+'</div>'+
+        return '<div class="item-row">'+avatarHtml(f)+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(f.name)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45">'+esc(f.note||'')+'</div></div>'+
         '<div class="row-actions"><button class="btn btn-danger" onclick="removeFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
@@ -585,9 +596,16 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
       var name=document.getElementById('fName').value.trim();
       if(!name){showToast('Name required');return}
       var item={name:name,initial:document.getElementById('fInit').value.trim()||name[0].toUpperCase(),note:document.getElementById('fNote').value.trim(),bg1:document.getElementById('fBg1').value,bg2:document.getElementById('fBg2').value};
+      var img=document.getElementById('fImg').value.trim();
+      if(img)item.img=img;
       var l=load(STORAGE.friends);l.push(item);save(STORAGE.friends,l);
-      document.getElementById('fName').value='';document.getElementById('fInit').value='';document.getElementById('fNote').value='';
-      renderFriendList();showToast('Friend added');
+      document.getElementById('fName').value='';document.getElementById('fInit').value='';document.getElementById('fNote').value='';document.getElementById('fImg').value='';
+      renderFriendList();showToast('Acquaintance added');
+    });
+    document.getElementById('fImgImport').addEventListener('click',function(){document.getElementById('fImgFile').click()});
+    document.getElementById('fImgFile').addEventListener('change',function(){
+      var f=this.files&&this.files[0];if(!f)return;
+      var rd=new FileReader();rd.onload=function(){document.getElementById('fImg').value=rd.result;showToast('Image imported')};rd.readAsDataURL(f);this.value='';
     });
 
     /* ---------------- SETTINGS ---------------- */
