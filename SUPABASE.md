@@ -17,7 +17,9 @@ server-side (not shipped to the browser except when you type it).
 Open **SQL Editor → New query**, paste everything below, and run it:
 
 ```sql
-create extension if not exists pgcrypto;
+-- pgcrypto is preinstalled on Supabase — do NOT run "create extension" (it errors).
+-- do NOT add "set search_path = public" to the functions — PostgREST hides RPC
+-- functions that carry a SET clause, so the vault delete/change RPCs would 404.
 
 create table if not exists comments (
   id bigint generated always as identity primary key,
@@ -49,7 +51,6 @@ create or replace function delete_comment(cid bigint, passcode text)
 returns void
 language plpgsql
 security definer
-set search_path = public
 as $$
 declare h text;
 begin
@@ -68,7 +69,6 @@ create or replace function change_passcode(old text, new text)
 returns void
 language plpgsql
 security definer
-set search_path = public
 as $$
 declare h text;
 begin

@@ -282,12 +282,8 @@
 
         <div id="secComments" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">💬 Guestbook moderation</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">connect supabase in Settings, then unlock with the guestbook password to delete messages.</p>
-          <div class="flex gap-2" style="max-width:360px">
-            <input class="input" id="gbOwnerPass" type="password" placeholder="guestbook password" />
-            <button class="btn" id="unlockGbBtn" style="flex-shrink:0">Unlock</button>
-          </div>
-          <div id="cmList" style="margin-top:16px"></div>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your vault passcode is the moderator key — the delete buttons below are active as long as you're unlocked.</p>
+          <div id="cmList" style="margin-top:4px"></div>
           <div id="cmNote" style="font-size:0.8rem;opacity:0.4;margin-top:12px"></div>
         </div>
 
@@ -311,11 +307,6 @@
             <button class="btn" id="saveSupBtn" style="align-self:flex-start">Save connection</button>
           </div>
           <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">read the SQL + setup steps from this repo's SUPABASE.md — the anon key is safe to ship in the browser; the delete functions are password-gated server-side.</p>
-          <label class="fld" style="margin-top:18px">Guestbook password <span style="opacity:0.4;font-weight:400">(change it — default cz2026)</span></label>
-          <div class="flex gap-2" style="max-width:360px">
-            <input class="input" id="newGbPass" type="password" placeholder="new guestbook password" />
-            <button class="btn" id="changeGbPassBtn" style="flex-shrink:0">Change</button>
-          </div>
           <label class="fld" style="margin-top:18px">Danger zone</label>
           <div class="flex gap-2">
             <button class="btn btn-danger" id="resetDataBtn">Reset all custom data</button>
@@ -543,15 +534,21 @@
       else{localStorage.setItem(STORAGE.bg,v);showToast('Background saved (applies after reload)')}
       document.getElementById('setBg').value='';
     });
-    document.getElementById('changePassBtn').addEventListener('click',function(){
+document.getElementById('changePassBtn').addEventListener('click',function(){
       var v=document.getElementById('newPass').value;
       if(v.length<4){showToast('Passcode must be 4+ chars');return}
+      var old=getPass();
       localStorage.setItem(STORAGE.pass,v);
+      sessionStorage.setItem('gbOwnerPass',v);
+      syncGuestbookPass(old,v);
       document.getElementById('newPass').value='';
       showToast('Passcode changed');
     });
     document.getElementById('resetPassBtn').addEventListener('click',function(){
+      var old=getPass();
       localStorage.setItem(STORAGE.pass,DEFAULT_PASS);
+      sessionStorage.setItem('gbOwnerPass',DEFAULT_PASS);
+      syncGuestbookPass(old,DEFAULT_PASS);
       document.getElementById('newPass').value='';
       showToast('Passcode reset to '+DEFAULT_PASS);
     });
@@ -575,6 +572,14 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
       s.onerror=function(){sbLoaded=true;cb(null)};
       document.head.appendChild(s);
     }
+    function syncGuestbookPass(oldPass,newPass){
+      getSbClient(function(c){
+        if(!c)return;
+        c.rpc('change_passcode',{old:oldPass,new:newPass}).then(function(res){
+          if(res.error)showToast('Supabase passcode sync failed');
+        });
+      });
+    }
     function setCmNote(t){var n=document.getElementById('cmNote');if(n)n.textContent=t}
     function refreshCmList(){
       var box=document.getElementById('cmList');
@@ -596,14 +601,6 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
         });
       });
     }
-    function unlockGb(){
-      var v=document.getElementById('gbOwnerPass').value;
-      if(!v){showToast('Enter the guestbook password');return}
-      sessionStorage.setItem('gbOwnerPass',v);
-      document.getElementById('gbOwnerPass').value='';
-      refreshCmList();
-      setCmNote('unlocked — delete buttons active');
-    }
     window.delComment=function(id){
       var pass=sessionStorage.getItem('gbOwnerPass');
       if(!pass){showToast('Unlock first');return}
@@ -611,7 +608,7 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
         if(!c){showToast('Supabase not connected');return}
         c.rpc('delete_comment',{cid:id,passcode:pass}).then(function(res){
           if(res.error){
-            if(String(res.error.message||res.error.details||'').toLowerCase().indexOf('wrong')!==-1){sessionStorage.removeItem('gbOwnerPass');setCmNote('wrong password — locked again')}
+            if(String(res.error.message||res.error.details||'').toLowerCase().indexOf('wrong')!==-1){sessionStorage.removeItem('gbOwnerPass');setCmNote('passcode changed elsewhere — re-enter the vault to re-sync')}
             else showToast('Delete failed');
             return
           }
@@ -619,27 +616,12 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
         });
       });
     };
-    document.getElementById('unlockGbBtn').addEventListener('click',unlockGb);
-    document.getElementById('gbOwnerPass').addEventListener('keydown',function(e){if(e.key==='Enter')unlockGb()});
     document.getElementById('saveSupBtn').addEventListener('click',function(){
       var u=document.getElementById('supUrl').value.trim(),k=document.getElementById('supAnon').value.trim();
       if(!u||!k){showToast('Both URL and anon key required');return}
       localStorage.setItem('supabaseUrl',u);localStorage.setItem('supabaseAnon',k);
       sbClient=null;sbLoaded=false;
       refreshCmList();showToast('Supabase connection saved');
-    });
-    document.getElementById('changeGbPassBtn').addEventListener('click',function(){
-      var v=document.getElementById('newGbPass').value;
-      if(v.length<4){showToast('Password must be 4+ chars');return}
-      getSbClient(function(c){
-        if(!c){showToast('Supabase not connected');return}
-        c.rpc('change_passcode',{old:sessionStorage.getItem('gbOwnerPass')||'',new:v}).then(function(res){
-          if(res.error){showToast('Change failed — unlock with current password first');return}
-          sessionStorage.setItem('gbOwnerPass',v);
-          document.getElementById('newGbPass').value='';
-          showToast('Guestbook password changed');
-        });
-      });
     });
     (function prefillSupabase(){
       var u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');
@@ -649,14 +631,14 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
     refreshCmList();
 
     /* ---------------- LOCKFLOW + INIT ---------------- */
-    document.getElementById('unlockBtn').addEventListener('click',function(){
+document.getElementById('unlockBtn').addEventListener('click',function(){
       var v=document.getElementById('passInput').value;
-      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');show(false,true);loadAllLists();document.getElementById('lockErr').textContent=''}
+      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();document.getElementById('lockErr').textContent=''}
       else{document.getElementById('lockErr').textContent='wrong passcode'}
     });
     document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('unlockBtn').click()});
     document.getElementById('lockBtn').addEventListener('click',function(){
-      sessionStorage.removeItem('vaultAuth');document.getElementById('passInput').value='';show(true,false);
+      sessionStorage.removeItem('vaultAuth');sessionStorage.removeItem('gbOwnerPass');document.getElementById('passInput').value='';show(true,false);
     });
     document.querySelectorAll('.section-jump').forEach(function(b){
       b.addEventListener('click',function(){document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'})});
@@ -667,7 +649,10 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
       var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
     }
 
-    if(isAuthed()){show(false,true);loadAllLists()}else{show(true,false)}
+    if(isAuthed()){
+      if(!sessionStorage.getItem('gbOwnerPass'))sessionStorage.setItem('gbOwnerPass',getPass());
+      show(false,true);loadAllLists()
+    }else{show(true,false)}
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
