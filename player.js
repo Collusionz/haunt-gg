@@ -1,8 +1,6 @@
 (function () {
   'use strict';
 
-  if (/^\/music(\.html)?$/.test(location.pathname || '/')) return;
-
   var TRACKS = [
     { src: '/audio/song-1.mp3', cover: '/audio/song-1-cover.jpg', title: 'untitled', artist: 'song 1' },
     { src: '/audio/song-2.mp3', cover: '/audio/song-2-cover.jpg', title: 'untitled', artist: 'song 2' },
