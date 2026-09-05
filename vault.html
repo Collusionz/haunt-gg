@@ -205,7 +205,7 @@
 
 <div id="secProjects" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🚀 Projects</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your community / project cards on <a href="/projects" style="color:#8aa3ff">/projects</a></p>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">edit or hide your affiliations and add new project cards on <a href="/projects" style="color:#8aa3ff">/projects</a></p>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="fld">Role</label>
@@ -227,8 +227,16 @@
           </div>
           <input type="file" id="prFile" accept="image/*" style="display:none" />
           <div class="upload-preview" id="prPreview"></div>
-          <button class="btn" id="addProjectBtn" style="margin-top:14px">＋ Add project</button>
+          <div class="flex gap-2">
+            <button class="btn" id="addProjectBtn" style="margin-top:14px">＋ Add project</button>
+            <button class="btn btn-secondary" id="prCancel" style="margin-top:14px;display:none">Cancel</button>
+          </div>
           <div id="projectList" style="margin-top:18px"></div>
+          <div style="margin-top:22px">
+            <h3 class="text-sm font-semibold text-white tracking-tight" style="margin-bottom:2px">Default affiliations</h3>
+            <p style="font-size:0.75rem;opacity:0.45;margin-bottom:10px">edit the built-in cards — change the tag, description, link or image — or hide them</p>
+            <div id="defaultProjectList"></div>
+          </div>
         </div>
 
         <div id="secFriends" class="card" style="margin-bottom:20px">
@@ -438,25 +446,127 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
     });
 
 /* ---------------- PROJECTS ---------------- */
+    var DEFAULT_PROJECTS=[
+      {role:"Adminstrator",title:"Rivals Competitive League",desc:"Leads the charge on moderation and addressing fair-play violations.",img:"/assets/img/projects/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp",link:"https://discord.gg/BuDr9eYt9m"},
+      {role:"Tester",title:"DUELISTS",desc:"Tasked with proposing ideas and ticket managing.",img:"/assets/img/projects/029feceb-48da-4dd8-98e6-d22de74d1688.webp",link:"https://discord.gg/tGSH8649xR"},
+      {role:"Moderator",title:"ALCHEMY",desc:"Handled moderation tickets, resolving user reports, while keeping chat engaged.",img:"/assets/img/projects/d90e60cf-dab9-4f16-8164-98e3913f1b4c.webp",link:"https://discord.gg/sFFSJAQhBs"},
+      {role:"Manager",title:"MRC",desc:"Oversaw moderation staff, enforced rules, managed channels and roles, handled reports, and ensured smooth daily server operations.",img:"/assets/img/projects/d4b066e4-b243-4802-a52d-24a1d9427267.png",link:"https://discord.gg/BTdpkjQQbu"},
+      {role:"Tester",title:"lu studiosT",desc:"Roblox game tester responsible for playtesting new features, identifying bugs and exploits, providing feedback on gameplay balance, and reporting issues to developers before public release.",img:"/assets/img/projects/a7ed631c-c7f0-46f2-992c-150f4d3da784.webp",link:"https://discord.gg/GXgSEXB3tY"},
+      {role:"Moderator",title:"Muz Crew",desc:"Managed support ticket systems, reviewed applications, handled user reports, enforced rules, and helped maintain an organized and safe community.",img:"/assets/img/projects/f90a300b-af49-4b59-952a-2fc472a77302.webp",link:"https://discord.gg/wQwkDQrhNa"},
+      {role:"Manager",title:"Rivals Competitive Hangout",desc:"Handled moderation tickets, reviewed user reports, managed rule enforcement, and helped keep the server active and well-organized.",img:"/assets/img/projects/be758949-e82a-4192-8e65-fac3ed198848.gif",link:"https://discord.gg/H5QhfZAjKr"},
+      {role:"Moderator",title:"Rivals Media",desc:"Assisted in posting people!",img:"/assets/img/projects/53c9fd80-34e1-4533-9d87-80996c5d7e8b.webp",link:"https://discord.gg/rivalstv"},
+      {role:"Moderator",title:"Fang",desc:"Played a key role in establishing server structure, rules, and staff systems, while supporting moderation operations and helping manage and grow the community.",img:"/assets/img/projects/108d058f-8092-4cff-83a1-c533188c53aa.webp",link:"https://discord.gg/vXuZwWT2F4"},
+      {role:"Moderator",title:"Xorf's",desc:"Responsible for enforcing rules, monitoring chats, handling reports, resolving conflicts, and maintaining a safe and friendly community.",img:"/assets/img/projects/28e02af9-af3e-4190-908c-d64ae165df91.webp",link:"https://discord.gg/xedkKawmxZ"},
+      {role:"Manager",title:"Holds",desc:"Responsible for overseeing moderators, managing channels and roles, handling tickets and escalations, and ensuring smooth server operations.",img:"/assets/img/projects/39e6974b-73ce-481e-9314-66037a4fa619.webp",link:"https://discord.gg/yjv5qbg2fN"},
+      {role:"Server Manager",title:"Arko's Kingdom",desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.",img:"/assets/img/projects/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp",link:"https://discord.gg/jZyGa3dJA"}
+    ];
+    var editingProjectKey=null,editingProjectImg='';
+    function projectsSplit(){
+      var list=load(STORAGE.projects),cust=[],ovr={};
+      list.forEach(function(s){ if(s&&s.__o){ ovr[s.base||s.title]=s } else { cust.push(s) } });
+      return {cust:cust,ovr:ovr};
+    }
+    function resetProjectForm(){
+      editingProjectKey=null;editingProjectImg='';
+      ['prRole','prTitle','prDesc','prLink','prImg'].forEach(function(id){document.getElementById(id).value=''});
+      document.getElementById('prImg').placeholder='https://... .png / .webp';
+      pendingProjectImg='';document.getElementById('prPreview').style.display='none';
+      document.getElementById('addProjectBtn').textContent='＋ Add project';
+      document.getElementById('prCancel').style.display='none';
+    }
+    function fillProjectForm(p){
+      document.getElementById('prRole').value=p.role||'';
+      document.getElementById('prTitle').value=p.title||'';
+      document.getElementById('prDesc').value=p.desc||'';
+      document.getElementById('prLink').value=p.link||'';
+      if(p.img&&p.img.indexOf('data:')===0){document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='image ready (uploaded)'}
+      else if(p.img){document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='keep current image (update to change)'}
+      else{document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='https://... .png / .webp'}
+      var pv=document.getElementById('prPreview');pv.innerHTML='';
+      if(p.img){var im=document.createElement('img');im.src=p.img;im.style.maxHeight='140px';im.style.borderRadius='10px';pv.appendChild(im);pv.style.display='block'}
+      else{pv.style.display='none'}
+    }
     function renderProjectList(){
-      var list=load(STORAGE.projects),box=document.getElementById('projectList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom projects yet</p>';return}
-      box.innerHTML=list.map(function(p,i){
+      var sp=projectsSplit(),cust=sp.cust,box=document.getElementById('projectList');
+      if(!cust.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom projects yet</p>';return}
+      box.innerHTML=cust.map(function(p,i){
         return '<div class="item-row">'+(p.img?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(p.img)+'\')"></div>':'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#1a1a2e)"></div>')+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(p.title)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45">'+esc(p.role)+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+        '<div class="row-actions"><button class="btn btn-secondary" onclick="editCustomProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
+        '<button class="btn btn-danger" onclick="removeProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
-    window.removeProject=function(i){var l=load(STORAGE.projects);l.splice(i,1);save(STORAGE.projects,l);renderProjectList();showToast('Project removed')};
+    window.removeProject=function(i){
+      var list=load(STORAGE.projects),ci=0;
+      for(var j=0;j<list.length;j++){if(!list[j].__o){if(ci===i){list.splice(j,1);break}ci++}}
+      save(STORAGE.projects,list);renderProjectList();renderDefaultProjectList();showToast('Project removed');
+    };
+    window.editCustomProject=function(i){
+      var p=projectsSplit().cust[i];if(!p){return}
+      editingProjectKey='c:'+i;editingProjectImg=p.img||'';
+      fillProjectForm(p);
+      document.getElementById('addProjectBtn').textContent='Update project';
+      document.getElementById('prCancel').style.display='';
+      document.getElementById('secProjects').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    function renderDefaultProjectList(){
+      var ovr=projectsSplit().ovr,box=document.getElementById('defaultProjectList');
+      box.innerHTML=DEFAULT_PROJECTS.map(function(d,i){
+        var o=ovr[d.title]||{};
+        var t=o.title||d.title,r=o.role||d.role,img=o.img||d.img,hidden=o.hide;
+        return '<div class="item-row" style="'+(hidden?'opacity:0.4':'')+'">'+(img?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(img)+'\')"></div>':'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#1a1a2e)"></div>')+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(t)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(r)+(hidden?' · hidden':'')+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-secondary" onclick="editDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
+        (hidden?'<button class="btn btn-secondary" onclick="toggleDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Restore</button>':'<button class="btn btn-danger" onclick="toggleDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Hide</button>')+
+        '</div></div>';
+      }).join('');
+    }
+    window.editDefaultProject=function(i){
+      var d=DEFAULT_PROJECTS[i],o=projectsSplit().ovr[d.title],p=o||d;
+      editingProjectKey='d:'+d.title;editingProjectImg=p.img||'';
+      fillProjectForm(p);
+      document.getElementById('addProjectBtn').textContent='Update affiliation';
+      document.getElementById('prCancel').style.display='';
+      document.getElementById('secProjects').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    window.toggleDefaultProject=function(i){
+      var d=DEFAULT_PROJECTS[i],list=load(STORAGE.projects),idx=-1;
+      for(var j=0;j<list.length;j++){if(list[j].__o&&(list[j].base||list[j].title)===d.title){idx=j;break}}
+      if(idx<0){list.push({__o:true,base:d.title,title:d.title,role:d.role,desc:d.desc,img:d.img,link:d.link,hide:true})}
+      else if(list[idx].hide){delete list[idx].hide}
+      else{list[idx].hide=true}
+      save(STORAGE.projects,list);renderDefaultProjectList();
+      var now=list[idx]||list[list.length-1];showToast(now&&now.hide?'Affiliation hidden':'Affiliation restored');
+    };
+    window.cancelProjectEdit=resetProjectForm;
+    document.getElementById('prCancel').addEventListener('click',resetProjectForm);
     document.getElementById('addProjectBtn').addEventListener('click',function(){
       var title=document.getElementById('prTitle').value.trim();
       if(!title){showToast('Title required');return}
-      var item={role:document.getElementById('prRole').value.trim()||'Member',title:title,desc:document.getElementById('prDesc').value.trim(),img:pendingProjectImg||document.getElementById('prImg').value.trim(),link:document.getElementById('prLink').value.trim()||'#'};
-      var l=load(STORAGE.projects);l.unshift(item);save(STORAGE.projects,l);
-      document.getElementById('prRole').value='';document.getElementById('prTitle').value='';document.getElementById('prDesc').value='';document.getElementById('prLink').value='';document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='https://... .png / .webp';
-      pendingProjectImg='';document.getElementById('prPreview').style.display='none';
-      renderProjectList();showToast('Project added');
+      var img=pendingProjectImg||document.getElementById('prImg').value.trim()||editingProjectImg||'';
+      var item={role:document.getElementById('prRole').value.trim()||'Member',title:title,desc:document.getElementById('prDesc').value.trim(),img:img,link:document.getElementById('prLink').value.trim()||'#'};
+      var list=load(STORAGE.projects);
+      if(editingProjectKey!==null){
+        if(editingProjectKey.substring(0,2)==='d:'){
+          var base=editingProjectKey.substring(2);item.__o=true;item.base=base;
+          var di=-1;for(var j=0;j<list.length;j++){if(list[j].__o&&(list[j].base||list[j].title)===base){di=j;break}}
+          if(di<0){list.push(item)}else{list[di]=item}
+        }else{
+          var ci=parseInt(editingProjectKey.substring(2),10),ci2=0,done=false;
+          for(var j=0;j<list.length;j++){
+            if(!list[j].__o){if(ci2===ci){list[j]=item;done=true;break}ci2++}
+          }
+          if(!done){list.unshift(item)}
+        }
+        showToast('Project updated');
+      }else{
+        list.unshift(item);showToast('Project added');
+      }
+      save(STORAGE.projects,list);
+      resetProjectForm();
+      renderProjectList();renderDefaultProjectList();
     });
 
     /* ---------------- FRIENDS ---------------- */
@@ -600,7 +710,7 @@ document.getElementById('unlockBtn').addEventListener('click',function(){
     });
 
 function loadAllLists(){
-      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderProjectList();renderFriendList();
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderProjectList();renderDefaultProjectList();renderFriendList();
       var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
     }
 

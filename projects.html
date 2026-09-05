@@ -82,8 +82,8 @@
     </main>
   </div>
 
-  <script>
-    const projects=[
+<script>
+    const defaults=[
       {role:"Adminstrator",title:"Rivals Competitive League",desc:"Leads the charge on moderation and addressing fair-play violations.",img:"/assets/img/projects/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp",link:"https://discord.gg/BuDr9eYt9m"},
       {role:"Tester",title:"DUELISTS",desc:"Tasked with proposing ideas and ticket managing.",img:"/assets/img/projects/029feceb-48da-4dd8-98e6-d22de74d1688.webp",link:"https://discord.gg/tGSH8649xR"},
       {role:"Moderator",title:"ALCHEMY",desc:"Handled moderation tickets, resolving user reports, while keeping chat engaged.",img:"/assets/img/projects/d90e60cf-dab9-4f16-8164-98e3913f1b4c.webp",link:"https://discord.gg/sFFSJAQhBs"},
@@ -97,14 +97,29 @@
       {role:"Manager",title:"Holds",desc:"Responsible for overseeing moderators, managing channels and roles, handling tickets and escalations, and ensuring smooth server operations.",img:"/assets/img/projects/39e6974b-73ce-481e-9314-66037a4fa619.webp",link:"https://discord.gg/yjv5qbg2fN"},
       {role:"Server Manager",title:"Arko's Kingdom",desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.",img:"/assets/img/projects/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp",link:"https://discord.gg/jZyGa3dJA"},
     ];
+    function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    let projects=[];
     try{
-      const custom=JSON.parse(localStorage.getItem('vaultProjects')||'[]');
-      if(Array.isArray(custom)&&custom.length)projects.unshift(...custom);
-    }catch(e){}
+      const stored=JSON.parse(localStorage.getItem('vaultProjects')||'[]');
+      const ovr={},cust=[];
+      if(Array.isArray(stored))stored.forEach(s=>{ if(s&&s.__o){ovr[s.base||s.title]=s}else{cust.push(s)} });
+      defaults.forEach(d=>{
+        const o=ovr[d.title];
+        if(o){
+          if(!o.hide){
+            const m=Object.assign({},d,o);
+            if(!m.img)m.img=d.img;
+            if(!m.link)m.link=d.link;
+            projects.push(m);
+          }
+        }else projects.push(d);
+      });
+      projects.unshift(...cust);
+    }catch(e){ projects=defaults.slice() }
     const grid=document.getElementById('projectsGrid');
     grid.innerHTML=projects.map((p,i)=>{
       const isWide=(i===2);
-      return `<div class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}"><a href="${p.link}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url(${p.img})"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${p.role}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${p.title}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${p.desc}</p></div></div></div></a></div>`;
+      return `<div class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
     }).join('');
 
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
