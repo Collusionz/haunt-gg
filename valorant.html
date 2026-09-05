@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://api.fontshare.com"/>
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin/>
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap"/>
+  <link rel="preconnect" href="https://api.henrikdev.xyz"/>
+  <link rel="preconnect" href="https://wsrv.nl"/>
+  <link rel="preconnect" href="https://media.valorant-api.com"/>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{satoshi:['"Satoshi"','sans-serif']}}}}</script>
   <style>
@@ -62,9 +65,7 @@
   </nav>
   <div class="dark contents">
     <!-- Video Background -->
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-      <video src="/audio/bg.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
-    </div>
+<div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000;background-image:radial-gradient(circle at 20% 15%,rgba(255,70,85,0.16),transparent 55%),radial-gradient(circle at 80% 10%,rgba(85,115,244,0.12),transparent 55%),radial-gradient(circle at 50% 90%,rgba(255,255,255,0.03),transparent 60%)"></div>
 
     <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
       <!-- Header -->
@@ -113,40 +114,24 @@
     const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
     const REGIONS = ['ap','na','eu','kr'];
 
-    const RANK_ICONS = {
-      'Unranked':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png',
-      'Iron 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png',
-      'Iron 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png',
-      'Iron 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png',
-      'Bronze 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png',
-      'Bronze 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png',
-      'Bronze 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png',
-      'Silver 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png',
-      'Silver 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png',
-      'Silver 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png',
-      'Gold 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png',
-      'Gold 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png',
-      'Gold 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png',
-      'Platinum 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png',
-      'Platinum 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png',
-      'Platinum 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png',
-      'Diamond 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png',
-      'Diamond 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png',
-      'Diamond 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png',
-      'Ascendant 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png',
-      'Ascendant 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png',
-      'Ascendant 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png',
-      'Immortal 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png',
-      'Immortal 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png',
-      'Immortal 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png',
-      'Radiant':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/25/smallicon.png',
-    };
+const TIER_GROUP_FALLBACK = '03621f52-342b-cf4e-4f86-9350a49c6d04';
+    let tierGroup = TIER_GROUP_FALLBACK;
+    function tierGroupFromImg(url) {
+      const m = /competitivetiers\/([0-9a-f-]+)\/\d+\//.exec(url || '');
+      return m ? m[1] : TIER_GROUP_FALLBACK;
+    }
+    function tierIconUrl(tier) {
+      return `https://media.valorant-api.com/competitivetiers/${tierGroup}/${tier}/smallicon.png`;
+    }
 
-    const RANK_LARGE = {};
-    Object.keys(RANK_ICONS).forEach(k => { RANK_LARGE[k] = RANK_ICONS[k].replace('smallicon','largeicon'); });
-
-    function agentIcon(id) {
+function agentIcon(id,w) {
+      return `https://wsrv.nl/?url=${encodeURIComponent(`https://media.valorant-api.com/agents/${id}/displayicon.png`)}&w=${w||96}`;
+    }
+    function agentImgFull(id) {
       return `https://media.valorant-api.com/agents/${id}/displayicon.png`;
+    }
+    function imgW(url,w) {
+      return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${w}`;
     }
 
     function tryFetch(url) {
@@ -168,15 +153,16 @@
       });
     }
 
-    const CACHE_KEY = 'val_data';
-    const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_KEY = 'val_data';
+    const PROFILE_TTL = 5 * 60 * 1000;
+    const MATCHES_TTL = 30 * 60 * 1000;
 
     function getCached() {
-      try { const d = JSON.parse(localStorage.getItem(CACHE_KEY)); if (d && Date.now() - d.ts < CACHE_TTL) return d; } catch(e) {}
+      try { const d = JSON.parse(localStorage.getItem(CACHE_KEY)); if (d && typeof d === 'object') return d; } catch(e) {}
       return null;
     }
-    function setCache(d) {
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...d, ts: Date.now() })); } catch(e) {}
+    function setCache(part, d) {
+      try { const cur = getCached() || {}; d.ts = Date.now(); cur[part] = d; localStorage.setItem(CACHE_KEY, JSON.stringify(cur)); } catch(e) {}
     }
 
     // ========== PROFILE ==========
@@ -187,12 +173,13 @@
       const peak = mmrData.highest_rank?.patched_tier || rank;
       const elo = mmrData.current_data?.elo || 0;
       const level = accountData?.account_level || '?';
-      const rankIcon = mmrData.current_data?.images?.large || RANK_LARGE[rank] || RANK_LARGE['Unranked'];
-      const peakIcon = RANK_ICONS[peak] || RANK_ICONS['Unranked'];
+      if (mmrData.current_data?.images?.large) tierGroup = tierGroupFromImg(mmrData.current_data.images.large);
+      const rankIcon = mmrData.current_data?.images?.large || tierIconUrl(mmrData.current_data?.currenttier ?? 0);
+      const peakIconSrc = tierIconUrl(mmrData.highest_rank?.tier ?? 0);
 
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center">
-          <img src="${rankIcon}" style="width:80px;height:80px;object-fit:contain" onerror="this.style.display='none'" />
+          <img src="${imgW(rankIcon,160)}" style="width:80px;height:80px;object-fit:contain" onerror="this.onerror=null;this.src='${rankIcon}'" />
           <div style="text-align:center;min-width:0">
             <div style="font-size:1.3rem;font-weight:700;white-space:nowrap">${VALORANT_NAME}#${VALORANT_TAG}</div>
             <div style="font-size:0.8rem;color:#9CA3AF;margin-top:2px">Level ${level}</div>
@@ -212,7 +199,7 @@
             </div>
             <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px">
               <div style="display:flex;align-items:center;gap:6px">
-                <img src="${peakIcon}" style="width:20px;height:20px;object-fit:contain" onerror="this.style.display='none'" />
+                <img src="${imgW(peakIconSrc,64)}" style="width:20px;height:20px;object-fit:contain" onerror="this.onerror=null;this.src='${peakIconSrc}'" />
                 <span style="font-size:0.95rem;font-weight:600;color:#fff">${peak}</span>
               </div>
               <div style="font-size:0.7rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Peak</div>
@@ -223,7 +210,7 @@
     }
 
     // ========== MATCH HISTORY ==========
-    function renderMatches(matches, puuid) {
+function renderMatches(matches) {
       const el = document.getElementById('matchList');
       if (!matches || matches.length === 0) {
         el.innerHTML = '<div style="text-align:center;padding:32px;color:#6B7280">No matches found</div>';
@@ -232,7 +219,7 @@
 
       el.innerHTML = matches.map(m => {
         const meta = m.metadata;
-        const player = m.players.find(p => p.puuid === puuid);
+        const player = (m.players||[]).find(p => String(p.name||'').toLowerCase() === VALORANT_NAME.toLowerCase() && String(p.tag||'').toLowerCase() === VALORANT_TAG.toLowerCase());
         if (!player) return '';
 
         const won = m.teams.find(t => t.team_id === player.team_id)?.won || false;
@@ -249,7 +236,7 @@
 
         return `
           <div class="widget-card ${won ? 'match-win' : 'match-loss'}" style="padding:12px 16px;border-radius:16px;display:flex;align-items:center;gap:14px;overflow:hidden">
-            <img src="${agentIcon(agentId)}" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
+            <img src="${agentIcon(agentId,96)}" loading="lazy" decoding="async" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.onerror=null;this.src='${agentImgFull(agentId)}'" />
             <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${won ? 'background:rgba(35,165,90,0.15);color:#23A55A' : 'background:rgba(242,63,67,0.15);color:#F23F43'}">${won ? 'WIN' : 'LOSS'}</span>
@@ -271,27 +258,29 @@
     }
 
     // ========== INIT ==========
-    (async function() {
+(async function() {
       const cached = getCached();
-      if (cached) {
-        renderProfile(cached.mmr.data, cached.account.data);
-        if (cached.matches) renderMatches(cached.matches.data, cached.puuid);
-        return;
-      }
-      try {
-        const [mmr, account] = await Promise.all([
+      const mmrC = cached && cached.mmr && (Date.now() - cached.mmr.ts < PROFILE_TTL) ? cached.mmr : null;
+      const accC = cached && cached.account && (Date.now() - cached.account.ts < PROFILE_TTL) ? cached.account : null;
+      const matchC = cached && cached.matches && (Date.now() - cached.matches.ts < MATCHES_TTL) ? cached.matches : null;
+      if (mmrC && accC) renderProfile(mmrC.data, accC.data);
+      if (matchC) renderMatches(matchC.data);
+
+      if (!(mmrC && accC)) {
+        Promise.all([
           tryRegions(r => `https://api.henrikdev.xyz/valorant/v2/mmr/${r}/${VALORANT_NAME}/${VALORANT_TAG}`),
           tryFetch(`https://api.henrikdev.xyz/valorant/v2/account/${VALORANT_NAME}/${VALORANT_TAG}`)
-        ]);
-        renderProfile(mmr.data, account.data);
-        const puuid = account.data?.puuid;
-        if (!puuid) return;
-        const matchData = await tryRegions(r => `https://api.henrikdev.xyz/valorant/v4/matches/${r}/pc/${VALORANT_NAME}/${VALORANT_TAG}?size=10`);
-        renderMatches(matchData.data, puuid);
-        setCache({ mmr, account, matches: matchData, puuid });
-      } catch (e) {
-        document.getElementById('profileCard').innerHTML = '<div style="text-align:center;padding:24px;color:#6B7280">Unable to load Valorant data</div>';
-        document.getElementById('matchList').innerHTML = '';
+        ]).then(([mmr, account]) => {
+          setCache('mmr', mmr); setCache('account', account);
+          renderProfile(mmr.data, account.data);
+        }).catch(() => {
+          document.getElementById('profileCard').innerHTML = '<div style="text-align:center;padding:24px;color:#6B7280">Unable to load profile</div>';
+        });
+      }
+      if (!matchC) {
+        tryRegions(r => `https://api.henrikdev.xyz/valorant/v4/matches/${r}/pc/${VALORANT_NAME}/${VALORANT_TAG}?size=10`)
+          .then(matchData => { setCache('matches', matchData); renderMatches(matchData.data); })
+          .catch(() => { document.getElementById('matchList').innerHTML = ''; });
       }
     })();
   </script>
