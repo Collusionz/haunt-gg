@@ -163,6 +163,44 @@
           </div>
         </div>
       </section>
+
+      <!-- about me -->
+      <section id="about-me" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
+        <div class="mx-auto w-full" style="max-width:44rem">
+          <div class="flex items-center gap-3 mb-8">
+            <span class="sec-rule"></span>
+            <h2 class="sec-title">about me.</h2>
+          </div>
+          <div class="widget-card p-8 md:p-10 anim-reveal">
+            <p id="aboutMeBio" style="font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.75);margin-bottom:20px">add a bio in the vault</p>
+            <div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+              <div>
+                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">LOCATION</p>
+                <p style="font-size:0.92rem;line-height:1.6">Singapore 🇸🇬 · UTC+8</p>
+              </div>
+              <div>
+                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">BIRTHDAY</p>
+                <p style="font-size:0.92rem;line-height:1.6">turning 16 in <span id="countdownBirthday" style="color:#8aa3ff;font-weight:600">…</span></p>
+              </div>
+            </div>
+            <div class="my-6" style="height:1px;background-image:linear-gradient(to right,transparent,rgba(255,255,255,0.15),transparent)"></div>
+            <p class="mb-3 text-xs font-semibold tracking-widest" style="color:#5573f4">WHAT I DO</p>
+            <ul class="flex flex-col gap-2" style="font-size:0.9rem">
+              <li>🎮 Play Valorant competitively</li>
+              <li>💬 Moderate &amp; manage Discord communities — staff in 12+ servers</li>
+              <li>🎵 Listen to music (pop, indie, and a bit of everything)</li>
+              <li>💻 Build websites and tools</li>
+              <li>🎨 Create content and designs</li>
+            </ul>
+            <ul class="about-facts flex flex-col gap-2 mt-6" style="font-size:0.9rem;color:rgba(255,255,255,0.6)">
+              <li>🗺 based in Singapore · UTC+8</li>
+              <li>🦉 night owl — most productive after midnight</li>
+              <li>👥 staff member in 12+ Discord servers</li>
+              <li>🎧 dark mode, always</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -311,7 +349,10 @@ setTimeout(()=>p.remove(),600);
       }
     });
 
-// ========== GUESTBOOK (overlay) ==========
+// ========== VAULT BIO ==========
+    try{const _ab=localStorage.getItem('vaultBio');if(_ab&&document.getElementById('aboutMeBio'))document.getElementById('aboutMeBio').textContent=_ab}catch(e){}
+
+    // ========== GUESTBOOK (overlay) ==========
   </script>
 
   <script>

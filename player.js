@@ -48,6 +48,7 @@
     document.getElementById('hzNext').addEventListener('click', function (ev) { ev.stopPropagation(); next(); });
     document.getElementById('hzPlay').addEventListener('click', function (ev) {
       ev.stopPropagation();
+      if (fallback) { unlockSound(); return; }
       toggle();
     });
     return c;
@@ -61,6 +62,7 @@
 
   function updateLabel(text, hint) {
     if (!labelEl) return;
+    if (fallback && text) return;
     if (text) {
       labelEl.title = text;
       labelEl.textContent = hint ? hint + ' · ' + text : text;
@@ -136,13 +138,19 @@
   if (typeof window.pagehide !== 'undefined') window.addEventListener('pagehide', save);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') save(); });
 
-  var unlockDone = false;
-  function unlock() {
-    if (unlockDone) return;
-    unlockDone = true;
-    try { localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
+  var soundAllowed = false;
+  try { soundAllowed = !!localStorage.getItem('hzEntered') || !!localStorage.getItem('hzAutoplay'); } catch (e) {}
+
+  var fallback = false;
+
+  function unlockSound() {
+    if (!soundAllowed) {
+      soundAllowed = true;
+      try { localStorage.setItem('hzEntered', '1'); localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
+    }
     audio.muted = false;
-    audio.play().catch(function () {});
+    audio.play().then(onPlay).catch(function () { refreshUI(); });
+    if (fallback) { fallback = false; refreshUI(); }
   }
 
   function buildEnter() {
@@ -156,13 +164,12 @@
       'background:rgba(6,8,14,0.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:opacity .5s ease;' +
       'color:#e8edff;font-family:"Satoshi",sans-serif;user-select:none;text-align:center';
     o.innerHTML =
-      '<div style="font-size:3rem;font-weight:700;letter-spacing:0.18em;text-transform:lowercase;color:#f4f7f8;text-shadow:0 0 24px rgba(85,115,244,0.8)">enter</div>' +
-      '<div style="font-size:0.8rem;opacity:0.55;letter-spacing:0.05em">music starts when you do</div>';
+      '<div style="font-size:3rem;font-weight:700;letter-spacing:0.18em;text-transform:lowercase;color:#f4f7f8;text-shadow:0 0 24px rgba(85,115,244,0.8)">enter</div>';
     document.body.appendChild(o);
     function go() {
       o.style.opacity = '0';
       setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 520);
-      unlock();
+      unlockSound();
     }
     ['click', 'keydown', 'touchstart', 'pointerdown'].forEach(function (t) {
       o.addEventListener(t, go, { passive: true });
@@ -175,11 +182,19 @@
     buildEnter();
   }
 
+  function mutedFallback() {
+    fallback = true;
+    audio.muted = true;
+    audio.play().then(onPlay).catch(function () { refreshUI(); });
+    if (labelEl) { labelEl.title = 'tap anywhere to unmute'; labelEl.textContent = 'tap for sound'; }
+    ['click', 'pointerdown', 'keydown', 'touchstart'].forEach(function (t) {
+      window.addEventListener(t, function () { if (fallback) unlockSound(); });
+    });
+  }
+
   function startAuto() {
-    var unlocked = false;
-    try { unlocked = !!localStorage.getItem('hzAutoplay'); } catch (e) {}
-    if (unlocked) {
-      audio.play().then(onPlay).catch(function () { enterMuted(); });
+    if (soundAllowed) {
+      audio.play().then(onPlay).catch(function () { mutedFallback(); });
     } else {
       enterMuted();
     }
