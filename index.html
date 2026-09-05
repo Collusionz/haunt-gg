@@ -260,24 +260,32 @@
       typingEl.style.display='none';
     }
 
-    // ========== AGE COUNTER (ticks in real-time) ==========
+// ========== AGE COUNTER (ticks in real-time) ==========
 const birthday=new Date('2027-06-04T00:00:00+08:00');
-    function updateCountdown(){
-      const txt=relUntil(birthday-new Date());
-      const els=[document.getElementById('countdown'),document.getElementById('countdownBirthday')];
-      els.forEach(el=>{if(el)el.textContent=txt});
-    }
-    function relUntil(diff){
-      if(diff<=0)return 'today';
-      const units=[['year',31536000000],['month',2628000000],['week',604800000],['day',86400000],['hour',3600000],['minute',60000],['second',1000]];
-      for(let i=0;i<units.length;i++){
-        if(diff/units[i][1]<1)continue;
-        const r=Math.round(diff/units[i][1]);
-        return r+' '+(r===1?units[i][0]:units[i][0]+'s');
-      }
-      return 'now';
-    }
-    updateCountdown();setInterval(updateCountdown,1000);
+function ddMMyy(d){
+  const date=new Date(d);const p=x=>String(x).padStart(2,'0');
+  return p(date.getDate())+'/'+p(date.getMonth()+1)+'/'+String(date.getFullYear()).slice(-2);
+}
+function relUntil(target){
+  const now=new Date(target),today=new Date();
+  if(now<=today)return 'today';
+  let y=now.getFullYear()-today.getFullYear();
+  let m=now.getMonth()-today.getMonth();
+  let d=now.getDate()-today.getDate();
+  if(d<0){m--;d+=new Date(today.getFullYear(),today.getMonth()+1,0).getDate()}
+  if(m<0){y--;m+=12}
+  let parts=[];
+  if(y>0)parts.push(y+'y');
+  if(m>0)parts.push(m+'m');
+  parts.push(d+'d');
+  return parts.join(' ')+' · '+ddMMyy(target);
+}
+function updateCountdown(){
+  const txt=relUntil(birthday);
+  const els=[document.getElementById('countdown'),document.getElementById('countdownBirthday')];
+  els.forEach(el=>{if(el)el.textContent=txt});
+}
+updateCountdown();setInterval(updateCountdown,1000);
 
     // ========== SOCIAL LINKS ==========
 const socials=[];
