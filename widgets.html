@@ -135,11 +135,6 @@
     function renderDiscord(data,profile){
       const el=document.getElementById('discordWidget'),u=data.discord_user;
       const puser=(profile&&profile.user)?profile.user:null;
-      const card=document.getElementById('discordCard');let bannerBox=card?card.querySelector('.dc-banner'):null;
-      if(card&&!bannerBox){bannerBox=document.createElement('div');bannerBox.className='dc-banner';bannerBox.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:25px;overflow:hidden';card.insertBefore(bannerBox,card.firstChild);}
-      const banner=(puser&&puser.banner)||'';
-      if(bannerBox){if(banner){const bfmt=banner.charAt(1)==='_'?'gif':'png';bannerBox.innerHTML=`<img src="https://cdn.discordapp.com/banners/${u.id}/${banner}.${bfmt}?size=600" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%" onerror="this.style.display='none'"/><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,15,0.72) 0%,rgba(7,9,15,0.18) 55%,rgba(7,9,15,0.6) 100%)"></div>`;bannerBox.style.display='';bannerBox.style.background=(puser&&puser.banner_color)||'';}else{bannerBox.style.display='none';bannerBox.innerHTML='';}}
-      el.style.position='relative';el.style.zIndex='2';
       const av=u.avatar?`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator||'0')%5}.png`;
       const status=data.discord_status||'offline',activities=data.activities||[],spotify=data.listening_to_spotify?data.spotify:null;
       const prof=data.profile||{};
