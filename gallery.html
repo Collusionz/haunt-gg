@@ -5,29 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gallery | home</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
   <style>
-    @font-face {
-      font-family: 'Satoshi';
-      src: url('https://cdn.jsdelivr.net/gh/nicoswan/satoshi-font@main/Satoshi-Regular.woff2') format('woff2');
-      font-weight: 400;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'Satoshi';
-      src: url('https://cdn.jsdelivr.net/gh/nicoswan/satoshi-font@main/Satoshi-Medium.woff2') format('woff2');
-      font-weight: 500;
-      font-style: normal;
-    }
-    @font-face {
-      font-family: 'Satoshi';
-      src: url('https://cdn.jsdelivr.net/gh/nicoswan/satoshi-font@main/Satoshi-Bold.woff2') format('woff2');
-      font-weight: 700;
-      font-style: normal;
-    }
-
     * {
       margin: 0;
       padding: 0;
@@ -35,7 +16,7 @@
     }
 
     body {
-      font-family: 'Satoshi', 'Inter', sans-serif;
+      font-family: 'Satoshi', sans-serif;
       background: #000;
       color: #fff;
       min-height: 100vh;
@@ -84,7 +65,7 @@
     .accent-bar {
       width: 50px;
       height: 4px;
-      background: #ff4466;
+      background: linear-gradient(90deg, #5573f4, #4764ec);
       border-radius: 2px;
       margin-bottom: 16px;
     }
@@ -116,7 +97,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(255, 255, 255, 0.04);
       color: rgba(255, 255, 255, 0.6);
-      font-family: 'Satoshi', 'Inter', sans-serif;
+      font-family: 'Satoshi', sans-serif;
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
@@ -334,7 +315,7 @@
     <a href="/gallery" class="active"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
     <a href="/friends"><span class="nav-line"></span>Friends</a>
-    <a href="/awards"><span class="nav-line"></span>Awards</a>
+
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
   </nav>
@@ -346,7 +327,7 @@
     <a href="/gallery" class="active">Gallery</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
-    <a href="/awards">Awards</a>
+    
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
   </nav>
@@ -561,5 +542,6 @@
   <script>
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/bg.js" defer></script>
 </body>
 </html>

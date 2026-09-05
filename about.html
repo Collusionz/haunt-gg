@@ -74,7 +74,7 @@
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
     <a href="/friends"><span class="nav-line"></span>Friends</a>
-    <a href="/awards"><span class="nav-line"></span>Awards</a>
+
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
   </nav>
@@ -94,7 +94,7 @@
   <div id="toast" class="toast"></div>
 
   <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-    <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+    <canvas id="bgCanvas"></canvas>
   </div>
 
   <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
@@ -210,5 +210,6 @@
     }catch(e){}
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/bg.js" defer></script>
 </body>
 </html>

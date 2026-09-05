@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends | home</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
     <style>
         * {
             margin: 0;
@@ -66,7 +66,7 @@
         .accent-bar {
             width: 50px;
             height: 4px;
-            background: linear-gradient(90deg, #ff4444, #ff6666);
+            background: linear-gradient(90deg, #5573f4, #4764ec);
             border-radius: 2px;
             margin-bottom: 16px;
         }
@@ -220,7 +220,7 @@
         <a href="/gallery"><span class="nav-line"></span>Gallery</a>
         <a href="/projects"><span class="nav-line"></span>Projects</a>
         <a href="/friends" class="active"><span class="nav-line"></span>Friends</a>
-        <a href="/awards"><span class="nav-line"></span>Awards</a>
+    
         <a href="/widgets"><span class="nav-line"></span>Widgets</a>
         <a href="/valorant"><span class="nav-line"></span>Valorant</a>
     </nav>
@@ -232,7 +232,7 @@
         <a href="/gallery">Gallery</a>
         <a href="/projects">Projects</a>
         <a href="/friends" class="active">Friends</a>
-        <a href="/awards">Awards</a>
+        
         <a href="/widgets">Widgets</a>
         <a href="/valorant">Valorant</a>
     </nav>
@@ -414,5 +414,6 @@
             try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
         </script>
 
+<script src="/bg.js" defer></script>
 </body>
 </html>

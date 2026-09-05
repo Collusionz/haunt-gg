@@ -61,7 +61,7 @@
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
     <a href="/friends"><span class="nav-line"></span>Friends</a>
-    <a href="/awards"><span class="nav-line"></span>Awards</a>
+
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
   </nav>
@@ -73,7 +73,7 @@
     <a href="/gallery">Gallery</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
-    <a href="/awards">Awards</a>
+    
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
   </nav>
@@ -116,8 +116,8 @@
           <button class="btn btn-secondary section-jump" data-target="secSocials" style="padding:10px 16px">Socials</button>
           <button class="btn btn-secondary section-jump" data-target="secSkills" style="padding:10px 16px">Skills</button>
           <button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
-          <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Friends</button>
-          <button class="btn btn-secondary section-jump" data-target="secAwards" style="padding:10px 16px">Awards</button>
+<button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Friends</button>
+          <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
           <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
         </div>
 
@@ -277,41 +277,18 @@
             </div>
           </div>
           <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add friend</button>
-          <div id="friendList" style="margin-top:18px"></div>
+<div id="friendList" style="margin-top:18px"></div>
         </div>
 
-        <div id="secAwards" class="card" style="margin-bottom:20px">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🏅 Awards</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">appears in its own row on <a href="/awards" style="color:#8aa3ff">/awards</a></p>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Icon (emoji)</label>
-              <input class="input" id="wIcon" placeholder="e.g. 🏆" />
-            </div>
-            <div>
-              <label class="fld">Title</label>
-              <input class="input" id="wTitle" placeholder="e.g. Best Manager" />
-            </div>
+        <div id="secComments" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">💬 Guestbook moderation</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">connect supabase in Settings, then unlock with the guestbook password to delete messages.</p>
+          <div class="flex gap-2" style="max-width:360px">
+            <input class="input" id="gbOwnerPass" type="password" placeholder="guestbook password" />
+            <button class="btn" id="unlockGbBtn" style="flex-shrink:0">Unlock</button>
           </div>
-          <label class="fld">Description</label>
-          <input class="input" id="wDesc" placeholder="What was it for?" />
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Date</label>
-              <input class="input" id="wDate" placeholder="e.g. 2025" />
-            </div>
-            <div>
-              <label class="fld">Color</label>
-              <select class="input" id="wColor">
-                <option value="red">Red</option>
-                <option value="gold">Gold</option>
-                <option value="blue">Blue</option>
-                <option value="green">Green</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn" id="addAwardBtn" style="margin-top:14px">＋ Add award</button>
-          <div id="awardList" style="margin-top:18px"></div>
+          <div id="cmList" style="margin-top:16px"></div>
+          <div id="cmNote" style="font-size:0.8rem;opacity:0.4;margin-top:12px"></div>
         </div>
 
         <div id="secSettings" class="card">
@@ -322,10 +299,22 @@
             <button class="btn" id="applyBgBtn" style="flex-shrink:0">Apply</button>
           </div>
           <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">applies site-wide (home, pages, and this one). leave empty + apply to restore the default.</p>
-          <label class="fld" style="margin-top:18px">Change passcode</label>
+<label class="fld" style="margin-top:18px">Change passcode</label>
           <div class="flex gap-2" style="max-width:360px">
             <input class="input" id="newPass" type="password" placeholder="new passcode" />
             <button class="btn" id="changePassBtn" style="flex-shrink:0">Save</button>
+          </div>
+          <label class="fld" style="margin-top:18px">Supabase connection <span style="opacity:0.4;font-weight:400">(for the home page guestbook)</span></label>
+          <div class="flex flex-col gap-2" style="max-width:420px">
+            <input class="input" id="supUrl" placeholder="project url — https://xxxx.supabase.co" />
+            <input class="input" id="supAnon" placeholder="anon public key" />
+            <button class="btn" id="saveSupBtn" style="align-self:flex-start">Save connection</button>
+          </div>
+          <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">read the SQL + setup steps from this repo's SUPABASE.md — the anon key is safe to ship in the browser; the delete functions are password-gated server-side.</p>
+          <label class="fld" style="margin-top:18px">Guestbook password <span style="opacity:0.4;font-weight:400">(change it — default cz2026)</span></label>
+          <div class="flex gap-2" style="max-width:360px">
+            <input class="input" id="newGbPass" type="password" placeholder="new guestbook password" />
+            <button class="btn" id="changeGbPassBtn" style="flex-shrink:0">Change</button>
           </div>
           <label class="fld" style="margin-top:18px">Danger zone</label>
           <div class="flex gap-2">
@@ -344,7 +333,7 @@
     var STORAGE={
       gallery:'vaultGallery', phrases:'vaultPhrases', bio:'vaultBio', facts:'vaultFacts',
       socials:'vaultSocials', skills:'vaultSkills', projects:'vaultProjects',
-      friends:'vaultFriends', awards:'vaultAwards', bg:'vaultBg', pass:'vaultPass'
+      friends:'vaultFriends', bg:'vaultBg', pass:'vaultPass'
     };
     var DEFAULT_PASS='cz2026';
 
@@ -547,27 +536,6 @@
       renderFriendList();showToast('Friend added');
     });
 
-    /* ---------------- AWARDS ---------------- */
-    function renderAwardList(){
-      var list=load(STORAGE.awards),box=document.getElementById('awardList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom awards yet</p>';return}
-      box.innerHTML=list.map(function(a,i){
-        return '<div class="item-row"><div style="font-size:1.4rem;width:44px;text-align:center;flex-shrink:0">'+esc(a.icon||'🏅')+'</div>'+
-        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(a.title)+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45">'+esc(a.desc||'')+' · '+esc(a.date||'')+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeAward('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
-      }).join('');
-    }
-    window.removeAward=function(i){var l=load(STORAGE.awards);l.splice(i,1);save(STORAGE.awards,l);renderAwardList();showToast('Award removed')};
-    document.getElementById('addAwardBtn').addEventListener('click',function(){
-      var title=document.getElementById('wTitle').value.trim();
-      if(!title){showToast('Title required');return}
-      var item={icon:document.getElementById('wIcon').value.trim()||'🏅',title:title,desc:document.getElementById('wDesc').value.trim(),date:document.getElementById('wDate').value.trim(),color:document.getElementById('wColor').value};
-      var l=load(STORAGE.awards);l.push(item);save(STORAGE.awards,l);
-      document.getElementById('wIcon').value='';document.getElementById('wTitle').value='';document.getElementById('wDesc').value='';document.getElementById('wDate').value='';
-      renderAwardList();showToast('Award added');
-    });
-
     /* ---------------- SETTINGS ---------------- */
     document.getElementById('applyBgBtn').addEventListener('click',function(){
       var v=document.getElementById('setBg').value.trim();
@@ -587,11 +555,98 @@
       document.getElementById('newPass').value='';
       showToast('Passcode reset to '+DEFAULT_PASS);
     });
-    document.getElementById('resetDataBtn').addEventListener('click',function(){
+document.getElementById('resetDataBtn').addEventListener('click',function(){
       Object.keys(STORAGE).forEach(function(k){localStorage.removeItem(STORAGE[k])});
-      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();renderAwardList();
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();
       showToast('All custom data wiped');
     });
+
+    /* ---------------- SUPABASE / GUESTBOOK ---------------- */
+    function supabaseConfig(){var u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');return (u&&k)?{url:u,key:k}:null}
+    var sbClient=null,sbLoaded=false;
+    function getSbClient(cb){
+      if(sbClient){cb(sbClient);return}
+      if(sbLoaded){cb(null);return}
+      var cfg=supabaseConfig();
+      if(!cfg){sbLoaded=true;cb(null);return}
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.js';
+      s.onload=function(){sbLoaded=true;try{sbClient=window.supabase.createClient(cfg.url,cfg.key)}catch(e){}cb(sbClient)};
+      s.onerror=function(){sbLoaded=true;cb(null)};
+      document.head.appendChild(s);
+    }
+    function setCmNote(t){var n=document.getElementById('cmNote');if(n)n.textContent=t}
+    function refreshCmList(){
+      var box=document.getElementById('cmList');
+      box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">loading…</p>';
+      getSbClient(function(c){
+        if(!c){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">supabase not connected — add url + anon key in Settings.</p>';return}
+        c.from('comments').select('id,name,message,is_anon,created_at').order('created_at',{ascending:false}).limit(50).then(function(res){
+          var data=res.data,error=res.error;
+          if(error){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">could not load comments.</p>';return}
+          if(!data||!data.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no comments yet.</p>';return}
+          var ownerLocked=!sessionStorage.getItem('gbOwnerPass');
+          box.innerHTML=data.map(function(x){
+            return '<div class="item-row"><div style="flex:1;min-width:0">'+
+              '<div style="font-size:0.85rem;font-weight:600;color:#fff">'+esc(x.is_anon?'anonymous':(x.name||'someone'))+
+              '<span style="font-weight:400;opacity:0.4;font-size:0.7rem;margin-left:8px">'+new Date(x.created_at).toLocaleString()+'</span></div>'+
+              '<div style="font-size:0.8rem;opacity:0.75;word-wrap:break-word">'+esc(x.message)+'</div></div>'+
+              '<div class="row-actions"><button class="btn btn-danger" onclick="delComment('+x.id+')" style="padding:8px 12px;font-size:0.75rem"'+(ownerLocked?' disabled':'')+'>Delete</button></div></div>';
+          }).join('');
+        });
+      });
+    }
+    function unlockGb(){
+      var v=document.getElementById('gbOwnerPass').value;
+      if(!v){showToast('Enter the guestbook password');return}
+      sessionStorage.setItem('gbOwnerPass',v);
+      document.getElementById('gbOwnerPass').value='';
+      refreshCmList();
+      setCmNote('unlocked — delete buttons active');
+    }
+    window.delComment=function(id){
+      var pass=sessionStorage.getItem('gbOwnerPass');
+      if(!pass){showToast('Unlock first');return}
+      getSbClient(function(c){
+        if(!c){showToast('Supabase not connected');return}
+        c.rpc('delete_comment',{cid:id,passcode:pass}).then(function(res){
+          if(res.error){
+            if(String(res.error.message||res.error.details||'').toLowerCase().indexOf('wrong')!==-1){sessionStorage.removeItem('gbOwnerPass');setCmNote('wrong password — locked again')}
+            else showToast('Delete failed');
+            return
+          }
+          refreshCmList();showToast('Comment deleted');
+        });
+      });
+    };
+    document.getElementById('unlockGbBtn').addEventListener('click',unlockGb);
+    document.getElementById('gbOwnerPass').addEventListener('keydown',function(e){if(e.key==='Enter')unlockGb()});
+    document.getElementById('saveSupBtn').addEventListener('click',function(){
+      var u=document.getElementById('supUrl').value.trim(),k=document.getElementById('supAnon').value.trim();
+      if(!u||!k){showToast('Both URL and anon key required');return}
+      localStorage.setItem('supabaseUrl',u);localStorage.setItem('supabaseAnon',k);
+      sbClient=null;sbLoaded=false;
+      refreshCmList();showToast('Supabase connection saved');
+    });
+    document.getElementById('changeGbPassBtn').addEventListener('click',function(){
+      var v=document.getElementById('newGbPass').value;
+      if(v.length<4){showToast('Password must be 4+ chars');return}
+      getSbClient(function(c){
+        if(!c){showToast('Supabase not connected');return}
+        c.rpc('change_passcode',{old:sessionStorage.getItem('gbOwnerPass')||'',new:v}).then(function(res){
+          if(res.error){showToast('Change failed — unlock with current password first');return}
+          sessionStorage.setItem('gbOwnerPass',v);
+          document.getElementById('newGbPass').value='';
+          showToast('Guestbook password changed');
+        });
+      });
+    });
+    (function prefillSupabase(){
+      var u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');
+      if(u)document.getElementById('supUrl').value=u;
+      if(k)document.getElementById('supAnon').value=k;
+    })();
+    refreshCmList();
 
     /* ---------------- LOCKFLOW + INIT ---------------- */
     document.getElementById('unlockBtn').addEventListener('click',function(){
@@ -608,7 +663,7 @@
     });
 
     function loadAllLists(){
-      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();renderAwardList();
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();
       var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
     }
 
@@ -616,5 +671,6 @@
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/bg.js" defer></script>
 </body>
 </html>

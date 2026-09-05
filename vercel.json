@@ -14,7 +14,6 @@
     { "src": "/skills", "dest": "/skills.html" },
     { "src": "/gallery", "dest": "/gallery.html" },
     { "src": "/music", "dest": "/music.html" },
-    { "src": "/awards", "dest": "/awards.html" },
     { "src": "/friends", "dest": "/friends.html" },
     { "src": "/vault", "dest": "/vault.html" },
     { "src": "/gaming", "status": 404 },

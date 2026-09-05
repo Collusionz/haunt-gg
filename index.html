@@ -18,10 +18,6 @@
     *,*::before,*::after{box-sizing:border-box}
     body{margin:0;padding:0;font-family:'Satoshi',sans-serif;background:#000;color:#ccd8ec;min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s}
     body.light{background:#f5f5f5;color:#1a1a2e}
-    .enter-overlay{position:fixed;inset:0;z-index:50;cursor:pointer;transition:opacity 0.6s ease,visibility 0.6s ease}
-    .enter-overlay.hidden-overlay{opacity:0;visibility:hidden;pointer-events:none}
-    .enter-overlay .bg{position:absolute;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-    .enter-overlay .text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2.25rem;font-weight:500;letter-spacing:0.05em}
     .profile-card{background:rgba(218,220,247,0);background-clip:padding-box;color:#ccd8ec;border:2px solid rgba(110,184,236,0.13);border-radius:44px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);position:relative;transition:border-color 0.3s}
     body.light .profile-card{border-color:rgba(85,115,244,0.2);background:rgba(255,255,255,0.8);color:#1a1a2e}
     .profile-card-inner{border-radius:42px;overflow:hidden}
@@ -76,7 +72,7 @@
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
     <a href="/friends"><span class="nav-line"></span>Friends</a>
-    <a href="/awards"><span class="nav-line"></span>Awards</a>
+
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
   </nav>
@@ -96,12 +92,12 @@
   <div id="toast" class="toast"></div>
 
   <div class="dark contents">
-    <audio id="bgAudio" src="https://r2.haunt.gg/audio/2dc1a59a-12c4-4850-9bdd-439432d9cabd.mp3" preload="auto" loop></audio>
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-      <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover"></video>
+      <canvas id="bgCanvas" class="absolute inset-0 w-full h-full"></canvas>
+      <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0"></video>
     </div>
 
-    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
+<main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
       <section class="relative flex min-h-screen w-full items-center justify-center py-12 px-4">
         <div class="relative flex w-full flex-col items-stretch gap-3" style="max-width:48rem">
           <div class="profile-card relative z-10 w-full px-8 py-8 will-change-transform anim-reveal">
@@ -132,24 +128,47 @@
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
                 <div class="flex justify-center gap-3 flex-wrap" id="socialLinks"></div>
+                <div class="mt-5 text-center text-sm" style="opacity:0.35"><span id="visitCount"></span></div>
               </div>
             </div>
           </div>
+
+          <div class="profile-card relative z-10 w-full px-8 py-8 anim-reveal anim-delay-3" id="guestbookCard" style="display:none">
+            <div class="text-left">
+              <div class="haunt-line mb-3" style="width:52px;height:4px;background:linear-gradient(90deg,#5573f4,#4764ec);border-radius:2px"></div>
+              <h2 style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;margin:0">guestbook ✍️</h2>
+              <p style="font-size:0.8rem;opacity:0.45;margin:4px 0 18px">leave a message — no account needed</p>
+              <div class="flex flex-col gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                  <input id="gbName" type="text" maxlength="24" placeholder="your name" style="flex:1;min-width:180px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;font-size:0.9rem;color:#fff;outline:none" />
+                  <label class="flex items-center gap-2 text-sm" style="opacity:0.65;cursor:pointer"><input type="checkbox" id="gbAnon" style="accent-color:#5573f4" /> post anonymously</label>
+                </div>
+                <textarea id="gbMsg" maxlength="280" rows="3" placeholder="say something nice…" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:10px 14px;font-size:0.9rem;color:#fff;outline:none;resize:vertical;font-family:inherit"></textarea>
+                <button id="gbSend" style="align-self:flex-start;background:linear-gradient(90deg,#5573f4,#4764ec);color:#fff;border:0;border-radius:12px;padding:10px 22px;font-size:0.9rem;font-weight:600;cursor:pointer">Post</button>
+              </div>
+              <div id="gbList" style="margin-top:22px;display:flex;flex-direction:column;gap:12px"></div>
+            </div>
+          </div>
+          <div id="gbNote" style="display:none;text-align:center;font-size:0.85rem;opacity:0.4;padding:8px 0">guestbook is disabled — the owner hasn't connected it yet.</div>
         </div>
       </section>
     </main>
-
-    <div role="button" tabindex="0" aria-label="enter" class="enter-overlay" id="enterOverlay">
-      <div class="bg"></div>
-      <div class="text"><div class="flex flex-col items-center"><div class="break-words px-6 text-center text-4xl font-medium tracking-wide"><p class="mb-2 leading-relaxed last:mb-0">enter</p></div></div></div>
-    </div>
   </div>
 
   <script>
-    // ========== ENTER OVERLAY ==========
-    const overlay=document.getElementById('enterOverlay'),bgVideo=document.getElementById('bgVideo'),bgAudio=document.getElementById('bgAudio');
-    function dismissOverlay(){overlay.classList.add('hidden-overlay');bgVideo.play().catch(()=>{});bgAudio.volume=0.3;bgAudio.play().catch(()=>{})}
-    if(window.location.hash){dismissOverlay()}else{overlay.addEventListener('click',dismissOverlay);overlay.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')dismissOverlay()})}
+// ========== BACKGROUND ==========
+    const bgVideo=document.getElementById('bgVideo');
+    bgVideo.play().catch(()=>{});
+
+    // ========== VISIT COUNT ==========
+    try {
+      const KEY='hauntVisits';
+      const today=new Date().toDateString();
+      let n=parseInt(localStorage.getItem(KEY)||'0',10)||0;
+      if(localStorage.getItem('hauntVisitsDay')!==today){n++;localStorage.setItem(KEY,String(n));localStorage.setItem('hauntVisitsDay',today)}
+      const el=document.getElementById('visitCount');
+      if(el)el.textContent='visited '+n.toLowerCase()+' time'+(n===1?'':'s');
+    }catch(e){};
 
     // ========== THEME TOGGLE ==========
     const themeToggle=document.getElementById('themeToggle');
@@ -274,13 +293,74 @@
         p.style.cssText=`position:absolute;width:4px;height:4px;border-radius:50%;background:${trailColors[i%trailColors.length]};left:50%;top:50%;z-index:30;pointer-events:none`;
         avatarWrap.appendChild(p);
         p.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px) scale(0)`,opacity:0}],{duration:600,easing:'ease-out'});
-        setTimeout(()=>p.remove(),600);
+setTimeout(()=>p.remove(),600);
       }
     });
+
+    // ========== GUESTBOOK (SUPABASE) ==========
+    const BAD_WORDS=['fuck','shit','bitch','cunt','nigger','nigga','faggot','retard','wtf','stfu','dick','pussy','slut','whore','asshole','bastard'];
+    function containsProfanity(t){const x=' '+String(t||'').toLowerCase()+' ';for(let i=0;i<BAD_WORDS.length;i++){if(x.indexOf(' '+BAD_WORDS[i]+' ')!==-1)return BAD_WORDS[i]}return null}
+    function supabaseConfig(){try{const u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');return (u&&k)?{url:u,key:k}:null}catch(e){return null}}
+    let gbClient=null,gbLoaded=false;
+    function loadSupabase(cb){
+      if(gbLoaded){cb();return}
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.js';
+      s.onload=()=>{gbLoaded=true;cb()};
+      s.onerror=()=>showToast('Could not load comments backend');
+      document.head.appendChild(s);
+    }
+    function initGuestbook(){
+      const cfg=supabaseConfig();
+      const card=document.getElementById('guestbookCard');
+      const note=document.getElementById('gbNote');
+      if(!cfg){if(note){note.style.display='block'};return}
+      if(card)card.style.display='block';
+      loadSupabase(()=>{
+        try{gbClient=window.supabase.createClient(cfg.url,cfg.key);refreshComments()}catch(e){showToast('Comments failed to load')}
+      });
+    }
+    function refreshComments(){
+      if(!gbClient)return;
+      gbClient.from('comments').select('id,name,message,is_anon,created_at').order('created_at',{ascending:false}).limit(50).then(({data,error})=>{
+        const box=document.getElementById('gbList');
+        if(error){box.innerHTML='<p style="font-size:0.8rem;opacity:0.45">could not load comments.</p>';return}
+        if(!data||!data.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.45">no messages yet — be the first!</p>';return}
+        box.innerHTML=data.map(c=>{
+          const name=c.is_anon?'anonymous':(c.name||'someone');
+          const t=new Date(c.created_at);
+          const date=t.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+          return '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 16px">'+
+            '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:4px">'+
+            '<span style="font-size:0.8rem;font-weight:600;color:#9db4ff">'+escHtml(name)+'</span>'+
+            '<span style="font-size:0.7rem;opacity:0.4">'+date+'</span></div>'+
+            '<div style="font-size:0.9rem;line-height:1.5;word-wrap:break-word">'+escHtml(c.message)+'</div></div>';
+        }).join('');
+      });
+    }
+    function escHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    function postComment(){
+      const msg=document.getElementById('gbMsg').value.trim();
+      if(!msg){showToast('Write a message first');return}
+      const bad=containsProfanity(msg);
+      if(bad){showToast('That word is not allowed');return}
+      const anon=document.getElementById('gbAnon').checked;
+      const row={message:msg,is_anon:anon,name:anon?'':document.getElementById('gbName').value.trim()};
+      if(!anon&&!row.name){showToast('Add your name or check anonymous');return}
+      gbClient.from('comments').insert(row).then(({error})=>{
+        if(error){showToast('Could not post — try again');return}
+        document.getElementById('gbMsg').value='';document.getElementById('gbName').value='';document.getElementById('gbAnon').checked=false;
+        refreshComments();
+        showToast('Message posted!');
+      });
+    }
+    document.getElementById('gbSend').addEventListener('click',postComment);
+    initGuestbook();
   </script>
 
   <script>
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/bg.js" defer></script>
 </body>
 </html>
