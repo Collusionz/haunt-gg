@@ -7,6 +7,7 @@ create table if not exists comments (
   name text not null default '',
   message text not null,
   is_anon boolean not null default false,
+  is_verified boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -15,17 +16,109 @@ create table if not exists owner (
   hash text not null
 );
 
+-- guest like rows. liker = "owner" marks the vault owner's like, guests use a
+-- random anonymous id stored in their browser.
+create table if not exists likes (
+  comment_id bigint not null references comments(id) on delete cascade,
+  liker text not null,
+  is_owner boolean not null default false,
+  created_at timestamptz not null default now(),
+  primary key (comment_id, liker)
+);
+
 insert into owner (id, hash) values (1, crypt('cz2026', gen_salt('bf')))
 on conflict (id) do nothing;
 
 alter table comments enable row level security;
 alter table owner enable row level security;
+alter table likes enable row level security;
 
 create policy "comments public read" on comments
   for select to anon using (true);
 
+-- guests may post, but never mark a comment as verified (owner badge).
 create policy "comments public insert" on comments
-  for insert to anon with check (true);
+  for insert to anon with check (is_verified = false);
+
+create policy "likes public read" on likes
+  for select to anon using (true);
+
+-- guests may insert/delete their own like rows only; the owner row is
+-- managed exclusively through owner_toggle_like below.
+create policy "likes guest insert" on likes
+  for insert to anon with check (
+    is_owner = false and
+    liker <> 'owner' and
+    length(liker) between 3 and 64
+  );
+
+create policy "likes guest delete" on likes
+  for delete to anon using (is_owner = false and liker <> 'owner');
+
+-- ---------------------------------------------------------------------------
+-- RPCs below are security definer (run as table owner -> bypass RLS) and do
+-- their own bcrypt passcode check. Grants are limited to anon.
+-- ---------------------------------------------------------------------------
+
+create or replace function verify_owner(passcode text)
+returns boolean
+language plpgsql
+security definer
+as $$
+declare h text;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  return h = crypt(coalesce(passcode, ''), h);
+end $$;
+
+create or replace function owner_post(name text, message text, is_anon boolean, passcode text)
+returns bigint
+language plpgsql
+security definer
+as $$
+declare h text;
+declare new_id bigint;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  if h <> crypt(coalesce(passcode, ''), h) then
+    raise exception 'wrong passcode';
+  end if;
+  insert into comments (name, message, is_anon, is_verified)
+  values (coalesce(name, ''), coalesce(message, ''), coalesce(is_anon, false), true)
+  returning id into new_id;
+  return new_id;
+end $$;
+
+create or replace function owner_toggle_like(cid bigint, passcode text)
+returns boolean
+language plpgsql
+security definer
+as $$
+declare h text;
+declare cnt int;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  if h <> crypt(coalesce(passcode, ''), h) then
+    raise exception 'wrong passcode';
+  end if;
+  select count(*) into cnt from likes where comment_id = cid and liker = 'owner';
+  if cnt > 0 then
+    delete from likes where comment_id = cid and liker = 'owner';
+    return false;
+  else
+    insert into likes (comment_id, liker, is_owner) values (cid, 'owner', true);
+    return true;
+  end if;
+end $$;
 
 create or replace function delete_comment(cid bigint, passcode text)
 returns void
@@ -66,6 +159,12 @@ begin
   end if;
 end $$;
 
+revoke all on function verify_owner(text) from public;
+grant execute on function verify_owner(text) to anon;
+revoke all on function owner_post(text, text, boolean, text) from public;
+grant execute on function owner_post(text, text, boolean, text) to anon;
+revoke all on function owner_toggle_like(bigint, text) from public;
+grant execute on function owner_toggle_like(bigint, text) to anon;
 revoke all on function delete_comment(bigint, text) from public;
 grant execute on function delete_comment(bigint, text) to anon;
 revoke all on function change_passcode(text, text) from public;

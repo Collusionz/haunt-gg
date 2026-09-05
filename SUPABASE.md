@@ -1,8 +1,9 @@
 # Supabase setup (guestbook)
 
-The guestbook on the home page stores comments in Supabase. Visitors can post and read
-comments; you (the owner) can delete them from `/vault` using a password that is verified
-server-side (not shipped to the browser except when you type it).
+The guestbook is an overlay you open from the **Guestbook** item in the sidebar on any
+page. Visitors can read and post comments and like entries. The site owner (you) can
+post as "verified" and delete comments from `/vault` — everything owner-scoped is
+gated by a passcode (bcrypt-hashed server-side, never shipped to the browser).
 
 ## 1. Create a project
 
@@ -14,96 +15,46 @@ server-side (not shipped to the browser except when you type it).
 
 ## 2. Run the SQL
 
-Open **SQL Editor → New query**, paste everything below, and run it:
+Open **SQL Editor → New query**, paste everything from `supa-setup.sql` (in this repo),
+and run it. The script sets up:
 
-```sql
--- pgcrypto is preinstalled on Supabase — do NOT run "create extension" (it errors).
--- do NOT add "set search_path = public" to the functions — PostgREST hides RPC
--- functions that carry a SET clause, so the vault delete/change RPCs would 404.
+- `comments` — messages, `is_anon`, `is_verified` (owner badge), timestamps
+- `owner` — a single bcrypt-hashed passcode (default `cz2026`)
+- `likes` — one row per `(comment_id, liker)`; guests use a random id, the owner uses `liker = 'owner'`
+- RLS: public read on `comments`/`likes`; insert on `comments` only with `is_verified = false`;
+  guest insert/delete on `likes` only for non-owner rows
+- RPCs (security definer, grant to `anon`):
+  - `verify_owner(passcode) -> boolean` — check the owner passcode
+  - `owner_post(name, message, is_anon, passcode) -> bigint` — post as verified owner
+  - `owner_toggle_like(cid, passcode) -> boolean` — owner like/unlike
+  - `delete_comment(cid, passcode)` — delete any comment
+  - `change_passcode(old, new)` — rotate the passcode
 
-create table if not exists comments (
-  id bigint generated always as identity primary key,
-  name text not null default '',
-  message text not null,
-  is_anon boolean not null default false,
-  created_at timestamptz not null default now()
-);
-
-create table if not exists owner (
-  id int primary key default 1 check (id = 1),
-  hash text not null
-);
-
--- default guestbook password is: cz2026
-insert into owner (id, hash) values (1, crypt('cz2026', gen_salt('bf')))
-on conflict (id) do nothing;
-
-alter table comments enable row level security;
-alter table owner enable row level security;
-
-create policy "comments public read" on comments
-  for select to anon using (true);
-
-create policy "comments public insert" on comments
-  for insert to anon with check (true);
-
-create or replace function delete_comment(cid bigint, passcode text)
-returns void
-language plpgsql
-security definer
-as $$
-declare h text;
-begin
-  select hash into h from owner where id = 1;
-  if h is null or h = '' then
-    raise exception 'owner not configured';
-  end if;
-  if h = crypt(passcode, h) then
-    delete from comments where id = cid;
-  else
-    raise exception 'wrong passcode';
-  end if;
-end $$;
-
-create or replace function change_passcode(old text, new text)
-returns void
-language plpgsql
-security definer
-as $$
-declare h text;
-begin
-  select hash into h from owner where id = 1;
-  if h is null or h = '' or h = crypt(old, h) then
-    if new is null or length(new) < 4 then
-      raise exception 'password too short';
-    end if;
-    update owner set hash = crypt(new, gen_salt('bf')) where id = 1;
-  else
-    raise exception 'wrong password';
-  end if;
-end $$;
-
-revoke all on function delete_comment(bigint, text) from public;
-grant execute on function delete_comment(bigint, text) to anon;
-revoke all on function change_passcode(text, text) from public;
-grant execute on function change_passcode(text, text) to anon;
-```
+> Do NOT run `create extension pgcrypto` (it's preinstalled) and do NOT add
+> `set search_path = public` to the functions — PostgREST hides RPC functions that
+> carry a `SET` clause, so the RPCs would 404.
 
 ## 3. Connect the site
 
 1. Open `https://cz-navy.vercel.app/vault` and unlock it (default passcode `cz2026`).
 2. In **Settings → Supabase connection**, paste the **Project URL** and **anon public** key, save.
-3. In **Guestbook moderation**, enter the guestbook password (`cz2026` by default) and unlock —
-   you can now delete comments. Use **Change** in Settings to rotate that password.
+   The page reloads so the guestbook picks up the fresh config.
+3. In **Guestbook moderation**, sign in with the guestbook passcode (`cz2026` by default) to
+   unlock deleting comments. Use **Change** in Settings to rotate that passcode.
 
-That's it — visitors can now read and post comments, and only the password lets you delete.
+## How the guestbook behaves
+
+- **Owner post/sign-in**: open the guestbook → **Sign in** with the passcode. Signed-in, your
+  posts get the "✓ official" badge and your likes use the dedicated owner row. The passcode is
+  kept in `sessionStorage` only while the tab is open.
+- **Guest likes**: liked entries are remembered per-browser via a random id in localStorage —
+  no account needed, guests can never fake an owner like or the verified badge.
+- **Profanity** is filtered on the client before posting; it is not a substitute for
+  moderation, which is why the delete flow exists.
 
 ## Security notes
 
-- RLS lets anyone read (`select`) and post (`insert`) — that's intended for a public guestbook.
-- Deletes go through the security-definer `delete_comment(...)` function, which bcrypt-compares
-  the password on the server. The password itself is only kept in your browser's `sessionStorage`
-  while you're on `/vault`.
+- RLS lets anyone read `comments`/`likes` and post comments — that's intended for a public guestbook.
+- Everything owner-scoped (verified posts, owner like, deletes, passcode change) goes through
+  security-definer RPCs that bcrypt-compare the passcode on the server.
 - The anon key is meant to be public. Never ship the **service_role** key in the browser.
-- Profanity is filtered on the client before posting; it is not a substitute for moderation,
-  which is why the delete flow exists.

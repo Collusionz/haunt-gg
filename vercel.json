@@ -11,7 +11,7 @@
     { "src": "/widgets", "dest": "/widgets.html" },
     { "src": "/projects", "dest": "/projects.html" },
     { "src": "/about", "dest": "/about.html" },
-    { "src": "/skills", "dest": "/skills.html" },
+    { "src": "/skills", "status": 404 },
     { "src": "/gallery", "dest": "/gallery.html" },
     { "src": "/music", "dest": "/music.html" },
     { "src": "/friends", "dest": "/friends.html" },

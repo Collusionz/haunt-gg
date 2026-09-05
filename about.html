@@ -68,8 +68,7 @@
 <body>
   <nav class="side-nav">
     <a href="/"><span class="nav-line"></span>Home</a>
-    <a href="/about" class="active"><span class="nav-line"></span>About</a>
-    <a href="/skills"><span class="nav-line"></span>Skills</a>
+<a href="/about" class="active"><span class="nav-line"></span>About</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -77,16 +76,17 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
     <a href="/about" class="active">About</a>
-    <a href="/skills">Skills</a>
     <a href="/music">Music</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;color:rgba(255,255,255,0.4);font-size:0.625rem;font-weight:300;letter-spacing:0.05em;cursor:pointer">Guestbook</button>
   </nav>
   <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -211,5 +211,6 @@
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 <script src="/bg.js" defer></script>
+<script src="/guestbook.js" defer></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+?<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -44,10 +44,9 @@
   </style>
 </head>
 <body class="min-h-full flex flex-col">
-  <nav class="side-nav">
+<nav class="side-nav">
     <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/about"><span class="nav-line"></span>About</a>
-    <a href="/skills"><span class="nav-line"></span>Skills</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -55,11 +54,11 @@
 
     <a href="/widgets" class="active"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
     <a href="/about">About</a>
-    <a href="/skills">Skills</a>
     <a href="/music">Music</a>
     <a href="/gallery">Gallery</a>
     <a href="/projects">Projects</a>
@@ -67,6 +66,7 @@
     
     <a href="/widgets" class="active">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;color:rgba(255,255,255,0.4);font-size:0.625rem;font-weight:300;letter-spacing:0.05em;cursor:pointer">Guestbook</button>
   </nav>
   <div class="dark contents">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
@@ -79,34 +79,14 @@
           <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">General Info</p></div>
           <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
         </header>
-        <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 sm:grid-rows-[minmax(5.5rem,auto)_minmax(5.5rem,auto)]">
-          <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:1/span 1">
-            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-              <div class="relative flex h-full items-center gap-3 px-4 py-3" id="discordWidget">
-                <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
-                <div class="flex min-w-0 flex-1 flex-col gap-2">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                  <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                  <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="min-w-0 h-full" style="grid-column:2/span 1;grid-row:1/span 2;min-height:13rem">
-            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-              <div class="relative flex h-full items-center justify-center px-4 py-3" id="valorantWidget">
+<div class="w-full">
+          <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+            <div class="relative flex items-center gap-3 px-4 py-3" id="discordWidget">
+              <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
+              <div class="flex min-w-0 flex-1 flex-col gap-2">
                 <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-              </div>
-            </div>
-          </div>
-          <div class="min-w-0 h-full" style="grid-column:1/span 1;grid-row:2/span 1">
-            <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
-              <div class="relative flex h-full items-center gap-3 px-4 py-3" id="robloxWidget">
-                <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
-                <div class="flex min-w-0 flex-1 flex-col gap-2">
-                  <div class="skeleton h-4 w-32 max-w-full rounded-md"></div>
-                  <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
-                </div>
+                <div class="skeleton h-3 w-44 max-w-full rounded-md"></div>
+                <div class="skeleton h-3 w-24 max-w-full rounded-md"></div>
               </div>
             </div>
           </div>
@@ -146,12 +126,8 @@
 
   <script>
     const DISCORD_USER_ID = '704140288716701737';
-    const ROBLOX_USERNAME = 'tripp_Thebest05';
     const LASTFM_USERNAME = 'collusionz';
     const LASTFM_API_KEY = '2e5b5823d8f5c2416b39bd8d26a6aa4f';
-    const VALORANT_NAME = 'collusionz';
-    const VALORANT_TAG = 'rival';
-    const VALORANT_KEY = 'HDEV-4ad22d5b-8a1e-4971-9283-129ae2890d55';
     const TIMEZONE = 'Asia/Singapore';
 
     function statusColor(s){return{online:'#23A55A',idle:'#F0B232',dnd:'#F23F43',offline:'#80848E'}[s]||'#80848E'}
@@ -192,8 +168,6 @@
       ws.onerror=()=>{clearTimeout(timeout);showError('discordWidget','Unable to load')};
     }
 
-    function renderRoblox(userId,username,displayName,avatarUrl){const el=document.getElementById('robloxWidget');el.innerHTML=`<img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayName||username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@${username}</div><a href="https://roblox.com/users/${userId}/profile" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none;margin-top:2px">View Profile</a></div>`}
-    function loadRoblox(){fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(user=>{if(user&&user.Id){fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.Id}&size=150x150&format=Png&isCircular=false`).then(r=>r.json()).then(t=>{const thumb=t.data&&t.data[0]?t.data[0].imageUrl:'';renderRoblox(user.Id,user.Name,user.DisplayName,thumb)}).catch(()=>renderRoblox(user.Id,user.Name,user.DisplayName,''))}else showError('robloxWidget','User not found')}).catch(()=>showError('robloxWidget','Unable to load'))}
 
     function renderTime(){const el=document.getElementById('timeWidget'),now=new Date();const opts={timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true};const dOpts={timeZone:TIMEZONE,weekday:'short',month:'short',day:'numeric'};const timeStr=now.toLocaleTimeString('en-US',opts),dateStr=now.toLocaleDateString('en-US',dOpts);const tzParts=now.toLocaleTimeString('en-US',{timeZone:TIMEZONE,hour:'numeric',minute:'numeric',second:'numeric',hour12:false});const[h,m,s]=tzParts.split(':').map(Number);const hDeg=((h%12)+m/60)*30,mDeg=(m+s/60)*6,sDeg=s*6;let marks='';for(let i=0;i<12;i++)marks+=`<div style="position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3);top:4px;left:calc(50% - 1px);transform-origin:bottom center;transform:translateX(-50%) rotate(${i*30}deg)"></div>`;el.innerHTML=`<div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center"><div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);position:relative;flex-shrink:0">${marks}<div style="position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);z-index:5"></div><div style="position:absolute;bottom:50%;left:50%;width:3px;height:22px;background:#fff;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${hDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:2px;height:30px;background:rgba(255,255,255,0.8);border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${mDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:1px;height:33px;background:#ff4466;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${sDeg}deg)"></div></div><div style="text-align:left"><div style="font-size:1.1rem;font-weight:600">${timeStr}</div><div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div><div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div></div></div>`}
     function loadTime(){renderTime();setInterval(renderTime,1000)}
@@ -205,16 +179,14 @@
     function renderLastfm(recentData,userInfo){const el=document.getElementById('lastfmWidget');const tracks=recentData.recenttracks.track;if(!tracks||tracks.length===0){showError('lastfmWidget','No recent tracks');return}const nowPlaying=tracks.find(t=>t['@attr']&&t['@attr'].nowplaying);const playcount=userInfo?userInfo.playcount:'—';const artistCount=userInfo?userInfo.artist_count:'—';let tracksHtml='';const displayTracks=nowPlaying?tracks:tracks.slice(0,5);displayTracks.slice(0,5).forEach((t,i)=>{const isNP=t['@attr']&&t['@attr'].nowplaying;const img=t.image&&t.image.length>0?t.image[t.image.length-1]['#text']:'';const artist=typeof t.artist==='object'?(t.artist['#text']||''):(t.artist||'');const name=t.name||'';const time=t.date?(t.date['#text']||''):'';tracksHtml+=`<div style="display:flex;align-items:center;gap:10px;padding:6px 14px;${i<4?'border-bottom:1px solid rgba(255,255,255,0.05);':''}"><img src="${img}" style="width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333';this.src=''" /><div style="flex:1;min-width:0"><div style="font-size:0.85rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff">${name}</div><div style="font-size:0.75rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${artist}</div></div><div style="font-size:0.7rem;color:#6B7280;flex-shrink:0;white-space:nowrap">${isNP?'<span style="color:#1DB954">● now playing</span>':time}</div></div>`});el.innerHTML=`<div style="display:flex;flex-direction:column;height:100%"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05)"><div style="flex:1;min-width:0"><div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px">Last.fm</div><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${LASTFM_USERNAME}</div><div style="font-size:0.75rem;color:#9CA3AF;margin-top:1px">${playcount} scrobbles · ${artistCount} artists</div></div><a href="https://www.last.fm/user/${LASTFM_USERNAME}" target="_blank" rel="noopener" style="font-size:0.7rem;color:#5573f4;text-decoration:none;flex-shrink:0">View Profile</a></div><div style="flex:1;overflow:hidden">${tracksHtml}</div></div>`}
     function loadLastfm(){const recentUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;const infoUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json`;Promise.all([fetch(recentUrl).then(r=>r.json()),fetch(infoUrl).then(r=>r.json())]).then(([recent,info])=>{if(recent.recenttracks&&recent.recenttracks.track&&recent.recenttracks.track.length>0){renderLastfm(recent,info.user)}else showError('lastfmWidget','No recent tracks')}).catch(()=>showError('lastfmWidget','Unable to load'))}
 
-    const RANK_ICONS={'Iron 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/0/smallicon.png','Iron 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/1/smallicon.png','Iron 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/2/smallicon.png','Bronze 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/3/smallicon.png','Bronze 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/4/smallicon.png','Bronze 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/5/smallicon.png','Silver 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/6/smallicon.png','Silver 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/7/smallicon.png','Silver 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/8/smallicon.png','Gold 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/9/smallicon.png','Gold 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/10/smallicon.png','Gold 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/11/smallicon.png','Platinum 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/12/smallicon.png','Platinum 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/13/smallicon.png','Platinum 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/14/smallicon.png','Diamond 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/15/smallicon.png','Diamond 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/16/smallicon.png','Diamond 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/17/smallicon.png','Ascendant 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/18/smallicon.png','Ascendant 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/19/smallicon.png','Ascendant 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/20/smallicon.png','Immortal 1':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/21/smallicon.png','Immortal 2':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/22/smallicon.png','Immortal 3':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/23/smallicon.png','Radiant':'https://media.valorant-api.com/competitivetiers/03621f52-4218-4eec-82d6-b5beb0d48c9e/24/smallicon.png'};
-    function renderValorant(data){const el=document.getElementById('valorantWidget'),mmr=data.data;const rank=mmr.current_data?.currenttierpatched||'Unranked',rr=mmr.current_data?.ranking_in_tier||0,peak=mmr.highest_rank?.tierpatched||rank,elo=mmr.current_data?.elo||0;const rankIcon=RANK_ICONS[rank]||RANK_ICONS['Iron 1'];el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px"><img src="${rankIcon}" style="width:56px;height:56px;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'" /><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:0.95rem">${VALORANT_NAME}#${VALORANT_TAG}</div><div style="font-size:0.85rem;color:#9CA3AF;margin-top:2px">${rank}</div><div style="font-size:0.75rem;color:#6B7280;margin-top:1px">${rr} RR · ELO ${elo}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:0.7rem;color:#6B7280">Peak</div><div style="font-size:0.8rem;color:#9CA3AF;font-weight:500">${peak}</div></div></div><a href="/valorant" style="display:block;text-align:center;padding:4px;font-size:0.75rem;color:#5573f4;text-decoration:none;border-top:1px solid rgba(255,255,255,0.05)">View Full Stats</a>`}
-    function loadValorant(){const regions=['ap','na','eu','kr'];let found=false;function tryRegion(idx){if(idx>=regions.length||found)return;fetch(`https://api.henrikdev.xyz/valorant/v2/mmr/${regions[idx]}/${VALORANT_NAME}/${VALORANT_TAG}`,{headers:{'Authorization':VALORANT_KEY}}).then(r=>{if(!r.ok)throw new Error('not found');return r.json()}).then(d=>{if(d&&d.data&&!found){found=true;renderValorant(d)}}).catch(()=>tryRegion(idx+1))}tryRegion(0)}
 
-    loadDiscord();loadRoblox();loadTime();loadWeather();loadLastfm();loadValorant();
+    loadDiscord();loadTime();loadWeather();loadLastfm();
   </script>
 
   <script>
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 <script src="/bg.js" defer></script>
+<script src="/guestbook.js" defer></script>
 </body>
 </html>

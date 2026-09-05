@@ -49,11 +49,10 @@
     .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
     .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
 
-    /* Main Content */
+/* Main Content */
     .main-content {
-      padding-left: 80px;
       padding-bottom: 90px;
-      padding: 40px 40px 100px 80px;
+      padding: 40px 40px 100px 120px;
       min-height: 100vh;
     }
 
@@ -265,9 +264,9 @@
       color: rgba(255, 255, 255, 0.5);
     }
 
-    /* Footer */
+/* Footer */
     .site-footer {
-      margin-left: 80px;
+      margin-left: 120px;
       padding: 30px 40px;
       text-align: center;
       color: rgba(255, 255, 255, 0.25);
@@ -307,10 +306,9 @@
   </video>
 
   <!-- Sidebar -->
-  <nav class="side-nav">
+<nav class="side-nav">
     <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/about"><span class="nav-line"></span>About</a>
-    <a href="/skills"><span class="nav-line"></span>Skills</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery" class="active"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -318,11 +316,11 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
     <a href="/about">About</a>
-    <a href="/skills">Skills</a>
     <a href="/music">Music</a>
     <a href="/gallery" class="active">Gallery</a>
     <a href="/projects">Projects</a>
@@ -330,6 +328,7 @@
     
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;color:rgba(255,255,255,0.4);font-size:0.625rem;font-weight:300;letter-spacing:0.05em;cursor:pointer">Guestbook</button>
   </nav>
 
   <!-- Main Content -->
@@ -436,7 +435,7 @@
       try{
         var items=JSON.parse(localStorage.getItem('vaultGallery')||'[]');
         var catMap={'screenshots':'Screenshots','art':'Art','irl':'IRL','memes':'Memes'};
-        items.forEach(function(it){
+items.forEach(function(it){
           var el=document.createElement('div');
           el.className='gallery-card';
           el.setAttribute('data-category',it.category||'screenshots');
@@ -448,8 +447,14 @@
           }else{
             bg='linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')';
           }
-          var art=it.img?'<img src="'+it.img+'" alt="'+it.title+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.remove()"/>':'';
-          el.innerHTML='<div class="card-bg" style="background:'+bg+';width:100%;height:100%;position:relative">'+art+'</div><div class="card-overlay"><h3>'+(it.title||'Untitled')+'</h3><span>'+(it.date||'')+'</span></div>';
+          var isVid=(it.img||'').match(/\.(mp4|webm|ogg)([?#]|$)/i);
+          var media;
+          if(isVid){
+            media='<video src="'+it.img+'" muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>';
+          }else{
+            media='<img src="'+it.img+'" alt="'+it.title+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.remove()"/>';
+          }
+          el.innerHTML='<div class="card-bg" style="background:'+bg+';width:100%;height:100%;position:relative">'+media+'</div><div class="card-overlay"><h3>'+(it.title||'Untitled')+'</h3><span>'+(it.date||'')+'</span></div>';
           grid.appendChild(el);
         });
       }catch(e){}
@@ -499,16 +504,26 @@
     const lightboxDate = document.getElementById('lightboxDate');
     const lightboxClose = document.getElementById('lightboxClose');
 
-    cards.forEach(card => {
+cards.forEach(card => {
       card.addEventListener('click', () => {
         const bg = card.querySelector('.card-bg');
-        const imgEl = bg.querySelector('img');
+        const mediaEl = bg.querySelector('img, video');
         lightboxBg.innerHTML = '';
-        if (imgEl) {
-          const clone = imgEl.cloneNode(false);
-          clone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
-          lightboxBg.style.background = 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.25))';
-          lightboxBg.appendChild(clone);
+        if (mediaEl) {
+          if (mediaEl.tagName === 'VIDEO') {
+            const clone = mediaEl.cloneNode(false);
+            clone.controls = true;
+            clone.autoplay = true;
+            clone.loop = true;
+            clone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;';
+            lightboxBg.style.background = '#000';
+            lightboxBg.appendChild(clone);
+          } else {
+            const clone = mediaEl.cloneNode(false);
+            clone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+            lightboxBg.style.background = 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.25))';
+            lightboxBg.appendChild(clone);
+          }
         } else {
           lightboxBg.style.background = bg.style.background;
         }
@@ -533,7 +548,9 @@
       }
     });
 
-    function closeLightbox() {
+function closeLightbox() {
+      const v=lightboxBg.querySelector('video');
+      if(v){v.pause();v.removeAttribute('controls')}
       lightbox.classList.remove('active');
       document.body.style.overflow = '';
     }
@@ -543,5 +560,6 @@
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 <script src="/bg.js" defer></script>
+<script src="/guestbook.js" defer></script>
 </body>
 </html>
