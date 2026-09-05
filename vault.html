@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>home</title>
+  <meta name="description" content="personal website" />
+  <meta name="theme-color" content="#5573f4" />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{satoshi:['"Satoshi"','sans-serif']}}}}</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;padding:0;font-family:'Satoshi',sans-serif;background:#000;color:#ccd8ec;min-height:100vh;overflow-x:hidden}
+    .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+    @media(min-width:768px){.side-nav{display:flex}}
+    .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+    .side-nav a:hover{color:rgba(255,255,255,0.7)}
+    .side-nav a.active{color:#fff}
+    .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+    .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+    .side-nav a.active .nav-line{width:16px;background:#fff}
+    .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+    @media(min-width:768px){.mobile-nav{display:none}}
+    .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+    .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+    @media(min-width:768px){#mainContent{padding-left:80px}}
+    .card{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.09);border-radius:28px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:28px}
+    .input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 16px;color:#fff;font-family:'Satoshi',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s}
+    .input:focus{border-color:#5573f4}
+    .input::placeholder{color:rgba(255,255,255,0.3)}
+    select.input{appearance:none}
+    label.fld{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);margin:14px 0 6px}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:rgba(85,115,244,0.9);color:#fff;border:none;border-radius:14px;padding:12px 20px;font-family:'Satoshi',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .btn:hover{background:#5a7bfc;transform:translateY(-1px)}
+    .btn-secondary{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12)}
+    .btn-secondary:hover{background:rgba(255,255,255,0.14)}
+    .btn-danger{background:rgba(255,70,85,0.85)}
+    .btn-danger:hover{background:#ff5561}
+    .item-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:10px}
+    .item-swatch{width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#4764ec,#ff4466)}
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:8px 20px;border-radius:12px;background:rgba(71,100,236,0.9);color:#fff;font-size:0.8rem;font-weight:500;backdrop-filter:blur(8px);z-index:200;opacity:0;transition:all 0.3s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .header-accent{width:4px;height:32px;border-radius:2px;background:linear-gradient(180deg,#5573f4,#4764ec);flex-shrink:0}
+    body.light{background:#f5f5f5;color:#1a1a2e}
+  </style>
+</head>
+<body>
+  <nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/about"><span class="nav-line"></span>About</a>
+    <a href="/skills"><span class="nav-line"></span>Skills</a>
+    <a href="/music"><span class="nav-line"></span>Music</a>
+    <a href="/gallery"><span class="nav-line"></span>Gallery</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/friends"><span class="nav-line"></span>Friends</a>
+    <a href="/awards"><span class="nav-line"></span>Awards</a>
+    <a href="/widgets"><span class="nav-line"></span>Widgets</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+  </nav>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/skills">Skills</a>
+    <a href="/music">Music</a>
+    <a href="/gallery">Gallery</a>
+    <a href="/projects">Projects</a>
+    <a href="/friends">Friends</a>
+    <a href="/awards">Awards</a>
+    <a href="/widgets">Widgets</a>
+    <a href="/valorant">Valorant</a>
+  </nav>
+  <div id="toast" class="toast"></div>
+
+  <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
+    <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+  </div>
+
+  <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
+    <section class="relative w-full max-w-2xl mx-auto py-16 px-6">
+
+      <div id="lockScreen">
+        <div class="card text-center" style="padding:48px 36px">
+          <div style="font-size:3rem;margin-bottom:12px">🔒</div>
+          <h1 style="font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-0.02em">restricted</h1>
+          <p style="font-size:0.85rem;opacity:0.5;margin-top:6px;margin-bottom:24px">this area is only for the owner</p>
+          <input type="password" id="passInput" class="input" placeholder="enter passcode" style="max-width:280px;text-align:center;margin:0 auto" />
+          <div style="margin-top:16px">
+            <button class="btn" id="unlockBtn">Unlock</button>
+          </div>
+          <p id="lockErr" style="font-size:0.75rem;color:#ff4466;margin-top:12px;min-height:16px"></p>
+        </div>
+      </div>
+
+      <div id="panelScreen" style="display:none">
+        <div class="flex items-center gap-3" style="margin-bottom:24px">
+          <div class="header-accent"></div>
+          <div>
+            <h1 style="font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin:0">Control Room</h1>
+            <p style="font-size:0.8rem;opacity:0.5;margin:2px 0 0">nobody can see this page</p>
+          </div>
+          <button class="btn btn-secondary" id="lockBtn" style="margin-left:auto;padding:10px 16px">Lock</button>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:16px">🖼️ Gallery Manager</h2>
+          <label class="fld">Title</label>
+          <input class="input" id="gTitle" placeholder="e.g. Valorant Ace" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Category</label>
+              <select class="input" id="gCategory">
+                <option value="screenshots">Screenshots</option>
+                <option value="art">Art</option>
+                <option value="irl">IRL</option>
+                <option value="memes">Memes</option>
+              </select>
+            </div>
+            <div>
+              <label class="fld">Date</label>
+              <input class="input" id="gDate" placeholder="e.g. Sep 2026" />
+            </div>
+          </div>
+          <label class="fld">Image URL (optional — leave empty for a gradient card)</label>
+          <input class="input" id="gImg" placeholder="https://... .png / .jpg" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Gradient start</label>
+              <input type="color" class="input" id="gBg1" value="#4764ec" style="height:46px;padding:4px" />
+            </div>
+            <div>
+              <label class="fld">Gradient end</label>
+              <input type="color" class="input" id="gBg2" value="#ff4466" style="height:46px;padding:4px" />
+            </div>
+          </div>
+          <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
+          <div id="galleryList" style="margin-top:20px"></div>
+        </div>
+
+        <div class="card">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:16px">⌨️ Typing Phrases</h2>
+          <p style="font-size:0.8rem;opacity:0.5;margin-bottom:10px">extra phrases that appear in the home page typing animation</p>
+          <div class="flex gap-2">
+            <input class="input" id="pPhrase" placeholder="e.g. eating at 2am" />
+            <button class="btn" id="addPhraseBtn" style="flex-shrink:0">Add</button>
+          </div>
+          <div id="phraseList" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const PASSCODE = 'cz2026';
+    const PASS_HINT = ''; // keep empty
+
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+    function isAuthed(){return sessionStorage.getItem('vaultAuth')==='1'}
+
+    function show(lock,panel){document.getElementById('lockScreen').style.display=lock?'block':'none';document.getElementById('panelScreen').style.display=panel?'block':'none'}
+
+    function loadGallery(){return JSON.parse(localStorage.getItem('vaultGallery')||'[]')}
+    function saveGallery(list){localStorage.setItem('vaultGallery',JSON.stringify(list))}
+    function loadPhrases(){return JSON.parse(localStorage.getItem('vaultPhrases')||'[]')}
+    function savePhrases(list){localStorage.setItem('vaultPhrases',JSON.stringify(list))}
+
+    function renderGalleryList(){
+      const list=loadGallery();
+      const box=document.getElementById('galleryList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom items yet</p>';return}
+      box.innerHTML=list.map((it,i)=>
+        '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+it.bg1+','+it.bg2+')"></div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+it.title+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+it.category+' · '+(it.date||'no date')+'</div></div>'+
+        '<button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div>'
+      ).join('');
+    }
+
+    window.removeGalleryItem=function(i){
+      const list=loadGallery();list.splice(i,1);saveGallery(list);renderGalleryList();showToast('Item deleted');
+    };
+
+    function renderPhraseList(){
+      const list=loadPhrases();
+      const box=document.getElementById('phraseList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom phrases yet</p>';return}
+      box.innerHTML=list.map((p,i)=>
+        '<div class="item-row"><div style="flex:1;min-width:0;font-size:0.9rem;color:#fff">“'+p+'”</div>'+
+        '<button class="btn btn-danger" onclick="removePhrase('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div>'
+      ).join('');
+    }
+
+    window.removePhrase=function(i){
+      const list=loadPhrases();list.splice(i,1);savePhrases(list);renderPhraseList();showToast('Phrase removed');
+    };
+
+    document.getElementById('unlockBtn').addEventListener('click',()=>{
+      const v=document.getElementById('passInput').value;
+      if(v===PASSCODE){sessionStorage.setItem('vaultAuth','1');show(false,true);renderGalleryList();renderPhraseList();document.getElementById('lockErr').textContent=''}
+      else{document.getElementById('lockErr').textContent='wrong passcode'}
+    });
+    document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('unlockBtn').click()});
+
+    document.getElementById('lockBtn').addEventListener('click',()=>{
+      sessionStorage.removeItem('vaultAuth');document.getElementById('passInput').value='';show(true,false);
+    });
+
+    document.getElementById('addGalleryBtn').addEventListener('click',()=>{
+      const title=document.getElementById('gTitle').value.trim();
+      if(!title){showToast('Title required');return}
+      const item={
+        title:title,
+        category:document.getElementById('gCategory').value,
+        date:document.getElementById('gDate').value.trim(),
+        img:document.getElementById('gImg').value.trim(),
+        bg1:document.getElementById('gBg1').value,
+        bg2:document.getElementById('gBg2').value
+      };
+      const list=loadGallery();list.unshift(item);saveGallery(list);
+      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';
+      renderGalleryList();showToast('Added to gallery');
+    });
+
+    document.getElementById('addPhraseBtn').addEventListener('click',()=>{
+      const v=document.getElementById('pPhrase').value.trim();
+      if(!v){showToast('Phrase required');return}
+      const list=loadPhrases();list.push(v);savePhrases(list);
+      document.getElementById('pPhrase').value='';
+      renderPhraseList();showToast('Phrase added');
+    });
+
+    if(isAuthed()){show(false,true);renderGalleryList();renderPhraseList()}else{show(true,false)}
+  </script>
+</body>
+</html>

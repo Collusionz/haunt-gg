@@ -48,7 +48,6 @@
     <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/about"><span class="nav-line"></span>About</a>
     <a href="/skills"><span class="nav-line"></span>Skills</a>
-    <a href="/gaming"><span class="nav-line"></span>Gaming</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -61,7 +60,6 @@
     <a href="/">Home</a>
     <a href="/about">About</a>
     <a href="/skills">Skills</a>
-    <a href="/gaming">Gaming</a>
     <a href="/music">Music</a>
     <a href="/gallery">Gallery</a>
     <a href="/projects">Projects</a>
@@ -143,9 +141,6 @@
           </div>
         </div>
       </div>
-      <footer class="relative flex w-full justify-center py-8 px-4 text-white" style="margin-top:48px">
-        <p class="text-sm opacity-40">made with care</p>
-      </footer>
     </main>
   </div>
 
@@ -173,7 +168,29 @@
       let aImg='';if(spotify&&spotify.album_art_url){aImg=`<img src="${spotify.album_art_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}else if(activities.length>0&&activities[0].assets?.large_image){let img=activities[0].assets.large_image;if(img.startsWith('mp:external'))img='https://media.discordapp.net/external/'+img.replace('mp:external/','');aImg=`<img src="${img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}
       el.innerHTML=`<img src="${av}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name||u.username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${detail}</div></div>${aImg}<div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${statusColor(status)}"></div>`
     }
-    function loadDiscord(){fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`).then(r=>r.json()).then(d=>{if(d.success)renderDiscord(d.data);else showError('discordWidget','Join discord.gg/lanyard to enable')}).catch(()=>showError('discordWidget','Unable to load'))}
+    function loadDiscord(){
+      const renderOrError=d=>{if(d&&d.success){renderDiscord(d.data)}else{showError('discordWidget','Not found — join discord.gg/lanyard to enable')}};
+      fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`)
+        .then(r=>r.json()).then(renderOrError)
+        .catch(()=>loadDiscordWS());
+    }
+    function loadDiscordWS(){
+      if(!window.WebSocket){showError('discordWidget','Unable to load');return}
+      let ws;
+      try{ws=new WebSocket('wss://api.lanyard.rest/socket')}catch(e){showError('discordWidget','Unable to load');return}
+      const timeout=setTimeout(()=>{try{ws.close()}catch(e){};showError('discordWidget','Unable to load')},6000);
+      ws.onopen=()=>{try{ws.send(JSON.stringify({op:2,d:{subscribe_to_ids:[DISCORD_USER_ID]}}))}catch(e){}};
+      ws.onmessage=ev=>{
+        try{
+          const m=JSON.parse(ev.data||'{}');
+          if(m.op===2){
+            const d=(m.d&&(m.d[DISCORD_USER_ID]||(m.d.data&&m.d.data[DISCORD_USER_ID])));
+            if(d){clearTimeout(timeout);renderDiscord(d);try{ws.close()}catch(e){}}
+          }
+        }catch(e){}
+      };
+      ws.onerror=()=>{clearTimeout(timeout);showError('discordWidget','Unable to load')};
+    }
 
     function renderRoblox(userId,username,displayName,avatarUrl){const el=document.getElementById('robloxWidget');el.innerHTML=`<img src="${avatarUrl}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayName||username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">@${username}</div><a href="https://roblox.com/users/${userId}/profile" target="_blank" rel="noopener" style="font-size:0.75rem;color:#5573f4;text-decoration:none;margin-top:2px">View Profile</a></div>`}
     function loadRoblox(){fetch(`https://api.roblox.com/users/get-by-username?username=${ROBLOX_USERNAME}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(user=>{if(user&&user.Id){fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${user.Id}&size=150x150&format=Png&isCircular=false`).then(r=>r.json()).then(t=>{const thumb=t.data&&t.data[0]?t.data[0].imageUrl:'';renderRoblox(user.Id,user.Name,user.DisplayName,thumb)}).catch(()=>renderRoblox(user.Id,user.Name,user.DisplayName,''))}else showError('robloxWidget','User not found')}).catch(()=>showError('robloxWidget','Unable to load'))}

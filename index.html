@@ -72,7 +72,6 @@
     <a href="/" class="active"><span class="nav-line"></span>Home</a>
     <a href="/about"><span class="nav-line"></span>About</a>
     <a href="/skills"><span class="nav-line"></span>Skills</a>
-    <a href="/gaming"><span class="nav-line"></span>Gaming</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -85,7 +84,6 @@
     <a href="/" class="active">Home</a>
     <a href="/about">About</a>
     <a href="/skills">Skills</a>
-    <a href="/gaming">Gaming</a>
     <a href="/music">Music</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
@@ -125,7 +123,6 @@
                       <span class="relative inline-block font-semibold tracking-tight text-3xl username-glow" id="usernameText">collusionz</span>
                       <span id="greetingBadge" class="stat-badge anim-delay-2" style="opacity:0"></span>
                     </div>
-                    <div class="flex flex-wrap gap-2 mt-1" id="statBadges"></div>
                   </div>
                 </div>
                 <div class="break-words w-full text-center text-xl" style="color:#5573f4">
@@ -135,15 +132,11 @@
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
                 <div class="flex justify-center gap-3 flex-wrap" id="socialLinks"></div>
-                <div class="flex justify-center gap-3 flex-wrap mt-1" id="extraStats"></div>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <footer class="relative flex w-full justify-center py-8 px-4 text-white">
-        <p class="text-sm opacity-40">made with care</p>
-      </footer>
     </main>
 
     <div role="button" tabindex="0" aria-label="enter" class="enter-overlay" id="enterOverlay">
@@ -194,16 +187,15 @@
       trailIdx++;
     });
 
-    // ========== GREETING ==========
-    function getGreeting(){const h=new Date().getHours();if(h<12)return'Good morning ☀️';if(h<17)return'Good afternoon 🌤️';if(h<21)return'Good evening 🌙';return'Late night 🦉'}
+    // ========== GREETING (Singapore time) ==========
+    function sgHour(){const parts=new Date().toLocaleTimeString('en-US',{timeZone:'Asia/Singapore',hour:'numeric',hour12:false});return parseInt(parts,10)%24}
+    function getGreeting(){const h=sgHour();if(h<12)return'Good morning ☀️';if(h<17)return'Good afternoon 🌤️';if(h<21)return'Good evening 🌙';return'Late night 🦉'}
     document.getElementById('greetingBadge').textContent=getGreeting();
     setTimeout(()=>document.getElementById('greetingBadge').style.opacity='1',200);
 
-    // ========== STAT BADGES ==========
-    document.getElementById('statBadges').innerHTML=['🎮 Gamer','⚡ Active','🎵 Music Lover','💻 Developer'].map(t=>`<span class="stat-badge">${t}</span>`).join('');
-
     // ========== TYPING ANIMATION ==========
     const typingPhrases=['building cool stuff','playing valorant','listening to music','coding at 3am','exploring new things','grinding ranked','hanging out on discord'];
+    try{const extra=JSON.parse(localStorage.getItem('vaultPhrases')||'[]');if(Array.isArray(extra)&&extra.length)typingPhrases.push(...extra)}catch(e){}
     const typingEl=document.getElementById('typingText');
     let phraseIdx=0,charIdx=0,isDeleting=false;
     function typeLoop(){
@@ -241,22 +233,6 @@
       {icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>',link:'https://twitter.com/',label:'Twitter'},
     ];
     document.getElementById('socialLinks').innerHTML=socials.map(s=>`<a href="${s.link}" target="_blank" rel="noopener" class="social-icon" title="${s.label}">${s.icon}</a>`).join('');
-
-    // ========== CLICK COUNTER ==========
-    let clicks=parseInt(localStorage.getItem('clicks')||'0');
-    document.addEventListener('click',()=>{clicks++;localStorage.setItem('clicks',clicks)});
-    document.getElementById('extraStats').innerHTML=`<span class="stat-badge" id="clickBadge">🖱️ ${clicks} clicks</span><span class="stat-badge" id="timeBadge">⏱️ 0s</span>`;
-
-    // ========== TIME ON SITE ==========
-    const siteStart=Date.now();
-    setInterval(()=>{
-      const s=Math.floor((Date.now()-siteStart)/1000);
-      const m=Math.floor(s/60);
-      const h=Math.floor(m/60);
-      const t=h>0?`${h}h ${m%60}m`:m>0?`${m}m ${s%60}s`:`${s}s`;
-      document.getElementById('timeBadge').textContent='⏱️ '+t;
-      document.getElementById('clickBadge').textContent='🖱️ '+clicks+' clicks';
-    },1000);
 
     // ========== KONAMI CODE ==========
     const konami=[38,38,40,40,37,39,37,39,66,65];

@@ -99,7 +99,6 @@
     <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/about"><span class="nav-line"></span>About</a>
     <a href="/skills"><span class="nav-line"></span>Skills</a>
-    <a href="/gaming"><span class="nav-line"></span>Gaming</a>
     <a href="/music" class="active"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -112,7 +111,6 @@
     <a href="/">Home</a>
     <a href="/about">About</a>
     <a href="/skills">Skills</a>
-    <a href="/gaming">Gaming</a>
     <a href="/music" class="active">Music</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
@@ -145,121 +143,40 @@
           <!-- Top Artists -->
           <div class="mb-10 anim-reveal anim-delay-1">
             <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Top Artists</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">TW</div>
-                <p class="text-white font-semibold text-sm mb-1">The Weeknd</p>
-                <span class="text-xs opacity-40">R&amp;B / Pop</span>
-              </div>
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#8e44ad,#6c3483)">TS</div>
-                <p class="text-white font-semibold text-sm mb-1">Travis Scott</p>
-                <span class="text-xs opacity-40">Hip-Hop</span>
-              </div>
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#e67e22,#d35400)">PM</div>
-                <p class="text-white font-semibold text-sm mb-1">Post Malone</p>
-                <span class="text-xs opacity-40">Hip-Hop / Pop</span>
-              </div>
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#2980b9,#1a5276)">JW</div>
-                <p class="text-white font-semibold text-sm mb-1">Juice WRLD</p>
-                <span class="text-xs opacity-40">Emo Rap</span>
-              </div>
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#27ae60,#1e8449)">DK</div>
-                <p class="text-white font-semibold text-sm mb-1">Drake</p>
-                <span class="text-xs opacity-40">Hip-Hop / Pop</span>
-              </div>
-              <div class="artist-card">
-                <div class="artist-avatar" style="background:linear-gradient(135deg,#f39c12,#b7950b)">KL</div>
-                <p class="text-white font-semibold text-sm mb-1">Kendrick Lamar</p>
-                <span class="text-xs opacity-40">Hip-Hop</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Genres I Like -->
-          <div class="mb-10 anim-reveal anim-delay-2">
-            <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Genres I Like</h2>
-            <div class="flex flex-wrap gap-3">
-              <span class="genre-pill">Hip-Hop</span>
-              <span class="genre-pill">R&amp;B</span>
-              <span class="genre-pill">Pop</span>
-              <span class="genre-pill">Lo-fi</span>
-              <span class="genre-pill">Electronic</span>
-              <span class="genre-pill">Rock</span>
-              <span class="genre-pill">Indie</span>
-              <span class="genre-pill">Jazz</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4" id="topArtists">
+              <div class="artist-card"><div class="artist-avatar" style="background:rgba(255,255,255,0.05)"></div><p class="text-white font-semibold text-sm mb-1">Loading…</p></div>
             </div>
           </div>
 
           <!-- Recent Plays -->
-          <div class="mb-10 anim-reveal anim-delay-3">
+          <div class="mb-10 anim-reveal anim-delay-2">
             <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Recent Plays</h2>
-            <div class="widget-card">
+            <div class="widget-card" id="recentPlays">
               <div class="flex flex-col gap-1">
                 <div class="track-row" style="border-radius:12px">
-                  <div class="track-art" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"></div>
+                  <div class="track-art" style="background:rgba(255,255,255,0.05)"></div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm truncate">Starboy</p>
-                    <p class="text-xs opacity-40">The Weeknd</p>
+                    <p class="text-white font-medium text-sm truncate">Loading…</p>
                   </div>
-                  <div class="now-playing">
-                    <span class="dot"></span>
-                    <span>now playing</span>
-                  </div>
-                </div>
-                <div class="track-row">
-                  <div class="track-art" style="background:linear-gradient(135deg,#8e44ad,#6c3483)"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm truncate">SICKO MODE</p>
-                    <p class="text-xs opacity-40">Travis Scott</p>
-                  </div>
-                  <span class="text-xs opacity-30 shrink-0">3:12</span>
-                </div>
-                <div class="track-row">
-                  <div class="track-art" style="background:linear-gradient(135deg,#e67e22,#d35400)"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm truncate">Circles</p>
-                    <p class="text-xs opacity-40">Post Malone</p>
-                  </div>
-                  <span class="text-xs opacity-30 shrink-0">3:35</span>
-                </div>
-                <div class="track-row">
-                  <div class="track-art" style="background:linear-gradient(135deg,#2980b9,#1a5276)"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm truncate">Lucid Dreams</p>
-                    <p class="text-xs opacity-40">Juice WRLD</p>
-                  </div>
-                  <span class="text-xs opacity-30 shrink-0">3:34</span>
-                </div>
-                <div class="track-row">
-                  <div class="track-art" style="background:linear-gradient(135deg,#27ae60,#1e8449)"></div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-white font-medium text-sm truncate">God's Plan</p>
-                    <p class="text-xs opacity-40">Drake</p>
-                  </div>
-                  <span class="text-xs opacity-30 shrink-0">3:18</span>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Music Stats -->
-          <div class="mb-10 anim-reveal anim-delay-4">
+          <div class="mb-10 anim-reveal anim-delay-3">
             <h2 class="text-lg font-semibold text-white mb-4 tracking-tight">Music Stats</h2>
             <div class="grid grid-cols-3 gap-4">
               <div class="stat-card">
-                <p class="text-2xl font-bold text-white">2,099</p>
+                <p class="text-2xl font-bold text-white" id="statScrobbles">—</p>
                 <p class="text-xs opacity-40 mt-1">Scrobbles</p>
               </div>
               <div class="stat-card">
-                <p class="text-2xl font-bold text-white">604</p>
+                <p class="text-2xl font-bold text-white" id="statArtists">—</p>
                 <p class="text-xs opacity-40 mt-1">Artists</p>
               </div>
               <div class="stat-card">
-                <p class="text-2xl font-bold text-white">12</p>
+                <p class="text-2xl font-bold text-white" id="statPlays">—</p>
                 <p class="text-xs opacity-40 mt-1">Albums</p>
               </div>
             </div>
@@ -267,10 +184,6 @@
 
         </div>
       </section>
-
-      <footer class="relative flex w-full justify-center py-8 px-4 text-white anim-reveal anim-delay-5">
-        <p class="text-sm opacity-40">made with care</p>
-      </footer>
     </main>
 
     <div role="button" tabindex="0" aria-label="enter" class="enter-overlay" id="enterOverlay">
@@ -317,6 +230,55 @@
     });
 
     function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+    // ========== LAST.FM (top artists + recent tracks + stats) ==========
+    const LF_USER='collusionz',LF_KEY='2e5b5823d8f5c2416b39bd8d26a6aa4f';
+    const LF_BASE='https://ws.audioscrobbler.com/2.0/';
+    const avatarGrads=[['#e74c3c','#c0392b'],['#8e44ad','#6c3483'],['#e67e22','#d35400'],['#2980b9','#1a5276'],['#27ae60','#1e8449'],['#f39c12','#b7950b'],['#4764ec','#16213e'],['#ff4466','#8b1e3f']];
+
+    function lfGet(method,extra){return fetch(`${LF_BASE}?method=${method}&user=${LF_USER}&api_key=${LF_KEY}&format=json${extra||''}`).then(r=>r.json())}
+
+    function loadTopArtists(){
+      const grid=document.getElementById('topArtists');
+      lfGet('user.gettopartists','&period=overall&limit=6').then(d=>{
+        const list=(d.topartists&&d.topartists.artist)||[];
+        if(!list.length){grid.innerHTML='<p class="text-sm opacity-40">No data</p>';return}
+        grid.innerHTML=list.map((a,i)=>{
+          const g=avatarGrads[i%avatarGrads.length];
+          const img=a.image&&a.image.length?a.image[a.image.length-1]['#text']:'';
+          const playcount=a.playcount||'';
+          return `<div class="artist-card"><div class="artist-avatar" style="background:linear-gradient(135deg,${g[0]},${g[1]});overflow:hidden">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()"/>`:a.name.charAt(0)}</div><p class="text-white font-semibold text-sm mb-1">${a.name}</p><span class="text-xs opacity-40">${playcount?playcount+' plays':''}</span></div>`;
+        }).join('');
+      }).catch(()=>{grid.innerHTML='<p class="text-sm opacity-40">Unable to load artists</p>'});
+    }
+
+    function loadRecentPlays(){
+      const box=document.getElementById('recentPlays');
+      lfGet('user.getrecenttracks','&limit=5').then(d=>{
+        const tracks=(d.recenttracks&&d.recenttracks.track)||[];
+        if(!tracks.length){box.innerHTML='<p class="text-sm opacity-40" style="padding:16px">No recent tracks</p>';return}
+        box.innerHTML='<div class="flex flex-col gap-1">'+tracks.map((t,i)=>{
+          const isNP=t['@attr']&&t['@attr'].nowplaying;
+          const img=t.image&&t.image.length?t.image[t.image.length-1]['#text']:'';
+          const artist=typeof t.artist==='object'?(t.artist['#text']||''):(t.artist||'');
+          const time=t.date?(t.date['#text']||''):'';
+          const g=avatarGrads[i%avatarGrads.length];
+          return `<div class="track-row"><div class="track-art" style="background:linear-gradient(135deg,${g[0]},${g[1]});overflow:hidden">${img?`<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()"/>`:''}</div><div class="flex-1 min-w-0"><p class="text-white font-medium text-sm truncate">${t.name||''}</p><p class="text-xs opacity-40">${artist}</p></div>${isNP?'<div class="now-playing" style="flex-shrink:0"><span class="dot"></span><span>now playing</span></div>':(time?`<span class="text-xs opacity-30 shrink-0">${time}</span>`:'')}</div>`;
+        }).join('')+'</div>';
+      }).catch(()=>{box.innerHTML='<p class="text-sm opacity-40" style="padding:16px">Unable to load plays</p>'});
+    }
+
+    function loadStats(){
+      lfGet('user.getinfo').then(d=>{
+        if(d.user){
+          document.getElementById('statScrobbles').textContent=Number(d.user.playcount||0).toLocaleString();
+          document.getElementById('statArtists').textContent=Number(d.user.artist_count||0).toLocaleString();
+          document.getElementById('statPlays').textContent=Number(d.user.album_count||0).toLocaleString();
+        }
+      }).catch(()=>{});
+    }
+
+    loadTopArtists();loadRecentPlays();loadStats();
   </script>
 </body>
 </html>

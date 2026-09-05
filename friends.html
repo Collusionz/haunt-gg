@@ -35,87 +35,23 @@
             pointer-events: none;
         }
 
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 80px;
-            height: 100vh;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            z-index: 100;
-            transition: width 0.3s ease;
-        }
-
-        .sidebar:hover {
-            width: 200px;
-        }
-
-        .sidebar-logo {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ff4444, #ff0000);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 900;
-            font-size: 18px;
-            color: white;
-            margin-bottom: 30px;
-            flex-shrink: 0;
-        }
-
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-            padding: 0 12px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .nav-item.active {
-            background: rgba(255, 68, 68, 0.15);
-            color: #ff4444;
-        }
-
-        .nav-item .nav-icon {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+        .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+        @media(min-width:768px){.side-nav{display:flex}}
+        .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+        .side-nav a:hover{color:rgba(255,255,255,0.7)}
+        .side-nav a.active{color:#fff}
+        .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+        .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+        .side-nav a.active .nav-line{width:16px;background:#fff}
+        .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+        @media(min-width:768px){.mobile-nav{display:none}}
+        .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+        .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
 
         .main-content {
-            margin-left: 80px;
             padding: 40px 60px;
+            padding-left: 80px;
+            padding-bottom: 90px;
             position: relative;
             z-index: 10;
         }
@@ -261,50 +197,7 @@
             margin-bottom: 20px;
         }
 
-        .footer {
-            text-align: center;
-            padding: 40px 0;
-            color: rgba(255, 255, 255, 0.25);
-            font-size: 13px;
-        }
-
         @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: fixed;
-                bottom: 0;
-                top: auto;
-                flex-direction: row;
-                justify-content: center;
-                padding: 10px;
-                border-right: none;
-                border-top: 1px solid rgba(255, 255, 255, 0.05);
-            }
-
-            .sidebar:hover {
-                width: 100%;
-            }
-
-            .sidebar-logo {
-                display: none;
-            }
-
-            .sidebar-nav {
-                flex-direction: row;
-                padding: 0;
-                gap: 4px;
-                overflow-x: auto;
-            }
-
-            .nav-item span {
-                display: none;
-            }
-
-            .nav-item {
-                padding: 10px;
-            }
-
             .main-content {
                 margin-left: 0;
                 margin-bottom: 70px;
@@ -319,55 +212,30 @@
         <source src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" type="video/mp4">
     </video>
 
-    <aside class="sidebar">
-        <div class="sidebar-logo">H</div>
-        <nav class="sidebar-nav">
-            <a href="/" class="nav-item">
-                <span class="nav-icon">⌂</span>
-                <span>Home</span>
-            </a>
-            <a href="/about" class="nav-item">
-                <span class="nav-icon">👤</span>
-                <span>About</span>
-            </a>
-            <a href="/skills" class="nav-item">
-                <span class="nav-icon">⚡</span>
-                <span>Skills</span>
-            </a>
-            <a href="/gaming" class="nav-item">
-                <span class="nav-icon">🎮</span>
-                <span>Gaming</span>
-            </a>
-            <a href="/music" class="nav-item">
-                <span class="nav-icon">🎵</span>
-                <span>Music</span>
-            </a>
-            <a href="/gallery" class="nav-item">
-                <span class="nav-icon">📷</span>
-                <span>Gallery</span>
-            </a>
-            <a href="/projects" class="nav-item">
-                <span class="nav-icon">🚀</span>
-                <span>Projects</span>
-            </a>
-            <a href="/friends" class="nav-item active">
-                <span class="nav-icon">👥</span>
-                <span>Friends</span>
-            </a>
-            <a href="/awards" class="nav-item">
-                <span class="nav-icon">🏆</span>
-                <span>Awards</span>
-            </a>
-            <a href="/widgets" class="nav-item">
-                <span class="nav-icon">🧩</span>
-                <span>Widgets</span>
-            </a>
-            <a href="/valorant" class="nav-item">
-                <span class="nav-icon">🎯</span>
-                <span>Valorant</span>
-            </a>
-        </nav>
-    </aside>
+    <nav class="side-nav">
+        <a href="/"><span class="nav-line"></span>Home</a>
+        <a href="/about"><span class="nav-line"></span>About</a>
+        <a href="/skills"><span class="nav-line"></span>Skills</a>
+        <a href="/music"><span class="nav-line"></span>Music</a>
+        <a href="/gallery"><span class="nav-line"></span>Gallery</a>
+        <a href="/projects"><span class="nav-line"></span>Projects</a>
+        <a href="/friends" class="active"><span class="nav-line"></span>Friends</a>
+        <a href="/awards"><span class="nav-line"></span>Awards</a>
+        <a href="/widgets"><span class="nav-line"></span>Widgets</a>
+        <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    </nav>
+    <nav class="mobile-nav">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/skills">Skills</a>
+        <a href="/music">Music</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/projects">Projects</a>
+        <a href="/friends" class="active">Friends</a>
+        <a href="/awards">Awards</a>
+        <a href="/widgets">Widgets</a>
+        <a href="/valorant">Valorant</a>
+    </nav>
 
     <main class="main-content">
 
@@ -526,11 +394,7 @@
             </div>
         </div>
 
-        <div class="footer">
-            made with care
-        </div>
-
-    </main>
+        </main>
 
 </body>
 </html>
