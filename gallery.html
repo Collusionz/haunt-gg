@@ -348,81 +348,8 @@
       <button class="filter-btn" data-filter="memes">Memes</button>
     </div>
 
-    <!-- Photo Grid -->
+<!-- Photo Grid -->
     <div class="gallery-grid">
-
-      <div class="gallery-card" data-category="screenshots" data-title="Valorant Ace" data-date="Aug 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #ff4655, #5573f4); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Valorant Ace</h3>
-          <span>Aug 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="screenshots" data-title="Discord Chat" data-date="Jul 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #5865F2, #7289DA); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Discord Chat</h3>
-          <span>Jul 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="screenshots" data-title="Roblox Session" data-date="Jun 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #00A86B, #1a1a2e); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Roblox Session</h3>
-          <span>Jun 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="irl" data-title="Setup Tour" data-date="May 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #4764ec, #000); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Setup Tour</h3>
-          <span>May 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="art" data-title="Art Commission" data-date="Apr 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #ff6b6b, #ffa500); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Art Commission</h3>
-          <span>Apr 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="memes" data-title="Meme Collection" data-date="Mar 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #ffd93d, #ff6b6b); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Meme Collection</h3>
-          <span>Mar 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="irl" data-title="Server Staff" data-date="Feb 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #5573f4, #23A55A); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Server Staff</h3>
-          <span>Feb 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="art" data-title="Profile Pic" data-date="Jan 2025">
-        <div class="card-bg" style="background: linear-gradient(135deg, #4764ec, #ff4466); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Profile Pic</h3>
-          <span>Jan 2025</span>
-        </div>
-      </div>
-
-      <div class="gallery-card" data-category="art" data-title="Banner Art" data-date="Dec 2024">
-        <div class="card-bg" style="background: linear-gradient(135deg, #1DB954, #4764ec); width: 100%; height: 100%;"></div>
-        <div class="card-overlay">
-          <h3>Banner Art</h3>
-          <span>Dec 2024</span>
-        </div>
-      </div>
-
     </div>
   </main>
 
@@ -453,8 +380,9 @@ items.forEach(function(it){
             media='<img src="'+it.img+'" alt="'+it.title+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" onerror="this.remove()"/>';
           }
           el.innerHTML='<div class="card-bg" style="background:'+bg+';width:100%;height:100%;position:relative">'+media+'</div><div class="card-overlay"><h3>'+(it.title||'Untitled')+'</h3><span>'+(it.date||'')+'</span></div>';
-          grid.appendChild(el);
+grid.appendChild(el);
         });
+        if(!grid.children.length){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.35);padding:48px 0;font-size:0.9rem">nothing here yet</p>'}
       }catch(e){}
     })();
   </script>

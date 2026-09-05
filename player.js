@@ -138,26 +138,45 @@
   if (typeof window.pagehide !== 'undefined') window.addEventListener('pagehide', save);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') save(); });
 
-  var evs = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
-  function kickOnce() {
-    var done = false;
-    return function () {
-      if (done) return;
-      done = true;
-      evs.forEach(function (t) { document.removeEventListener(t, kick); });
-      try { localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
-      play();
-    };
+  var uEvs = ['pointerdown', 'keydown', 'touchstart'];
+  var unlockDone = false;
+  function unlock() {
+    if (unlockDone) return;
+    unlockDone = true;
+    uEvs.forEach(function (t) { document.removeEventListener(t, unlock); });
+    try { localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
+    audio.muted = false;
+    audio.play().catch(function () {});
   }
-  var kick = kickOnce();
-  evs.forEach(function (t) { document.addEventListener(t, kick, { passive: true, once: true }); });
+
+  function enterMuted() {
+    audio.muted = true;
+    audio.play().then(onPlay).catch(function () { refreshUI(); });
+    if (!unlockDone) uEvs.forEach(function (t) { document.addEventListener(t, unlock, { passive: true, once: true }); });
+  }
+
+  function startAuto() {
+    var unlocked = false;
+    try { unlocked = !!localStorage.getItem('hzAutoplay'); } catch (e) {}
+    if (unlocked) {
+      audio.play().then(onPlay).catch(function () { enterMuted(); });
+    } else {
+      enterMuted();
+    }
+  }
 
   function init() {
     buildChip();
     spinEl = document.getElementById('hzSpin');
     labelEl = document.getElementById('hzLabel');
     iconEl = document.getElementById('hzPlayIcon');
-
+    var loadFresh = function () {
+      if (cur < 0) cur = order[0];
+      audio.src = TRACKS[cur].src;
+      audio.load();
+      refreshUI();
+      startAuto();
+    };
     if (resume && cur >= 0 && resume.t > 0) {
       try {
         var t = TRACKS[cur];
@@ -168,17 +187,18 @@
             audio.src = t.src;
             audio.load();
             audio.currentTime = resume.t;
-            audio.play().then(onPlay).catch(function () { refreshUI(); });
+            refreshUI();
+            startAuto();
+          } else {
+            loadFresh();
           }
         });
         cl.src = t.src;
-      } catch (e) { refreshUI(); }
+      } catch (e) {
+        loadFresh();
+      }
     } else {
-      refreshUI();
-      audio.play().then(onPlay).catch(function () {
-        refreshUI();
-        if (!localStorage.getItem('hzAutoplay')) updateLabel(null, 'tap anywhere to play');
-      });
+      loadFresh();
     }
   }
 

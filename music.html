@@ -156,10 +156,6 @@
 
           <!-- Music Player -->
           <div class="widget-card mb-10 anim-reveal anim-delay-1" style="padding:24px">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="accent-bar" style="height:18px"></div>
-              <span class="text-xs font-bold tracking-widest" style="color:#ff4466">NOW PLAYING</span>
-            </div>
             <div class="player-now">
               <img class="player-cover" id="playerCover" src="" alt="cover" />
               <div class="player-meta">
@@ -405,17 +401,19 @@ const LF_PLACEHOLDER='2a96cbd8b46e442fc41c2b86b821562f';
     // kick off: default random order
     player.order=shuffleArr([0,1,2]);
     document.getElementById('playerShuffle').classList.toggle('off',!player.random);
-    // autoplay: try immediately, else start on first interaction (browser autoplay policy)
+    // autoplay: play immediately; if the browser blocks sound, start muted and unlock sound on first interaction
     function attemptAutoPlay(){
       if(player.cur<0){player.cur=0;renderPlayer()}
       audio.play().catch(function(){
-        let done=false;
-        function kick(){
-          if(done)return;done=true;
-          ['pointerdown','keydown','touchstart'].forEach(function(t){document.removeEventListener(t,kick)});
-          audio.play().catch(function(){});
+        const evts=['pointerdown','keydown','touchstart'];
+        function unlock(){
+          evts.forEach(function(t){document.removeEventListener(t,unlock)});
+          audio.muted=false;
+          try{localStorage.setItem('hzAutoplay','1')}catch(e){}
         }
-        ['pointerdown','keydown','touchstart'].forEach(function(t){document.addEventListener(t,kick,{passive:true,once:true})});
+        audio.muted=true;
+        audio.play().catch(function(){});
+        evts.forEach(function(t){document.addEventListener(t,unlock,{passive:true,once:true})});
       });
     }
     attemptAutoPlay();
