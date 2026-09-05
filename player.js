@@ -1,6 +1,9 @@
 (function () {
   'use strict';
 
+  var HOME = location.pathname === '/' || location.pathname === '/index.html';
+  if (!HOME) return;
+
   var TRACKS = [
     { src: '/audio/song-1.mp3', cover: '/audio/song-1-cover.jpg', title: 'untitled', artist: 'song 1' },
     { src: '/audio/song-2.mp3', cover: '/audio/song-2-cover.jpg', title: 'untitled', artist: 'song 2' },
@@ -48,7 +51,6 @@
     document.getElementById('hzNext').addEventListener('click', function (ev) { ev.stopPropagation(); next(); });
     document.getElementById('hzPlay').addEventListener('click', function (ev) {
       ev.stopPropagation();
-      if (fallback) { unlockSound(); return; }
       toggle();
     });
     return c;
@@ -62,7 +64,6 @@
 
   function updateLabel(text, hint) {
     if (!labelEl) return;
-    if (fallback && text) return;
     if (text) {
       labelEl.title = text;
       labelEl.textContent = hint ? hint + ' · ' + text : text;
@@ -138,19 +139,9 @@
   if (typeof window.pagehide !== 'undefined') window.addEventListener('pagehide', save);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') save(); });
 
-  var soundAllowed = false;
-  try { soundAllowed = !!localStorage.getItem('hzEntered') || !!localStorage.getItem('hzAutoplay'); } catch (e) {}
-
-  var fallback = false;
-
   function unlockSound() {
-    if (!soundAllowed) {
-      soundAllowed = true;
-      try { localStorage.setItem('hzEntered', '1'); localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
-    }
     audio.muted = false;
     audio.play().then(onPlay).catch(function () { refreshUI(); });
-    if (fallback) { fallback = false; refreshUI(); }
   }
 
   function buildEnter() {
@@ -182,22 +173,8 @@
     buildEnter();
   }
 
-  function mutedFallback() {
-    fallback = true;
-    audio.muted = true;
-    audio.play().then(onPlay).catch(function () { refreshUI(); });
-    if (labelEl) { labelEl.title = 'tap anywhere to unmute'; labelEl.textContent = 'tap for sound'; }
-    ['click', 'pointerdown', 'keydown', 'touchstart'].forEach(function (t) {
-      window.addEventListener(t, function () { if (fallback) unlockSound(); });
-    });
-  }
-
   function startAuto() {
-    if (soundAllowed) {
-      audio.play().then(onPlay).catch(function () { mutedFallback(); });
-    } else {
-      enterMuted();
-    }
+    enterMuted();
   }
 
   function init() {
