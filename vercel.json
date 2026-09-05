@@ -17,6 +17,7 @@
     { "src": "/awards", "dest": "/awards.html" },
     { "src": "/friends", "dest": "/friends.html" },
     { "src": "/vault", "dest": "/vault.html" },
+    { "src": "/gaming", "status": 404 },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
