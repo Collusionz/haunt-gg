@@ -59,7 +59,7 @@
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
-    <a href="/friends"><span class="nav-line"></span>Friends</a>
+    <a href="/friends"><span class="nav-line"></span>Acquaintances</a>
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
@@ -70,7 +70,7 @@
     <a href="/music">Music</a>
     <a href="/gallery">Gallery</a>
     <a href="/projects">Projects</a>
-    <a href="/friends">Friends</a>
+    <a href="/friends">Acquaintances</a>
     
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
@@ -114,7 +114,7 @@
           <button class="btn btn-secondary section-jump" data-target="secAbout" style="padding:10px 16px">About</button>
 <button class="btn btn-secondary section-jump" data-target="secSocials" style="padding:10px 16px">Socials</button>
           <button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
-<button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Friends</button>
+<button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
           <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
         </div>
@@ -240,7 +240,7 @@
         </div>
 
         <div id="secFriends" class="card" style="margin-bottom:20px">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🫂 Friends</h2>
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🫂 Acquaintances</h2>
           <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">appears on <a href="/friends" style="color:#8aa3ff">/friends</a></p>
           <div class="grid grid-cols-2 gap-3">
             <div>
@@ -572,7 +572,7 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
     /* ---------------- FRIENDS ---------------- */
     function renderFriendList(){
       var list=load(STORAGE.friends),box=document.getElementById('friendList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom friends yet</p>';return}
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom acquaintances yet</p>';return}
       box.innerHTML=list.map(function(f,i){
         return '<div class="item-row"><div class="item-avatar" style="background:linear-gradient(135deg,'+f.bg1+','+f.bg2+')">'+esc(f.initial||(f.name||'?')[0])+'</div>'+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(f.name)+'</div>'+
@@ -580,7 +580,7 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
         '<div class="row-actions"><button class="btn btn-danger" onclick="removeFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
-    window.removeFriend=function(i){var l=load(STORAGE.friends);l.splice(i,1);save(STORAGE.friends,l);renderFriendList();showToast('Friend removed')};
+    window.removeFriend=function(i){var l=load(STORAGE.friends);l.splice(i,1);save(STORAGE.friends,l);renderFriendList();showToast('Acquaintance removed')};
     document.getElementById('addFriendBtn').addEventListener('click',function(){
       var name=document.getElementById('fName').value.trim();
       if(!name){showToast('Name required');return}

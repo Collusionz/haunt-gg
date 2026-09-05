@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friends | home</title>
+    <title>Acquaintances | home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -219,7 +219,7 @@
     <a href="/music"><span class="nav-line"></span>Music</a>
         <a href="/gallery"><span class="nav-line"></span>Gallery</a>
         <a href="/projects"><span class="nav-line"></span>Projects</a>
-        <a href="/friends" class="active"><span class="nav-line"></span>Friends</a>
+        <a href="/friends" class="active"><span class="nav-line"></span>Acquaintances</a>
     
         <a href="/widgets"><span class="nav-line"></span>Widgets</a>
         <a href="/valorant"><span class="nav-line"></span>Valorant</a>
@@ -230,7 +230,7 @@
     <a href="/music">Music</a>
         <a href="/gallery">Gallery</a>
         <a href="/projects">Projects</a>
-        <a href="/friends" class="active">Friends</a>
+        <a href="/friends" class="active">Acquaintances</a>
         
         <a href="/widgets">Widgets</a>
         <a href="/valorant">Valorant</a>
@@ -241,12 +241,12 @@
 
         <div style="margin-bottom: 48px;">
             <div class="accent-bar"></div>
-            <h1 style="font-size: 40px; font-weight: 900; color: white; margin-bottom: 6px;">Friends</h1>
+            <h1 style="font-size: 40px; font-weight: 900; color: white; margin-bottom: 6px;">Acquaintances</h1>
             <p style="font-size: 16px; color: rgba(255,255,255,0.4);">people I appreciate</p>
         </div>
 
 <div style="margin-bottom: 56px;">
-            <div class="section-title">Close Friends</div>
+            <div class="section-title">Acquaintances</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;" id="friendsGrid">
             </div>
         </div>
@@ -267,7 +267,7 @@
                         grid.appendChild(card);
                     });
                 }else if(grid){
-                    grid.innerHTML='<p style="font-size: 14px; color: rgba(255,255,255,0.4); grid-column: 1 / -1;">no friends listed yet.</p>';
+                    grid.innerHTML='<p style="font-size: 14px; color: rgba(255,255,255,0.4); grid-column: 1 / -1;">no acquaintances listed yet.</p>';
                 }
             }catch(e){}
             try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
