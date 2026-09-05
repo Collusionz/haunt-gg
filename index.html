@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -88,7 +88,7 @@
 <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
   </nav>
-  <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
+  <button class="theme-toggle" id="themeToggle" title="Toggle theme">â˜€</button>
   <div class="scroll-progress" id="scrollProgress"></div>
   <div id="cursorSpotlight"></div>
   <div id="toast" class="toast"></div>
@@ -125,7 +125,7 @@
                 </div>
                 <div class="break-words w-full text-center text-xl" style="color:#5573f4">
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
-                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm 16</strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">in <span id="countdown" style="font-weight:700">…</span></span></p>
+                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm 16</strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">in <span id="countdown" style="font-weight:700">â€¦</span></span></p>
                   <p class="mb-2 leading-relaxed last:mb-0 text-base opacity-70" id="typingText"></p>
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
@@ -138,19 +138,6 @@
           </div>
       </section>
 
-      <!-- about me -->
-      <section id="about-me" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
-        <div class="mx-auto w-full" style="max-width:44rem">
-          <div class="flex items-center gap-3 mb-8">
-            <span class="sec-rule"></span>
-            <h2 class="sec-title">about me.</h2>
-          </div>
-          <div class="widget-card p-8 md:p-10 anim-reveal">
-            <p id="aboutMeBio" style="font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.75)">add a bio in the vault</p>
-          </div>
-        </div>
-      </section>
-
       <!-- guestbook -->
       <section id="guestbook" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
         <div class="mx-auto w-full" style="max-width:44rem">
@@ -159,7 +146,7 @@
             <h2 class="sec-title">guestbook.</h2>
           </div>
           <div class="widget-card p-8 md:p-10" data-gb-board>
-            <p class="mb-4" style="font-size:0.9rem;opacity:0.7">leave a message — no account needed ✍️</p>
+            <p class="mb-4" style="font-size:0.9rem;opacity:0.7">leave a message â€” no account needed âœï¸</p>
             <div data-gb-counts style="min-height:18px"></div>
             <div data-gb-list></div>
             <div data-gb-morewrap style="text-align:center;margin-top:4px"><button type="button" data-gb-more style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;font-size:0.72rem;font-family:Satoshi,sans-serif;cursor:pointer;transition:all .2s">load more</button></div>
@@ -168,7 +155,7 @@
                 <input type="text" data-gb-name maxlength="24" placeholder="your name" style="flex:1;min-width:150px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;font-size:0.85rem;color:#fff;outline:none" />
                 <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;opacity:0.65;cursor:pointer"><input type="checkbox" data-gb-anon style="accent-color:#5573f4" /> anonymous</label>
               </div>
-              <textarea data-gb-msg maxlength="280" rows="3" placeholder="say something nice…" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;font-size:0.85rem;color:#fff;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>
+              <textarea data-gb-msg maxlength="280" rows="3" placeholder="say something niceâ€¦" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;font-size:0.85rem;color:#fff;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px">
                 <span data-gb-count style="font-size:0.7rem;opacity:0.35">0/280</span>
                 <button type="button" data-gb-post style="background:linear-gradient(90deg,#5573f4,#4764ec);color:#fff;border:0;border-radius:10px;padding:8px 20px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:Satoshi,sans-serif;transition:opacity .2s">Post</button>
@@ -193,7 +180,7 @@
       localStorage.setItem(KEY,String(n));
       const el=document.getElementById('visitCount');
       if(el){
-        el.innerHTML='👀 <span class="vc-num">0</span> '+(n===1?'view':'views');
+        el.innerHTML='ðŸ‘€ <span class="vc-num">0</span> '+(n===1?'view':'views');
         el.style.opacity='1';
         const num=el.querySelector('.vc-num');
         const step=Math.max(1,Math.round(n/22));
@@ -209,11 +196,11 @@
     // ========== THEME TOGGLE ==========
     const themeToggle=document.getElementById('themeToggle');
     const savedTheme=localStorage.getItem('theme')||'dark';
-    if(savedTheme==='light'){document.body.classList.add('light');themeToggle.textContent='☾'}
+    if(savedTheme==='light'){document.body.classList.add('light');themeToggle.textContent='â˜¾'}
     themeToggle.addEventListener('click',()=>{
       document.body.classList.toggle('light');
       const isLight=document.body.classList.contains('light');
-      themeToggle.textContent=isLight?'☾':'☀';
+      themeToggle.textContent=isLight?'â˜¾':'â˜€';
       localStorage.setItem('theme',isLight?'light':'dark');
     });
 
@@ -244,7 +231,7 @@
 
     // ========== GREETING (Singapore time) ==========
     function sgHour(){const parts=new Date().toLocaleTimeString('en-US',{timeZone:'Asia/Singapore',hour:'numeric',hour12:false});return parseInt(parts,10)%24}
-    function getGreeting(){const h=sgHour();if(h<12)return'Good morning ☀️';if(h<17)return'Good afternoon 🌤️';if(h<21)return'Good evening 🌙';return'Late night 🦉'}
+    function getGreeting(){const h=sgHour();if(h<12)return'Good morning â˜€ï¸';if(h<17)return'Good afternoon ðŸŒ¤ï¸';if(h<21)return'Good evening ðŸŒ™';return'Late night ðŸ¦‰'}
     document.getElementById('greetingBadge').textContent=getGreeting();
     setTimeout(()=>document.getElementById('greetingBadge').style.opacity='1',200);
 
@@ -304,7 +291,7 @@ const socials=[];
       if(e.keyCode===konami[konamiIdx]){konamiIdx++;if(konamiIdx===konami.length){konamiIdx=0;triggerEasterEgg()}}else{konamiIdx=0}
     });
     function triggerEasterEgg(){
-      showToast('🎮 Easter egg found!');
+      showToast('ðŸŽ® Easter egg found!');
       for(let i=0;i<50;i++){
         const c=document.createElement('div');
         c.className='confetti';
@@ -340,8 +327,7 @@ setTimeout(()=>p.remove(),600);
       }
     });
 
-// ========== VAULT BIO ==========
-    try{const _ab=localStorage.getItem('vaultBio');if(_ab&&document.getElementById('aboutMeBio'))document.getElementById('aboutMeBio').textContent=_ab}catch(e){}
+}
 
     // ========== GUESTBOOK (overlay) ==========
   </script>

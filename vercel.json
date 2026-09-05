@@ -10,7 +10,7 @@
     { "src": "/valorant", "dest": "/valorant.html" },
     { "src": "/widgets", "dest": "/widgets.html" },
     { "src": "/projects", "dest": "/projects.html" },
-    { "src": "/about", "dest": "/about.html" },
+    { "src": "/about", "status": 404 },
     { "src": "/skills", "status": 404 },
     { "src": "/gallery", "dest": "/gallery.html" },
     { "src": "/music", "dest": "/music.html" },
