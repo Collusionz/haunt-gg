@@ -33,19 +33,23 @@
     .input:focus{border-color:#5573f4}
     .input::placeholder{color:rgba(255,255,255,0.3)}
     select.input{appearance:none}
+    textarea.input{resize:vertical;min-height:90px;line-height:1.5}
     label.fld{display:block;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.45);margin:14px 0 6px}
-    .btn{display:inline-flex;align-items:center;gap:8px;background:rgba(85,115,244,0.9);color:#fff;border:none;border-radius:14px;padding:12px 20px;font-family:'Satoshi',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+    .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;background:rgba(85,115,244,0.9);color:#fff;border:none;border-radius:14px;padding:12px 20px;font-family:'Satoshi',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s}
     .btn:hover{background:#5a7bfc;transform:translateY(-1px)}
     .btn-secondary{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12)}
     .btn-secondary:hover{background:rgba(255,255,255,0.14)}
     .btn-danger{background:rgba(255,70,85,0.85)}
     .btn-danger:hover{background:#ff5561}
     .item-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:10px}
-    .item-swatch{width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#4764ec,#ff4466)}
+    .item-swatch{width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#4764ec,#ff4466);background-size:cover;background-position:center}
+    .item-avatar{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff}
     .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:8px 20px;border-radius:12px;background:rgba(71,100,236,0.9);color:#fff;font-size:0.8rem;font-weight:500;backdrop-filter:blur(8px);z-index:200;opacity:0;transition:all 0.3s;pointer-events:none}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .header-accent{width:4px;height:32px;border-radius:2px;background:linear-gradient(180deg,#5573f4,#4764ec);flex-shrink:0}
-    body.light{background:#f5f5f5;color:#1a1a2e}
+    .upload-preview{margin-top:10px;border-radius:14px;overflow:hidden;max-height:140px;display:none;border:1px solid rgba(255,255,255,0.1)}
+    .upload-preview img{width:100%;height:auto;display:block;max-height:140px;object-fit:cover}
+    .row-actions{display:flex;gap:8px;flex-shrink:0}
   </style>
 </head>
 <body>
@@ -80,7 +84,7 @@
   </div>
 
   <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
-    <section class="relative w-full max-w-2xl mx-auto py-16 px-6">
+    <section class="relative w-full max-w-3xl mx-auto py-16 px-6">
 
       <div id="lockScreen">
         <div class="card text-center" style="padding:48px 36px">
@@ -100,13 +104,26 @@
           <div class="header-accent"></div>
           <div>
             <h1 style="font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin:0">Control Room</h1>
-            <p style="font-size:0.8rem;opacity:0.5;margin:2px 0 0">nobody can see this page</p>
+            <p style="font-size:0.8rem;opacity:0.5;margin:2px 0 0">edit your site from here — changes live in localStorage</p>
           </div>
           <button class="btn btn-secondary" id="lockBtn" style="margin-left:auto;padding:10px 16px">Lock</button>
         </div>
 
-        <div class="card" style="margin-bottom:20px">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:16px">🖼️ Gallery Manager</h2>
+        <div class="flex gap-2 flex-wrap" style="margin-bottom:20px">
+          <button class="btn btn-secondary section-jump" data-target="secGallery" style="padding:10px 16px">Gallery</button>
+          <button class="btn btn-secondary section-jump" data-target="secPhrases" style="padding:10px 16px">Phrases</button>
+          <button class="btn btn-secondary section-jump" data-target="secAbout" style="padding:10px 16px">About</button>
+          <button class="btn btn-secondary section-jump" data-target="secSocials" style="padding:10px 16px">Socials</button>
+          <button class="btn btn-secondary section-jump" data-target="secSkills" style="padding:10px 16px">Skills</button>
+          <button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
+          <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Friends</button>
+          <button class="btn btn-secondary section-jump" data-target="secAwards" style="padding:10px 16px">Awards</button>
+          <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
+        </div>
+
+        <div id="secGallery" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🖼️ Gallery Manager</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">upload an image or use a URL — shows on <a href="/gallery" style="color:#8aa3ff">/gallery</a></p>
           <label class="fld">Title</label>
           <input class="input" id="gTitle" placeholder="e.g. Valorant Ace" />
           <div class="grid grid-cols-2 gap-3">
@@ -124,8 +141,13 @@
               <input class="input" id="gDate" placeholder="e.g. Sep 2026" />
             </div>
           </div>
-          <label class="fld">Image URL (optional — leave empty for a gradient card)</label>
-          <input class="input" id="gImg" placeholder="https://... .png / .jpg" />
+          <label class="fld">Image (upload or paste a URL)</label>
+          <div class="flex gap-2">
+            <input class="input" id="gImg" placeholder="https://... .png / .jpg / .webp" />
+            <button class="btn btn-secondary" id="gUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
+          </div>
+          <input type="file" id="gFile" accept="image/*" style="display:none" />
+          <div class="upload-preview" id="gPreview"></div>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="fld">Gradient start</label>
@@ -140,101 +162,459 @@
           <div id="galleryList" style="margin-top:20px"></div>
         </div>
 
-        <div class="card">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:16px">⌨️ Typing Phrases</h2>
-          <p style="font-size:0.8rem;opacity:0.5;margin-bottom:10px">extra phrases that appear in the home page typing animation</p>
+        <div id="secPhrases" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">⌨️ Typing Phrases</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:10px">extra phrases for the home page typing animation</p>
           <div class="flex gap-2">
             <input class="input" id="pPhrase" placeholder="e.g. eating at 2am" />
             <button class="btn" id="addPhraseBtn" style="flex-shrink:0">Add</button>
           </div>
           <div id="phraseList" style="margin-top:16px"></div>
         </div>
+
+        <div id="secAbout" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">👤 About Page</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">bio + fun facts shown on <a href="/about" style="color:#8aa3ff">/about</a></p>
+          <label class="fld">Bio text</label>
+          <textarea class="input" id="aBio" placeholder="I'm cz, a 16 year old from Singapore..."></textarea>
+          <div class="flex gap-2" style="margin-top:12px">
+            <button class="btn" id="saveBioBtn">Save bio</button>
+            <button class="btn btn-secondary" id="resetBioBtn">Reset to default</button>
+          </div>
+          <label class="fld" style="margin-top:20px">Add a fun fact</label>
+          <div class="flex gap-2">
+            <input class="input" id="aFact" placeholder="e.g. I have 400+ keyboard macros" />
+            <button class="btn" id="addFactBtn" style="flex-shrink:0">Add</button>
+          </div>
+          <div id="factList" style="margin-top:16px"></div>
+        </div>
+
+        <div id="secSocials" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🔗 Home Socials</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">extra icon links on the home page (letter badge)</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Label</label>
+              <input class="input" id="sLabel" placeholder="e.g. Spotify" />
+            </div>
+            <div>
+              <label class="fld">URL</label>
+              <input class="input" id="sUrl" placeholder="https://..." />
+            </div>
+          </div>
+          <button class="btn" id="addSocialBtn" style="margin-top:14px">＋ Add social</button>
+          <div id="socialList" style="margin-top:18px"></div>
+        </div>
+
+        <div id="secSkills" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🛠️ Skills</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">added skills appear in a "Custom" card on <a href="/skills" style="color:#8aa3ff">/skills</a></p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Skill name</label>
+              <input class="input" id="kName" placeholder="e.g. Editing" />
+            </div>
+            <div>
+              <label class="fld">Level (%)</label>
+              <input class="input" id="kPercent" type="number" min="0" max="100" placeholder="e.g. 70" />
+            </div>
+          </div>
+          <button class="btn" id="addSkillBtn" style="margin-top:14px">＋ Add skill</button>
+          <div id="skillList" style="margin-top:18px"></div>
+        </div>
+
+        <div id="secProjects" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🚀 Projects</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your community / project cards on <a href="/projects" style="color:#8aa3ff">/projects</a></p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Role</label>
+              <input class="input" id="prRole" placeholder="e.g. Moderator" />
+            </div>
+            <div>
+              <label class="fld">Title</label>
+              <input class="input" id="prTitle" placeholder="e.g. My Server" />
+            </div>
+          </div>
+          <label class="fld">Description</label>
+          <textarea class="input" id="prDesc" placeholder="What do you do there?"></textarea>
+          <label class="fld">Link</label>
+          <input class="input" id="prLink" placeholder="https://discord.gg/..." />
+          <label class="fld">Image (upload or URL)</label>
+          <div class="flex gap-2">
+            <input class="input" id="prImg" placeholder="https://... .png / .webp" />
+            <button class="btn btn-secondary" id="prUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
+          </div>
+          <input type="file" id="prFile" accept="image/*" style="display:none" />
+          <div class="upload-preview" id="prPreview"></div>
+          <button class="btn" id="addProjectBtn" style="margin-top:14px">＋ Add project</button>
+          <div id="projectList" style="margin-top:18px"></div>
+        </div>
+
+        <div id="secFriends" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🫂 Friends</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">appears on <a href="/friends" style="color:#8aa3ff">/friends</a></p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Name</label>
+              <input class="input" id="fName" placeholder="e.g. Kira" />
+            </div>
+            <div>
+              <label class="fld">Avatar letter</label>
+              <input class="input" id="fInit" placeholder="e.g. K" maxlength="1" />
+            </div>
+          </div>
+          <label class="fld">Note</label>
+          <input class="input" id="fNote" placeholder="e.g. valorant duo" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Avatar start</label>
+              <input type="color" class="input" id="fBg1" value="#5573f4" style="height:46px;padding:4px" />
+            </div>
+            <div>
+              <label class="fld">Avatar end</label>
+              <input type="color" class="input" id="fBg2" value="#4764ec" style="height:46px;padding:4px" />
+            </div>
+          </div>
+          <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add friend</button>
+          <div id="friendList" style="margin-top:18px"></div>
+        </div>
+
+        <div id="secAwards" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🏅 Awards</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">appears in its own row on <a href="/awards" style="color:#8aa3ff">/awards</a></p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Icon (emoji)</label>
+              <input class="input" id="wIcon" placeholder="e.g. 🏆" />
+            </div>
+            <div>
+              <label class="fld">Title</label>
+              <input class="input" id="wTitle" placeholder="e.g. Best Manager" />
+            </div>
+          </div>
+          <label class="fld">Description</label>
+          <input class="input" id="wDesc" placeholder="What was it for?" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="fld">Date</label>
+              <input class="input" id="wDate" placeholder="e.g. 2025" />
+            </div>
+            <div>
+              <label class="fld">Color</label>
+              <select class="input" id="wColor">
+                <option value="red">Red</option>
+                <option value="gold">Gold</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" id="addAwardBtn" style="margin-top:14px">＋ Add award</button>
+          <div id="awardList" style="margin-top:18px"></div>
+        </div>
+
+        <div id="secSettings" class="card">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">⚙️ Settings</h2>
+          <label class="fld">Background video URL</label>
+          <div class="flex gap-2">
+            <input class="input" id="setBg" placeholder="https://... .mp4" />
+            <button class="btn" id="applyBgBtn" style="flex-shrink:0">Apply</button>
+          </div>
+          <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">applies site-wide (home, pages, and this one). leave empty + apply to restore the default.</p>
+          <label class="fld" style="margin-top:18px">Change passcode</label>
+          <div class="flex gap-2" style="max-width:360px">
+            <input class="input" id="newPass" type="password" placeholder="new passcode" />
+            <button class="btn" id="changePassBtn" style="flex-shrink:0">Save</button>
+          </div>
+          <label class="fld" style="margin-top:18px">Danger zone</label>
+          <div class="flex gap-2">
+            <button class="btn btn-danger" id="resetDataBtn">Reset all custom data</button>
+            <button class="btn btn-danger" id="resetPassBtn">Reset passcode to default</button>
+          </div>
+          <p style="font-size:0.75rem;opacity:0.4;margin-top:10px">all data is stored in this browser's localStorage — clearing site data removes it.</p>
+        </div>
+
       </div>
 
     </section>
   </main>
 
   <script>
-    const PASSCODE = 'cz2026';
-    const PASS_HINT = ''; // keep empty
+    var STORAGE={
+      gallery:'vaultGallery', phrases:'vaultPhrases', bio:'vaultBio', facts:'vaultFacts',
+      socials:'vaultSocials', skills:'vaultSkills', projects:'vaultProjects',
+      friends:'vaultFriends', awards:'vaultAwards', bg:'vaultBg', pass:'vaultPass'
+    };
+    var DEFAULT_PASS='cz2026';
 
-    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
-
+    function getPass(){return localStorage.getItem(STORAGE.pass)||DEFAULT_PASS}
+    function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2400)}
     function isAuthed(){return sessionStorage.getItem('vaultAuth')==='1'}
-
     function show(lock,panel){document.getElementById('lockScreen').style.display=lock?'block':'none';document.getElementById('panelScreen').style.display=panel?'block':'none'}
+    function load(k){return JSON.parse(localStorage.getItem(k)||'[]')}
+    function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+    function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
-    function loadGallery(){return JSON.parse(localStorage.getItem('vaultGallery')||'[]')}
-    function saveGallery(list){localStorage.setItem('vaultGallery',JSON.stringify(list))}
-    function loadPhrases(){return JSON.parse(localStorage.getItem('vaultPhrases')||'[]')}
-    function savePhrases(list){localStorage.setItem('vaultPhrases',JSON.stringify(list))}
+    function fileInput(onchange){
+      var inp=document.createElement('input');
+      inp.type='file';inp.accept='image/*';inp.style.display='none';
+      inp.onchange=function(){var f=inp.files&&inp.files[0];if(f)onchange(f);inp.remove()};
+      document.body.appendChild(inp);inp.click();
+    }
+    function imageToDataUrl(file,cb){
+      var maxSide=1280,img=new Image(),url=URL.createObjectURL(file);
+      img.onload=function(){
+        var scale=Math.min(1,maxSide/Math.max(img.width,img.height));
+        var c=document.createElement('canvas');
+        c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(url);
+        cb(c.toDataURL('image/jpeg',0.82));
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);cb('')};
+      img.src=url;
+    }
+    function bindUpload(btnId,fileId,previewId,cb){
+      document.getElementById(btnId).addEventListener('click',function(){fileInput(function(f){
+        document.getElementById(fileId).value='';
+        imageToDataUrl(f,function(data){
+          if(!data){showToast('Failed to read image');return}
+          cb(data);
+          var pv=document.getElementById(previewId);
+          pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
+          var box=document.getElementById(fileId);
+          box.placeholder='image ready (uploaded)';
+        });
+      })});
+    }
+    function thumbHtml(src){
+      if(!src)return '';
+      return src.indexOf('data:')===0
+        ? '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover" />'
+        : '<div style="width:100%;height:100%;background-size:cover;background-position:center;background-image:url(\''+esc(src)+'\')"></div>';
+    }
+
+    /* ---------------- GALLERY ---------------- */
+    var pendingGalleryImg='',pendingProjectImg='';
+    bindUpload('gUploadBtn','gImg','gPreview',function(d){pendingGalleryImg=d});
+    bindUpload('prUploadBtn','prImg','prPreview',function(d){pendingProjectImg=d});
 
     function renderGalleryList(){
-      const list=loadGallery();
-      const box=document.getElementById('galleryList');
+      var list=load(STORAGE.gallery),box=document.getElementById('galleryList');
       if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom items yet</p>';return}
-      box.innerHTML=list.map((it,i)=>
-        '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+it.bg1+','+it.bg2+')"></div>'+
-        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+it.title+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45">'+it.category+' · '+(it.date||'no date')+'</div></div>'+
-        '<button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div>'
-      ).join('');
+      box.innerHTML=list.map(function(it,i){
+        return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+it.bg1+','+it.bg2+')'+((it.img&&it.img.indexOf('data:')===0)?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+it.bg1+','+it.bg2+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(it.title)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(it.category)+' · '+(it.date?esc(it.date):'no date')+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
     }
+    window.removeGalleryItem=function(i){var l=load(STORAGE.gallery);l.splice(i,1);save(STORAGE.gallery,l);renderGalleryList();showToast('Item deleted')};
 
-    window.removeGalleryItem=function(i){
-      const list=loadGallery();list.splice(i,1);saveGallery(list);renderGalleryList();showToast('Item deleted');
-    };
-
-    function renderPhraseList(){
-      const list=loadPhrases();
-      const box=document.getElementById('phraseList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom phrases yet</p>';return}
-      box.innerHTML=list.map((p,i)=>
-        '<div class="item-row"><div style="flex:1;min-width:0;font-size:0.9rem;color:#fff">“'+p+'”</div>'+
-        '<button class="btn btn-danger" onclick="removePhrase('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div>'
-      ).join('');
-    }
-
-    window.removePhrase=function(i){
-      const list=loadPhrases();list.splice(i,1);savePhrases(list);renderPhraseList();showToast('Phrase removed');
-    };
-
-    document.getElementById('unlockBtn').addEventListener('click',()=>{
-      const v=document.getElementById('passInput').value;
-      if(v===PASSCODE){sessionStorage.setItem('vaultAuth','1');show(false,true);renderGalleryList();renderPhraseList();document.getElementById('lockErr').textContent=''}
-      else{document.getElementById('lockErr').textContent='wrong passcode'}
-    });
-    document.getElementById('passInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('unlockBtn').click()});
-
-    document.getElementById('lockBtn').addEventListener('click',()=>{
-      sessionStorage.removeItem('vaultAuth');document.getElementById('passInput').value='';show(true,false);
-    });
-
-    document.getElementById('addGalleryBtn').addEventListener('click',()=>{
-      const title=document.getElementById('gTitle').value.trim();
+    document.getElementById('addGalleryBtn').addEventListener('click',function(){
+      var title=document.getElementById('gTitle').value.trim();
       if(!title){showToast('Title required');return}
-      const item={
-        title:title,
-        category:document.getElementById('gCategory').value,
-        date:document.getElementById('gDate').value.trim(),
-        img:document.getElementById('gImg').value.trim(),
-        bg1:document.getElementById('gBg1').value,
-        bg2:document.getElementById('gBg2').value
-      };
-      const list=loadGallery();list.unshift(item);saveGallery(list);
-      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';
+      var urlVal=document.getElementById('gImg').value.trim();
+      var item={title:title,category:document.getElementById('gCategory').value,date:document.getElementById('gDate').value.trim(),img:pendingGalleryImg||urlVal,bg1:document.getElementById('gBg1').value,bg2:document.getElementById('gBg2').value};
+      var list=load(STORAGE.gallery);list.unshift(item);save(STORAGE.gallery,list);
+      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp';
+      pendingGalleryImg='';document.getElementById('gPreview').style.display='none';
       renderGalleryList();showToast('Added to gallery');
     });
 
-    document.getElementById('addPhraseBtn').addEventListener('click',()=>{
-      const v=document.getElementById('pPhrase').value.trim();
+    /* ---------------- PHRASES ---------------- */
+    function renderPhraseList(){
+      var list=load(STORAGE.phrases),box=document.getElementById('phraseList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom phrases yet</p>';return}
+      box.innerHTML=list.map(function(p,i){
+        return '<div class="item-row"><div style="flex:1;min-width:0;font-size:0.9rem;color:#fff">“'+esc(p)+'”</div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removePhrase('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removePhrase=function(i){var l=load(STORAGE.phrases);l.splice(i,1);save(STORAGE.phrases,l);renderPhraseList();showToast('Phrase removed')};
+    document.getElementById('addPhraseBtn').addEventListener('click',function(){
+      var v=document.getElementById('pPhrase').value.trim();
       if(!v){showToast('Phrase required');return}
-      const list=loadPhrases();list.push(v);savePhrases(list);
-      document.getElementById('pPhrase').value='';
-      renderPhraseList();showToast('Phrase added');
+      var l=load(STORAGE.phrases);l.push(v);save(STORAGE.phrases,l);
+      document.getElementById('pPhrase').value='';renderPhraseList();showToast('Phrase added');
     });
 
-    if(isAuthed()){show(false,true);renderGalleryList();renderPhraseList()}else{show(true,false)}
+    /* ---------------- ABOUT ---------------- */
+    function renderFactList(){
+      var list=load(STORAGE.facts),box=document.getElementById('factList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom fun facts yet</p>';return}
+      box.innerHTML=list.map(function(f,i){
+        return '<div class="item-row"><div style="flex:1;min-width:0;font-size:0.9rem;color:#fff">'+esc(f)+'</div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeFact('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeFact=function(i){var l=load(STORAGE.facts);l.splice(i,1);save(STORAGE.facts,l);renderFactList();showToast('Fact removed')};
+    document.getElementById('saveBioBtn').addEventListener('click',function(){
+      var v=document.getElementById('aBio').value.trim();
+      if(!v){localStorage.removeItem(STORAGE.bio);showToast('Bio cleared to default')}
+      else{localStorage.setItem(STORAGE.bio,v);showToast('Bio saved')}
+    });
+    document.getElementById('resetBioBtn').addEventListener('click',function(){
+      localStorage.removeItem(STORAGE.bio);document.getElementById('aBio').value='';showToast('Bio reset to default');
+    });
+    document.getElementById('addFactBtn').addEventListener('click',function(){
+      var v=document.getElementById('aFact').value.trim();
+      if(!v){showToast('Fact required');return}
+      var l=load(STORAGE.facts);l.push(v);save(STORAGE.facts,l);
+      document.getElementById('aFact').value='';renderFactList();showToast('Fact added');
+    });
+
+    /* ---------------- SOCIALS ---------------- */
+    function renderSocialList(){
+      var list=load(STORAGE.socials),box=document.getElementById('socialList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom socials yet</p>';return}
+      box.innerHTML=list.map(function(s,i){
+        return '<div class="item-row"><div class="item-avatar" style="background:linear-gradient(135deg,#4764ec,#ff4466)">'+esc((s.label||'?')[0].toUpperCase())+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(s.label)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(s.url)+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeSocial('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeSocial=function(i){var l=load(STORAGE.socials);l.splice(i,1);save(STORAGE.socials,l);renderSocialList();showToast('Social removed')};
+    document.getElementById('addSocialBtn').addEventListener('click',function(){
+      var label=document.getElementById('sLabel').value.trim(),url=document.getElementById('sUrl').value.trim();
+      if(!label||!url){showToast('Label and URL required');return}
+      var l=load(STORAGE.socials);l.push({label:label,url:url});save(STORAGE.socials,l);
+      document.getElementById('sLabel').value='';document.getElementById('sUrl').value='';renderSocialList();showToast('Social added');
+    });
+
+    /* ---------------- SKILLS ---------------- */
+    function renderSkillList(){
+      var list=load(STORAGE.skills),box=document.getElementById('skillList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom skills yet</p>';return}
+      box.innerHTML=list.map(function(k,i){
+        return '<div class="item-row"><div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(k.name)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(k.percent)+'%</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeSkill('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeSkill=function(i){var l=load(STORAGE.skills);l.splice(i,1);save(STORAGE.skills,l);renderSkillList();showToast('Skill removed')};
+    document.getElementById('addSkillBtn').addEventListener('click',function(){
+      var name=document.getElementById('kName').value.trim();
+      var pct=parseInt(document.getElementById('kPercent').value,10);
+      if(!name||isNaN(pct)){showToast('Name + level required');return}
+      pct=Math.max(0,Math.min(100,pct));
+      var l=load(STORAGE.skills);l.push({name:name,percent:pct});save(STORAGE.skills,l);
+      document.getElementById('kName').value='';document.getElementById('kPercent').value='';renderSkillList();showToast('Skill added');
+    });
+
+    /* ---------------- PROJECTS ---------------- */
+    function renderProjectList(){
+      var list=load(STORAGE.projects),box=document.getElementById('projectList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom projects yet</p>';return}
+      box.innerHTML=list.map(function(p,i){
+        return '<div class="item-row">'+(p.img?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(p.img)+'\')"></div>':'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#1a1a2e)"></div>')+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(p.title)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(p.role)+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeProject=function(i){var l=load(STORAGE.projects);l.splice(i,1);save(STORAGE.projects,l);renderProjectList();showToast('Project removed')};
+    document.getElementById('addProjectBtn').addEventListener('click',function(){
+      var title=document.getElementById('prTitle').value.trim();
+      if(!title){showToast('Title required');return}
+      var item={role:document.getElementById('prRole').value.trim()||'Member',title:title,desc:document.getElementById('prDesc').value.trim(),img:pendingProjectImg||document.getElementById('prImg').value.trim(),link:document.getElementById('prLink').value.trim()||'#'};
+      var l=load(STORAGE.projects);l.unshift(item);save(STORAGE.projects,l);
+      document.getElementById('prRole').value='';document.getElementById('prTitle').value='';document.getElementById('prDesc').value='';document.getElementById('prLink').value='';document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='https://... .png / .webp';
+      pendingProjectImg='';document.getElementById('prPreview').style.display='none';
+      renderProjectList();showToast('Project added');
+    });
+
+    /* ---------------- FRIENDS ---------------- */
+    function renderFriendList(){
+      var list=load(STORAGE.friends),box=document.getElementById('friendList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom friends yet</p>';return}
+      box.innerHTML=list.map(function(f,i){
+        return '<div class="item-row"><div class="item-avatar" style="background:linear-gradient(135deg,'+f.bg1+','+f.bg2+')">'+esc(f.initial||(f.name||'?')[0])+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(f.name)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(f.note||'')+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeFriend=function(i){var l=load(STORAGE.friends);l.splice(i,1);save(STORAGE.friends,l);renderFriendList();showToast('Friend removed')};
+    document.getElementById('addFriendBtn').addEventListener('click',function(){
+      var name=document.getElementById('fName').value.trim();
+      if(!name){showToast('Name required');return}
+      var item={name:name,initial:document.getElementById('fInit').value.trim()||name[0].toUpperCase(),note:document.getElementById('fNote').value.trim(),bg1:document.getElementById('fBg1').value,bg2:document.getElementById('fBg2').value};
+      var l=load(STORAGE.friends);l.push(item);save(STORAGE.friends,l);
+      document.getElementById('fName').value='';document.getElementById('fInit').value='';document.getElementById('fNote').value='';
+      renderFriendList();showToast('Friend added');
+    });
+
+    /* ---------------- AWARDS ---------------- */
+    function renderAwardList(){
+      var list=load(STORAGE.awards),box=document.getElementById('awardList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom awards yet</p>';return}
+      box.innerHTML=list.map(function(a,i){
+        return '<div class="item-row"><div style="font-size:1.4rem;width:44px;text-align:center;flex-shrink:0">'+esc(a.icon||'🏅')+'</div>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(a.title)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(a.desc||'')+' · '+esc(a.date||'')+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeAward('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeAward=function(i){var l=load(STORAGE.awards);l.splice(i,1);save(STORAGE.awards,l);renderAwardList();showToast('Award removed')};
+    document.getElementById('addAwardBtn').addEventListener('click',function(){
+      var title=document.getElementById('wTitle').value.trim();
+      if(!title){showToast('Title required');return}
+      var item={icon:document.getElementById('wIcon').value.trim()||'🏅',title:title,desc:document.getElementById('wDesc').value.trim(),date:document.getElementById('wDate').value.trim(),color:document.getElementById('wColor').value};
+      var l=load(STORAGE.awards);l.push(item);save(STORAGE.awards,l);
+      document.getElementById('wIcon').value='';document.getElementById('wTitle').value='';document.getElementById('wDesc').value='';document.getElementById('wDate').value='';
+      renderAwardList();showToast('Award added');
+    });
+
+    /* ---------------- SETTINGS ---------------- */
+    document.getElementById('applyBgBtn').addEventListener('click',function(){
+      var v=document.getElementById('setBg').value.trim();
+      if(!v){localStorage.removeItem(STORAGE.bg);showToast('Default background restored (after reload)')}
+      else{localStorage.setItem(STORAGE.bg,v);showToast('Background saved (applies after reload)')}
+      document.getElementById('setBg').value='';
+    });
+    document.getElementById('changePassBtn').addEventListener('click',function(){
+      var v=document.getElementById('newPass').value;
+      if(v.length<4){showToast('Passcode must be 4+ chars');return}
+      localStorage.setItem(STORAGE.pass,v);
+      document.getElementById('newPass').value='';
+      showToast('Passcode changed');
+    });
+    document.getElementById('resetPassBtn').addEventListener('click',function(){
+      localStorage.setItem(STORAGE.pass,DEFAULT_PASS);
+      document.getElementById('newPass').value='';
+      showToast('Passcode reset to '+DEFAULT_PASS);
+    });
+    document.getElementById('resetDataBtn').addEventListener('click',function(){
+      Object.keys(STORAGE).forEach(function(k){localStorage.removeItem(STORAGE[k])});
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();renderAwardList();
+      showToast('All custom data wiped');
+    });
+
+    /* ---------------- LOCKFLOW + INIT ---------------- */
+    document.getElementById('unlockBtn').addEventListener('click',function(){
+      var v=document.getElementById('passInput').value;
+      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');show(false,true);loadAllLists();document.getElementById('lockErr').textContent=''}
+      else{document.getElementById('lockErr').textContent='wrong passcode'}
+    });
+    document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('unlockBtn').click()});
+    document.getElementById('lockBtn').addEventListener('click',function(){
+      sessionStorage.removeItem('vaultAuth');document.getElementById('passInput').value='';show(true,false);
+    });
+    document.querySelectorAll('.section-jump').forEach(function(b){
+      b.addEventListener('click',function(){document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'})});
+    });
+
+    function loadAllLists(){
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderSkillList();renderProjectList();renderFriendList();renderAwardList();
+      var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
+    }
+
+    if(isAuthed()){show(false,true);loadAllLists()}else{show(true,false)}
+
+    try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 </body>
 </html>

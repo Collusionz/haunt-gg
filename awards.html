@@ -363,6 +363,11 @@
             </div>
         </section>
 
+        <section id="vaultAwardsSection" style="display:none">
+            <h2 class="section-title">My Own</h2>
+            <div class="award-grid" id="vaultAwardsGrid"></div>
+        </section>
+
         <section>
             <h2 class="section-title">Stats Summary</h2>
             <div class="stats-grid">
@@ -382,5 +387,25 @@
         </section>
 
         </main>
+
+<script>
+    try{
+        const awards=JSON.parse(localStorage.getItem('vaultAwards')||'[]');
+        if(Array.isArray(awards)&&awards.length){
+            const grid=document.getElementById('vaultAwardsGrid');
+            if(grid){
+                document.getElementById('vaultAwardsSection').style.display='';
+                grid.innerHTML=awards.map(a=>
+                    '<div class="glass-card award-card glow-'+(a.color||'blue')+'">'+
+                    '<span class="award-icon">'+(a.icon||'🏅')+'</span>'+
+                    '<h3 class="award-title">'+a.title+'</h3>'+
+                    '<p class="award-desc">'+(a.desc||'')+'</p>'+
+                    '<span class="award-date">'+(a.date||'')+'</span></div>'
+                ).join('');
+            }
+        }
+    }catch(e){}
+    try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
+</script>
 </body>
 </html>

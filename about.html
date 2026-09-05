@@ -110,7 +110,7 @@
 
         <div class="mb-10">
           <p class="section-label">Who am I?</p>
-          <p style="font-size:1rem;line-height:1.7;color:rgba(255,255,255,0.7)">
+          <p style="font-size:1rem;line-height:1.7;color:rgba(255,255,255,0.7)" id="aboutBio">
             I'm <strong style="color:#fff">cz / collusionz</strong>, a 16 year old from Singapore. I'm passionate about gaming, community management, and building cool stuff on the web.
           </p>
         </div>
@@ -144,7 +144,7 @@
 
         <div>
           <p class="section-label">Fun Facts</p>
-          <div class="flex flex-col" style="gap:4px">
+          <div class="flex flex-col" style="gap:4px" id="funFacts">
             <div class="fun-fact">I've been a staff member in 12+ Discord servers</div>
             <div class="fun-fact">My timezone is UTC+8 (Singapore)</div>
             <div class="fun-fact">I prefer dark mode in everything</div>
@@ -196,6 +196,19 @@
 
     // ========== TOAST ==========
     function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+  </script>
+
+  <script>
+    try{
+      const bio=localStorage.getItem('vaultBio');
+      if(bio&&document.getElementById('aboutBio'))document.getElementById('aboutBio').textContent=bio;
+      const facts=JSON.parse(localStorage.getItem('vaultFacts')||'[]');
+      if(Array.isArray(facts)&&facts.length){
+        const box=document.getElementById('funFacts');
+        if(box)facts.forEach(f=>{const d=document.createElement('div');d.className='fun-fact';d.textContent=f;box.appendChild(d)});
+      }
+    }catch(e){}
+    try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 </body>
 </html>

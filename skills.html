@@ -259,7 +259,7 @@
                 <p class="page-subtitle">what I can do</p>
             </div>
 
-            <div class="category-grid">
+            <div class="category-grid" id="categoryGrid">
                 <div class="glass-card">
                     <div class="skill-category-title">Communication</div>
                     <div class="skill-item">
@@ -455,6 +455,25 @@
         document.querySelectorAll('.glass-card').forEach(card => {
             observer.observe(card);
         });
+    </script>
+
+    <script>
+        try{
+            const skills=JSON.parse(localStorage.getItem('vaultSkills')||'[]');
+            if(Array.isArray(skills)&&skills.length){
+                const grid=document.getElementById('categoryGrid');
+                if(grid){
+                    const card=document.createElement('div');
+                    card.className='glass-card';
+                    card.innerHTML='<div class="skill-category-title">Custom</div>'+skills.map(k=>
+                        '<div class="skill-item"><div class="skill-label"><span class="skill-name">'+k.name+'</span><span class="skill-percent">'+k.percent+'%</span></div>'+
+                        '<div class="skill-track"><div class="skill-fill animated" style="--target-width: '+k.percent+'%"></div></div></div>'
+                    ).join('');
+                    grid.appendChild(card);
+                }
+            }
+        }catch(e){}
+        try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
     </script>
 </body>
 </html>
