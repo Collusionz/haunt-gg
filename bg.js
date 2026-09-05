@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var DEFAULT_VIDEO = 'https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001';
+  var DEFAULT_VIDEO = '/audio/bg.mp4#t=0.001';
   var vaultBg = null;
   try { vaultBg = localStorage.getItem('vaultBg') || null; } catch (e) {}
   var mode = 'video';
@@ -24,6 +24,8 @@
   var speeds = [0.04, 0.12, 0.28];
   var sizes = [1, 1.6, 2.4];
   var alphas = [0.35, 0.6, 0.95];
+  var parallax = [3, 8, 16];
+  var mouse = { nx: 0, ny: 0 };
 
   function baseStyle() {
     return 'position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none';
@@ -59,6 +61,10 @@
     }
     canvas.style.zIndex = '-1';
     ctx = canvas.getContext('2d');
+    window.addEventListener('mousemove', function (e) {
+      mouse.nx = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
+      mouse.ny = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+    });
     resize();
     window.addEventListener('resize', function () { resize(); makeStars(); });
     makeStars();
@@ -94,6 +100,8 @@
     ctx.clearRect(0, 0, W, H);
     for (var i = 0; i < stars.length; i++) {
       var s = stars[i];
+      var px = mouse.nx * parallax[s.layer];
+      var py = mouse.ny * parallax[s.layer];
       s.y -= speeds[s.layer];
       if (s.y < -4) { s.y = H + 4; s.x = Math.random() * W; }
       s.tw += s.tws * 0.016;
@@ -101,7 +109,7 @@
       ctx.globalAlpha = a;
       ctx.fillStyle = '#cdd6ff';
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.arc(s.x + px, s.y + py, s.r, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.globalAlpha = 1;

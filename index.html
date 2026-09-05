@@ -60,13 +60,17 @@
     body.light .social-icon{border-color:rgba(85,115,244,0.2);color:#1a1a2e}
     .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:8px 20px;border-radius:12px;background:rgba(71,100,236,0.9);color:#fff;font-size:0.8rem;font-weight:500;backdrop-filter:blur(8px);z-index:200;opacity:0;transition:all 0.3s;pointer-events:none}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    .confetti{position:fixed;pointer-events:none;z-index:200}
+.confetti{position:fixed;pointer-events:none;z-index:200}
+    .widget-card{background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);border-radius:25px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:background 0.3s,border-color 0.3s}
+    body.light .widget-card{background:rgba(255,255,255,0.85);border-color:rgba(85,115,244,0.2)}
+    .sec-title{font-size:2rem;font-weight:700;letter-spacing:-0.02em;color:#fff;margin:0}
+    body.light .sec-title{color:#1a1a2e}
+    .sec-rule{display:block;width:16px;height:1px;background:rgba(255,255,255,0.8);flex-shrink:0}
   </style>
 </head>
 <body class="min-h-full flex flex-col">
   <nav class="side-nav">
-    <a href="/" class="active"><span class="nav-line"></span>Home</a>
-<a href="/about"><span class="nav-line"></span>About</a>
+<a href="/" class="active"><span class="nav-line"></span>Home</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -77,8 +81,7 @@
     <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
   </nav>
   <nav class="mobile-nav">
-    <a href="/" class="active">Home</a>
-<a href="/about">About</a>
+<a href="/" class="active">Home</a>
     <a href="/music">Music</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
@@ -94,7 +97,7 @@
   <div class="dark contents">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
       <canvas id="bgCanvas" class="absolute inset-0 w-full h-full"></canvas>
-      <video id="bgVideo" src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0"></video>
+      <video id="bgVideo" src="/audio/bg.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0"></video>
     </div>
 
 <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
@@ -104,15 +107,15 @@
             <div class="profile-card-inner" style="margin:-2rem;margin-bottom:0;padding:2rem;padding-bottom:0">
               <div class="-mx-8 -mt-8 overflow-hidden" style="border-top-left-radius:42px;border-top-right-radius:42px">
                 <div class="relative w-full overflow-hidden" style="height:160px;mask-image:linear-gradient(to top,transparent 0%,black 100%);-webkit-mask-image:linear-gradient(to top,transparent 0%,black 100%)">
-                  <img alt="Banner" src="https://r2.haunt.gg/banner/ac6de097-e866-496a-8bc2-93c3f1e5bcef.jpg" class="absolute inset-0 w-full h-full object-cover" />
+                  <img alt="Banner" src="/assets/img/banner.jpg" class="absolute inset-0 w-full h-full object-cover" />
                 </div>
               </div>
               <div class="flex flex-col gap-4">
                 <div class="flex items-start gap-4">
                   <div class="relative shrink-0 -mt-[60px]" style="width:120px;height:120px" id="avatarWrap">
                     <div class="avatar-ring"></div>
-                    <img alt="Avatar" src="https://r2.haunt.gg/avatar/850dc5e6-1cc7-420a-9358-213ee2b2277a.jpg" class="w-full h-full object-cover rounded-full relative z-10" />
-                    <img alt="" src="https://r2.haunt.gg/decorations/pandoran_seas.png" class="pointer-events-none absolute top-1/2 left-1/2 z-20 w-full h-full object-contain" style="transform:translate(-50%,-50%) scale(1.2)" />
+                    <img alt="Avatar" src="/assets/img/avatar.jpg" class="w-full h-full object-cover rounded-full relative z-10" />
+                    <img alt="" src="/assets/img/decoration.png" class="pointer-events-none absolute top-1/2 left-1/2 z-20 w-full h-full object-contain" style="transform:translate(-50%,-50%) scale(1.2)" />
                   </div>
                   <div class="flex min-w-0 flex-1 flex-col items-start justify-center gap-1" style="height:120px;margin-top:-60px">
                     <div class="flex w-full flex-wrap items-center gap-x-3 gap-y-1">
@@ -123,7 +126,7 @@
                 </div>
                 <div class="break-words w-full text-center text-xl" style="color:#5573f4">
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
-                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm <span id="ageCounter">16</span></strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)"><span id="ageSubtext">in 9 months</span></span></p>
+                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm <span id="ageCounter">16</span></strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">turning 17 in <span id="countdown" style="font-weight:700">…</span></span></p>
                   <p class="mb-2 leading-relaxed last:mb-0 text-base opacity-70" id="typingText"></p>
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
@@ -134,6 +137,71 @@
           </div>
 
           </div>
+      </section>
+
+      <!-- about me -->
+      <section id="about-me" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
+        <div class="mx-auto w-full" style="max-width:44rem">
+          <div class="flex items-center gap-3 mb-8">
+            <span class="sec-rule"></span>
+            <h2 class="sec-title">about me.</h2>
+          </div>
+          <div class="widget-card p-8 md:p-10 anim-reveal">
+            <p id="aboutMeBio" style="font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.75);margin-bottom:20px">I'm <strong style="color:#fff;font-weight:600">cz / collusionz</strong> — 16, Singapore, always building something.</p>
+            <div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+              <div>
+                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">LOCATION</p>
+                <p style="font-size:0.92rem;line-height:1.6">Singapore 🇸🇬 · UTC+8</p>
+              </div>
+              <div>
+                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">BIRTHDAY</p>
+                <p style="font-size:0.92rem;line-height:1.6">turning 17 in <span id="countdownBirthday" style="color:#8aa3ff;font-weight:600">…</span></p>
+              </div>
+            </div>
+            <div class="my-6" style="height:1px;background-image:linear-gradient(to right,transparent,rgba(255,255,255,0.15),transparent)"></div>
+            <p class="mb-3 text-xs font-semibold tracking-widest" style="color:#5573f4">WHAT I DO</p>
+            <ul class="flex flex-col gap-2" style="font-size:0.9rem">
+              <li>🎮 Play Valorant competitively</li>
+              <li>💬 Moderate &amp; manage Discord communities — staff in 12+ servers</li>
+              <li>🎵 Listen to music (pop, indie, and a bit of everything)</li>
+              <li>💻 Build websites and tools</li>
+              <li>🎨 Create content and designs</li>
+            </ul>
+            <ul class="about-facts flex flex-col gap-2 mt-6" style="font-size:0.9rem;color:rgba(255,255,255,0.6)">
+              <li>🗺 based in Singapore · UTC+8</li>
+              <li>🦉 night owl — most productive after midnight</li>
+              <li>👥 staff member in 12+ Discord servers</li>
+              <li>🎧 dark mode, always</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- guestbook -->
+      <section id="guestbook" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
+        <div class="mx-auto w-full" style="max-width:44rem">
+          <div class="flex items-center gap-3 mb-8">
+            <span class="sec-rule"></span>
+            <h2 class="sec-title">guestbook.</h2>
+          </div>
+          <div class="widget-card p-8 md:p-10" data-gb-board>
+            <p class="mb-4" style="font-size:0.9rem;opacity:0.7">leave a message — no account needed ✍️</p>
+            <div data-gb-counts style="min-height:18px"></div>
+            <div data-gb-list></div>
+            <div data-gb-morewrap style="text-align:center;margin-top:4px"><button type="button" data-gb-more style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;font-size:0.72rem;font-family:Satoshi,sans-serif;cursor:pointer;transition:all .2s">load more</button></div>
+            <div data-gb-form style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:16px">
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px">
+                <input type="text" data-gb-name maxlength="24" placeholder="your name" style="flex:1;min-width:150px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;font-size:0.85rem;color:#fff;outline:none" />
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.75rem;opacity:0.65;cursor:pointer"><input type="checkbox" data-gb-anon style="accent-color:#5573f4" /> anonymous</label>
+              </div>
+              <textarea data-gb-msg maxlength="280" rows="3" placeholder="say something nice…" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 12px;font-size:0.85rem;color:#fff;outline:none;resize:vertical;font-family:inherit;box-sizing:border-box"></textarea>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px">
+                <span data-gb-count style="font-size:0.7rem;opacity:0.35">0/280</span>
+                <button type="button" data-gb-post style="background:linear-gradient(90deg,#5573f4,#4764ec);color:#fff;border:0;border-radius:10px;padding:8px 20px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:Satoshi,sans-serif;transition:opacity .2s">Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -217,16 +285,18 @@
     typeLoop();
 
     // ========== AGE COUNTER (ticks in real-time) ==========
-    const birthDate=new Date('2010-03-15');
-    function updateAge(){
-      const now=new Date();
-      const diff=now-birthDate;
-      const years=Math.floor(diff/(365.25*24*60*60*1000));
-      const months=Math.floor((diff%(365.25*24*60*60*1000))/(30.44*24*60*60*1000));
-      document.getElementById('ageCounter').textContent=years;
-      document.getElementById('ageSubtext').textContent=`${months} months`;
+const birthday=new Date('2027-06-04T00:00:00+08:00');
+    function updateCountdown(){
+      const diff=birthday-new Date();
+      const els=[document.getElementById('countdown'),document.getElementById('countdownBirthday')];
+      if(diff<=0){els.forEach(el=>{if(el)el.textContent='today!'});return}
+      const d=Math.floor(diff/86400000);
+      const h=Math.floor(diff%86400000/3600000);
+      const m=Math.floor(diff%3600000/60000);
+      const s=Math.floor(diff%60000/1000);
+      els.forEach(el=>{if(el)el.textContent=`${d}d ${h}h ${m}m ${s}s`});
     }
-    updateAge();setInterval(updateAge,60000);
+    updateCountdown();setInterval(updateCountdown,1000);
 
     // ========== SOCIAL LINKS ==========
 const socials=[];
@@ -280,6 +350,15 @@ setTimeout(()=>p.remove(),600);
   </script>
 
   <script>
+    try{
+      const vb=localStorage.getItem('vaultBio');
+      if(vb&&document.getElementById('aboutMeBio'))document.getElementById('aboutMeBio').textContent=vb;
+      const vf=JSON.parse(localStorage.getItem('vaultFacts')||'[]');
+      if(Array.isArray(vf)&&vf.length){
+        const box=document.querySelector('#about-me .about-facts');
+        if(box)vf.forEach(f=>{const d=document.createElement('li');d.textContent=f;box.appendChild(d)});
+      }
+    }catch(e){}
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 <script src="/bg.js" defer></script>

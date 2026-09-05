@@ -67,8 +67,7 @@
 </head>
 <body>
   <nav class="side-nav">
-    <a href="/"><span class="nav-line"></span>Home</a>
-<a href="/about" class="active"><span class="nav-line"></span>About</a>
+<a href="/"><span class="nav-line"></span>Home</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -80,7 +79,6 @@
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
-    <a href="/about" class="active">About</a>
     <a href="/music">Music</a>
     <a href="/projects">Projects</a>
     <a href="/friends">Friends</a>
@@ -100,58 +98,15 @@
   <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
     <section class="relative w-full max-w-3xl mx-auto py-16 px-6 md:py-24 md:px-10">
 
-      <div class="anim-reveal" style="opacity:0">
+<div class="anim-reveal" style="opacity:0">
         <div class="header-accent"></div>
         <h1 style="font-size:2.4rem;font-weight:700;letter-spacing:-0.02em;margin:0 0 6px 0">About</h1>
-        <p style="font-size:0.95rem;color:rgba(255,255,255,0.45);margin:0 0 40px 0">who am I?</p>
       </div>
 
       <div class="about-card p-8 md:p-12 anim-reveal anim-delay-1" style="opacity:0">
-
-        <div class="mb-10">
-          <p class="section-label">Who am I?</p>
-          <p style="font-size:1rem;line-height:1.7;color:rgba(255,255,255,0.7)" id="aboutBio">
-            I'm <strong style="color:#fff">cz / collusionz</strong>, a 16 year old from Singapore. I'm passionate about gaming, community management, and building cool stuff on the web.
-          </p>
-        </div>
-
-        <div class="haunt-line mx-auto my-6 h-px w-full" style="max-width:100%"></div>
-
-        <div class="mb-10">
-          <p class="section-label">What do I do?</p>
-          <div class="flex flex-col" style="gap:2px">
-            <div class="about-list-item"><span>🎮</span><span>Play Valorant competitively</span></div>
-            <div class="about-list-item"><span>💬</span><span>Moderate &amp; manage Discord communities</span></div>
-            <div class="about-list-item"><span>🎵</span><span>Listen to music (mostly pop/hip-hop)</span></div>
-            <div class="about-list-item"><span>💻</span><span>Build websites and tools</span></div>
-            <div class="about-list-item"><span>🎨</span><span>Create content and designs</span></div>
-          </div>
-        </div>
-
-        <div class="haunt-line mx-auto my-6 h-px w-full" style="max-width:100%"></div>
-
-        <div class="mb-10">
-          <p class="section-label">Goals</p>
-          <div class="flex flex-wrap gap-2">
-            <div class="goal-pill">Reach Immortal in Valorant</div>
-            <div class="goal-pill">Grow my community</div>
-            <div class="goal-pill">Learn more about web development</div>
-            <div class="goal-pill">Build something people actually use</div>
-          </div>
-        </div>
-
-        <div class="haunt-line mx-auto my-6 h-px w-full" style="max-width:100%"></div>
-
-        <div>
-          <p class="section-label">Fun Facts</p>
-          <div class="flex flex-col" style="gap:4px" id="funFacts">
-            <div class="fun-fact">I've been a staff member in 12+ Discord servers</div>
-            <div class="fun-fact">My timezone is UTC+8 (Singapore)</div>
-            <div class="fun-fact">I prefer dark mode in everything</div>
-            <div class="fun-fact">Night owl — most productive after midnight</div>
-          </div>
-        </div>
-
+        <p style="font-size:1.05rem;line-height:1.8;color:rgba(255,255,255,0.8)" id="aboutBio">
+          I'm <strong style="color:#fff">cz / collusionz</strong>, a 16 year old from Singapore — I game, I moderate a few communities, and I build things for the web.
+        </p>
       </div>
 
     </section>
@@ -198,15 +153,10 @@
     function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
   </script>
 
-  <script>
+<script>
     try{
       const bio=localStorage.getItem('vaultBio');
       if(bio&&document.getElementById('aboutBio'))document.getElementById('aboutBio').textContent=bio;
-      const facts=JSON.parse(localStorage.getItem('vaultFacts')||'[]');
-      if(Array.isArray(facts)&&facts.length){
-        const box=document.getElementById('funFacts');
-        if(box)facts.forEach(f=>{const d=document.createElement('div');d.className='fun-fact';d.textContent=f;box.appendChild(d)});
-      }
     }catch(e){}
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>

@@ -16,7 +16,7 @@
 
   var GB = (window.GB = { configLoaded: false });
   var client = null, scriptLoaded = false, waiters = [];
-  var overlay = null, board = null;
+  var overlay = null, board = null, boards = [];
   var state = {
     items: [], likesBy: {}, liked: {}, loaded: 0, total: 0,
     queue: [], loading: false, hasMore: false
@@ -268,18 +268,6 @@
   var LBTN = 'background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:3px 10px;font-size:0.72rem;font-family:Satoshi,sans-serif;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px';
   var DBTN = 'background:transparent;border:1px solid rgba(255,70,85,0.35);color:#ff7a92;border-radius:999px;padding:3px 10px;font-size:0.72rem;font-family:Satoshi,sans-serif;cursor:pointer;transition:all .2s';
 
-  function ownerStrip() {
-    if (signedIn()) {
-      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(85,115,244,0.12);border:1px solid rgba(85,115,244,0.3);border-radius:12px;padding:8px 12px;margin-bottom:12px;font-size:0.78rem;color:#b9c6ff">' +
-        '<span>★ signed in as owner — your posts get the official badge</span>' +
-        '<button type="button" data-gb-signout style="background:transparent;border:0;color:#8aa3ff;cursor:pointer;font-size:0.72rem;font-family:Satoshi,sans-serif;text-decoration:underline">sign out</button></div>';
-    }
-    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">' +
-      '<span style="font-size:0.72rem;opacity:0.5">owner? sign in:</span>' +
-      '<input type="password" data-gb-pass placeholder="passcode" maxlength="40" style="flex:1;min-width:120px;max-width:180px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:6px 10px;font-size:0.78rem;color:#fff;outline:none" />' +
-      '<button type="button" data-gb-signin style="' + LBTN + '">sign in</button></div>';
-  }
-
   function countsHtml() {
     if (!client) return '';
     var n = state.total;
@@ -289,18 +277,14 @@
       '<span>' + likes + ' ' + (likes === 1 ? 'like' : 'likes') + '</span></div>';
   }
 
-  function renderAll() {
-    if (!board) return;
-    var root = board;
+  function renderOne(root) {
+    if (!root) return;
     var counts = root.querySelector('[data-gb-counts]');
     if (counts) counts.innerHTML = countsHtml();
-    var owner = root.querySelector('[data-gb-owner]');
-    if (owner) owner.innerHTML = ownerStrip();
     var list = root.querySelector('[data-gb-list]');
     if (!list) return;
     if (!client) {
       list.innerHTML = '<p style="font-size:0.8rem;opacity:0.4;text-align:center;padding:10px 0">guestbook is disabled — the owner hasn\'t connected it yet.</p>';
-      if (owner) owner.innerHTML = '';
       var wrap = root.querySelector('[data-gb-morewrap]'); if (wrap) wrap.style.display = 'none';
       var form = root.querySelector('[data-gb-form]'); if (form) form.style.display = 'none';
       return;
@@ -318,6 +302,7 @@
     }
     list.innerHTML = state.items.map(rowHtml).join('');
   }
+  function renderAll() { for (var i = 0; i < boards.length; i++) renderOne(boards[i]); }
   if (!document.getElementById('gbStyle')) {
     var st = document.createElement('style');
     st.id = 'gbStyle';
@@ -340,7 +325,6 @@
       '<p style="font-size:0.78rem;opacity:0.45;margin:4px 0 0">leave a message — no account needed</p></div>' +
       '<button type="button" data-gb-close style="background:transparent;border:0;color:rgba(255,255,255,0.5);font-size:1.3rem;cursor:pointer;line-height:1;padding:4px">×</button></div>' +
       '<div data-gb-counts style="min-height:18px"></div>' +
-      '<div data-gb-owner></div>' +
       '<div data-gb-list></div>' +
       '<div data-gb-morewrap style="text-align:center;margin-top:4px"><button type="button" data-gb-more style="' + LBTN + '">load more</button></div>' +
       '<div data-gb-form style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.07);padding-top:16px">' +
@@ -354,19 +338,35 @@
       '</div></div></div>';
     document.body.appendChild(overlay);
     var panel = overlay.firstChild.firstChild;
-    var name = panel.querySelector('[data-gb-name]');
-    var anon = panel.querySelector('[data-gb-anon]');
-    if (anon) anon.addEventListener('change', function () {
-      if (name) name.style.display = anon.checked ? 'none' : '';
-    });
+    bindAnon(panel);
+    if (boards.indexOf(panel) === -1) boards.push(panel);
     board = panel;
     return overlay;
+  }
+  function bindAnon(root) {
+    if (!root) return;
+    var name = root.querySelector('[data-gb-name]');
+    var anon = root.querySelector('[data-gb-anon]');
+    if (anon && !anon.getAttribute('data-gb-anon-bound')) {
+      anon.setAttribute('data-gb-anon-bound', '1');
+      anon.addEventListener('change', function () {
+        if (name) name.style.display = anon.checked ? 'none' : '';
+      });
+    }
+  }
+  function registerBoards() {
+    var els = document.querySelectorAll('[data-gb-board]');
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].getAttribute('data-gb-board-bound')) continue;
+      els[i].setAttribute('data-gb-board-bound', '1');
+      if (boards.indexOf(els[i]) === -1) boards.push(els[i]);
+      bindAnon(els[i]);
+    }
   }
   function open() {
     var o = ensureOverlay();
     o.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    var first = o.querySelector('[data-gb-pass]');
     refresh();
   }
   function close() {
@@ -393,23 +393,11 @@
     if ((el = t.closest ? t.closest('[data-gb-more]') : null)) { more(); return; }
     if ((el = t.closest ? t.closest('[data-gb-close]') : null)) { close(); return; }
     if (overlay && e.target === overlay) { close(); return; }
-    if ((el = t.closest ? t.closest('[data-gb-signin]') : null)) {
-      var passEl = o.querySelector('[data-gb-pass]');
-      var pass = passEl ? passEl.value.trim() : '';
-      if (!pass) { toast('enter the passcode'); return; }
-      verifyOwner(pass, function (ok) {
-        if (ok) { toast('signed in as owner'); var p = o.querySelector('[data-gb-pass]'); if (p) p.value = ''; refresh(); }
-        else toast('wrong passcode');
-      });
-      return;
-    }
-    if ((el = t.closest ? t.closest('[data-gb-signout]') : null)) {
-      ssDel('gbOwnerPass'); refresh(); toast('signed out'); return;
-    }
     if ((el = t.closest ? t.closest('[data-gb-post]') : null)) {
-      var msgEl = o.querySelector('[data-gb-msg]');
-      var nameEl = o.querySelector('[data-gb-name]');
-      var anonEl = o.querySelector('[data-gb-anon]');
+      var broot = t.closest ? (t.closest('[data-gb-board]') || overlay) : overlay;
+      var msgEl = broot.querySelector('[data-gb-msg]');
+      var nameEl = broot.querySelector('[data-gb-name]');
+      var anonEl = broot.querySelector('[data-gb-anon]');
       var msg = msgEl ? msgEl.value.trim() : '';
       if (!msg) { toast('write a message first'); return; }
       var bad = profanity(msg);
@@ -443,7 +431,8 @@
   }
   function guestbookBootstrap() {
     attachSidebarBoot();
-    loadClient(function (c) { GB.configLoaded = true; if (overlay && overlay.style.display !== 'none') refresh(); });
+    registerBoards();
+    loadClient(function (c) { GB.configLoaded = true; refresh(); });
   }
   window.guestbookBootstrap = guestbookBootstrap;
 

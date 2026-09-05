@@ -1,4 +1,4 @@
-?<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -46,7 +46,6 @@
 <body class="min-h-full flex flex-col">
 <nav class="side-nav">
     <a href="/"><span class="nav-line"></span>Home</a>
-    <a href="/about"><span class="nav-line"></span>About</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects"><span class="nav-line"></span>Projects</a>
@@ -58,7 +57,6 @@
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
-    <a href="/about">About</a>
     <a href="/music">Music</a>
     <a href="/gallery">Gallery</a>
     <a href="/projects">Projects</a>
@@ -70,7 +68,7 @@
   </nav>
   <div class="dark contents">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-      <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+      <video src="/audio/bg.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
     </div>
 
     <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent" style="padding-top:48px;padding-bottom:48px">
@@ -80,7 +78,7 @@
           <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Live widgets</p></div>
         </header>
 <div class="w-full">
-          <div class="widget-card relative w-full h-full" style="border-radius:25px;overflow:hidden">
+          <div class="widget-card relative w-full h-full" id="discordCard" style="border-radius:25px;overflow:hidden;transition:border-color .3s, box-shadow .3s">
             <div class="relative flex items-center gap-3 px-4 py-3" id="discordWidget">
               <div class="skeleton shrink-0 rounded-[14px]" style="width:74px;height:74px"></div>
               <div class="flex min-w-0 flex-1 flex-col gap-2">
@@ -137,12 +135,37 @@
       const el=document.getElementById('discordWidget'),u=data.discord_user;
       const av=u.avatar?`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator||'0')%5}.png`;
       const status=data.discord_status||'offline',activities=data.activities||[],spotify=data.listening_to_spotify?data.spotify:null;
-      let detail='';
-      if(spotify&&(spotify.track||spotify.song)){const t=spotify.track||spotify.song||'',a=spotify.artist||'';detail=`<span style="color:#1DB954">Listening to</span> <strong>${t}</strong>`;if(a)detail+=` <span style="opacity:0.6">by ${a}</span>`}
-      else if(activities.length>0){const p=activities.find(a=>a.type===3||(a.name&&a.name!=='Custom Status'&&a.name!=='Spotify')),c=activities.find(a=>a.name==='Custom Status');if(p){const n=p.name||'',d=p.details||'',s=p.state||'';detail=d||s||n}else if(c&&c.state){detail=c.state}else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}}
-      else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
-      let aImg='';if(spotify&&spotify.album_art_url){aImg=`<img src="${spotify.album_art_url}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}else if(activities.length>0&&activities[0].assets?.large_image){let img=activities[0].assets.large_image;if(img.startsWith('mp:external'))img='https://media.discordapp.net/external/'+img.replace('mp:external/','');aImg=`<img src="${img}" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`}
-      el.innerHTML=`<img src="${av}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" /><div style="display:flex;flex-direction:column;min-width:0;flex:1"><div style="font-weight:600;font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name||u.username}</div><div style="font-size:0.8rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">${detail}</div></div>${aImg}<div style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${statusColor(status)}"></div>`
+      const prof=data.profile||{};
+      const border=prof.border_color||'#5865F2';
+      const badges=Array.isArray(prof.badges)?prof.badges:[];
+      const plat=[data.active_on_desktop&&'desktop',data.active_on_mobile&&'mobile',data.active_on_web&&'web'].filter(Boolean);
+      const card=document.getElementById('discordCard');
+      if(card){card.style.borderColor=border;card.style.boxShadow=`0 0 24px ${border}22`}
+      let detail='',aImg='';
+      if(spotify&&(spotify.track||spotify.song)){
+        const t=spotify.track||spotify.song||'',a=spotify.artist||'';
+        detail=`<span style="color:#1DB954;font-weight:600">${t}</span>${a?` <span style="opacity:0.55">· ${a}</span>`:''}`;
+        if(spotify.album_art_url)aImg=`<img src="${spotify.album_art_url}" onerror="this.remove()" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`;
+      }else if(activities.length>0){
+        const p=activities.find(a=>a.type!==4&&a.name&&a.name!=='Custom Status'&&a.name!=='Spotify');
+        const c=activities.find(a=>a.type===4&&a.name==='Custom Status'&&a.state);
+        if(p){const n=p.name||'';detail=n+(p.details?` — ${p.details}`:'')+(p.state?` <span style="opacity:0.6">(${p.state})</span>`:'');if(p.assets){let img=p.assets.large_image||p.assets.small_image||'';if(img.startsWith('mp:external'))img='https://media.discordapp.net/external/'+img.replace('mp:external/','')+'&width=64&height=64';aImg=img?`<img src="${img}" onerror="this.remove()" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0" />`:''}}
+        else if(c&&c.state){detail=c.state}
+        else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
+      }else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
+      const badgeRow=badges.length?`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">`+badges.slice(0,8).map(b=>{if(!b.icon)return'';const src=String(b.icon).indexOf('http')===0?b.icon:'https://api.lanyard.rest/'+b.icon;return `<img src="${src}" title="${b.description||''}" style="width:20px;height:20px;border-radius:4px" onerror="this.remove()" />`}).join('')+`</div>`:'';
+      el.innerHTML=`<div style="display:flex;align-items:center;gap:16px;width:100%">
+        <div style="width:74px;height:74px;border-radius:50%;background:conic-gradient(${border},rgba(85,115,244,0.35),${border});padding:3px;position:relative;flex-shrink:0">
+          <img src="${av}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:2px solid #0b0d14" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'" />
+          <div style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;border:2px solid #0b0d14;background:${statusColor(status)}"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+          <div style="font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.global_name||u.username}${u.discriminator&&u.discriminator!=='0'?'<span style="opacity:0.4;font-weight:400;margin-left:4px">#'+u.discriminator+'</span>':''}</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px;min-width:0"><span style="font-size:0.82rem;color:#b9c6ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${detail}</span>${aImg}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;font-size:0.62rem;font-weight:700;letter-spacing:0.03em;color:${statusColor(status)}">● ${status.charAt(0).toUpperCase()+status.slice(1)}</span>${plat.length?'<span style="font-size:0.62rem;opacity:0.4">· '+plat.join(' / ')+'</span>':''}</div>
+          ${badgeRow}
+        </div>
+      </div>`;
     }
     function loadDiscord(){
       const renderOrError=d=>{if(d&&d.success){renderDiscord(d.data)}else{showError('discordWidget','Not found — join discord.gg/lanyard to enable')}};

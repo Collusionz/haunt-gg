@@ -43,8 +43,7 @@
 </head>
 <body class="min-h-full flex flex-col">
   <nav class="side-nav">
-    <a href="/"><span class="nav-line"></span>Home</a>
-<a href="/about"><span class="nav-line"></span>About</a>
+<a href="/"><span class="nav-line"></span>Home</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
     <a href="/gallery"><span class="nav-line"></span>Gallery</a>
     <a href="/projects" class="active"><span class="nav-line"></span>Projects</a>
@@ -56,7 +55,6 @@
   </nav>
   <nav class="mobile-nav">
     <a href="/">Home</a>
-    <a href="/about">About</a>
     <a href="/music">Music</a>
     <a href="/gallery">Gallery</a>
     <a href="/projects" class="active">Projects</a>
@@ -67,7 +65,7 @@
   </nav>
   <div class="dark contents">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-      <video src="https://r2.haunt.gg/background/5f034507-f610-4968-98f3-b614bb7b4339.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
+      <video src="/audio/bg.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
     </div>
 
     <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent" style="padding-top:48px;padding-bottom:48px">
@@ -85,18 +83,18 @@
 
   <script>
     const projects=[
-      {role:"Adminstrator",title:"Rivals Competitive League",desc:"Leads the charge on moderation and addressing fair-play violations.",img:"https://r2.haunt.gg/project/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp",link:"https://discord.gg/BuDr9eYt9m"},
-      {role:"Tester",title:"DUELISTS",desc:"Tasked with proposing ideas and ticket managing.",img:"https://r2.haunt.gg/project/029feceb-48da-4dd8-98e6-d22de74d1688.webp",link:"https://discord.gg/tGSH8649xR"},
-      {role:"Moderator",title:"ALCHEMY",desc:"Handled moderation tickets, resolving user reports, while keeping chat engaged.",img:"https://r2.haunt.gg/project/d90e60cf-dab9-4f16-8164-98e3913f1b4c.webp",link:"https://discord.gg/sFFSJAQhBs"},
-      {role:"Manager",title:"MRC",desc:"Oversaw moderation staff, enforced rules, managed channels and roles, handled reports, and ensured smooth daily server operations.",img:"https://r2.haunt.gg/project/d4b066e4-b243-4802-a52d-24a1d9427267.png",link:"https://discord.gg/BTdpkjQQbu"},
-      {role:"Tester",title:"lu studiosT",desc:"Roblox game tester responsible for playtesting new features, identifying bugs and exploits, providing feedback on gameplay balance, and reporting issues to developers before public release.",img:"https://r2.haunt.gg/project/a7ed631c-c7f0-46f2-992c-150f4d3da784.webp",link:"https://discord.gg/GXgSEXB3tY"},
-      {role:"Moderator",title:"Muz Crew",desc:"Managed support ticket systems, reviewed applications, handled user reports, enforced rules, and helped maintain an organized and safe community.",img:"https://r2.haunt.gg/project/f90a300b-af49-4b59-952a-2fc472a77302.webp",link:"https://discord.gg/wQwkDQrhNa"},
-      {role:"Manager",title:"Rivals Competitive Hangout",desc:"Handled moderation tickets, reviewed user reports, managed rule enforcement, and helped keep the server active and well-organized.",img:"https://r2.haunt.gg/project/be758949-e82a-4192-8e65-fac3ed198848.gif",link:"https://discord.gg/H5QhfZAjKr"},
-      {role:"Moderator",title:"Rivals Media",desc:"Assisted in posting people!",img:"https://r2.haunt.gg/project/53c9fd80-34e1-4533-9d87-80996c5d7e8b.webp",link:"https://discord.gg/rivalstv"},
-      {role:"Moderator",title:"Fang",desc:"Played a key role in establishing server structure, rules, and staff systems, while supporting moderation operations and helping manage and grow the community.",img:"https://r2.haunt.gg/project/108d058f-8092-4cff-83a1-c533188c53aa.webp",link:"https://discord.gg/vXuZwWT2F4"},
-      {role:"Moderator",title:"Xorf's",desc:"Responsible for enforcing rules, monitoring chats, handling reports, resolving conflicts, and maintaining a safe and friendly community.",img:"https://r2.haunt.gg/project/28e02af9-af3e-4190-908c-d64ae165df91.webp",link:"https://discord.gg/xedkKawmxZ"},
-      {role:"Manager",title:"Holds",desc:"Responsible for overseeing moderators, managing channels and roles, handling tickets and escalations, and ensuring smooth server operations.",img:"https://r2.haunt.gg/project/39e6974b-73ce-481e-9314-66037a4fa619.webp",link:"https://discord.gg/yjv5qbg2fN"},
-      {role:"Server Manager",title:"Arko's Kingdom",desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.",img:"https://r2.haunt.gg/project/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp",link:"https://discord.gg/jZyGa3dJA"},
+      {role:"Adminstrator",title:"Rivals Competitive League",desc:"Leads the charge on moderation and addressing fair-play violations.",img:"/assets/img/projects/6b89fdd9-b736-4367-b87c-80df070d0c2f.webp",link:"https://discord.gg/BuDr9eYt9m"},
+      {role:"Tester",title:"DUELISTS",desc:"Tasked with proposing ideas and ticket managing.",img:"/assets/img/projects/029feceb-48da-4dd8-98e6-d22de74d1688.webp",link:"https://discord.gg/tGSH8649xR"},
+      {role:"Moderator",title:"ALCHEMY",desc:"Handled moderation tickets, resolving user reports, while keeping chat engaged.",img:"/assets/img/projects/d90e60cf-dab9-4f16-8164-98e3913f1b4c.webp",link:"https://discord.gg/sFFSJAQhBs"},
+      {role:"Manager",title:"MRC",desc:"Oversaw moderation staff, enforced rules, managed channels and roles, handled reports, and ensured smooth daily server operations.",img:"/assets/img/projects/d4b066e4-b243-4802-a52d-24a1d9427267.png",link:"https://discord.gg/BTdpkjQQbu"},
+      {role:"Tester",title:"lu studiosT",desc:"Roblox game tester responsible for playtesting new features, identifying bugs and exploits, providing feedback on gameplay balance, and reporting issues to developers before public release.",img:"/assets/img/projects/a7ed631c-c7f0-46f2-992c-150f4d3da784.webp",link:"https://discord.gg/GXgSEXB3tY"},
+      {role:"Moderator",title:"Muz Crew",desc:"Managed support ticket systems, reviewed applications, handled user reports, enforced rules, and helped maintain an organized and safe community.",img:"/assets/img/projects/f90a300b-af49-4b59-952a-2fc472a77302.webp",link:"https://discord.gg/wQwkDQrhNa"},
+      {role:"Manager",title:"Rivals Competitive Hangout",desc:"Handled moderation tickets, reviewed user reports, managed rule enforcement, and helped keep the server active and well-organized.",img:"/assets/img/projects/be758949-e82a-4192-8e65-fac3ed198848.gif",link:"https://discord.gg/H5QhfZAjKr"},
+      {role:"Moderator",title:"Rivals Media",desc:"Assisted in posting people!",img:"/assets/img/projects/53c9fd80-34e1-4533-9d87-80996c5d7e8b.webp",link:"https://discord.gg/rivalstv"},
+      {role:"Moderator",title:"Fang",desc:"Played a key role in establishing server structure, rules, and staff systems, while supporting moderation operations and helping manage and grow the community.",img:"/assets/img/projects/108d058f-8092-4cff-83a1-c533188c53aa.webp",link:"https://discord.gg/vXuZwWT2F4"},
+      {role:"Moderator",title:"Xorf's",desc:"Responsible for enforcing rules, monitoring chats, handling reports, resolving conflicts, and maintaining a safe and friendly community.",img:"/assets/img/projects/28e02af9-af3e-4190-908c-d64ae165df91.webp",link:"https://discord.gg/xedkKawmxZ"},
+      {role:"Manager",title:"Holds",desc:"Responsible for overseeing moderators, managing channels and roles, handling tickets and escalations, and ensuring smooth server operations.",img:"/assets/img/projects/39e6974b-73ce-481e-9314-66037a4fa619.webp",link:"https://discord.gg/yjv5qbg2fN"},
+      {role:"Server Manager",title:"Arko's Kingdom",desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.",img:"/assets/img/projects/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp",link:"https://discord.gg/jZyGa3dJA"},
     ];
     try{
       const custom=JSON.parse(localStorage.getItem('vaultProjects')||'[]');
