@@ -136,21 +136,43 @@
   if (typeof window.pagehide !== 'undefined') window.addEventListener('pagehide', save);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') save(); });
 
-  var uEvs = ['pointerdown', 'keydown', 'touchstart'];
   var unlockDone = false;
   function unlock() {
     if (unlockDone) return;
     unlockDone = true;
-    uEvs.forEach(function (t) { document.removeEventListener(t, unlock); });
     try { localStorage.setItem('hzAutoplay', '1'); } catch (e) {}
     audio.muted = false;
     audio.play().catch(function () {});
   }
 
+  function buildEnter() {
+    if (document.getElementById('hzEnter')) return;
+    var o = document.createElement('div');
+    o.id = 'hzEnter';
+    o.setAttribute('role', 'button');
+    o.setAttribute('aria-label', 'enter');
+    o.style.cssText =
+      'position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;' +
+      'background:rgba(6,8,14,0.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:opacity .5s ease;' +
+      'color:#e8edff;font-family:"Satoshi",sans-serif;user-select:none;text-align:center';
+    o.innerHTML =
+      '<div style="font-size:3rem;font-weight:700;letter-spacing:0.18em;text-transform:lowercase;color:#f4f7f8;text-shadow:0 0 24px rgba(85,115,244,0.8)">enter</div>' +
+      '<div style="font-size:0.8rem;opacity:0.55;letter-spacing:0.05em">music starts when you do</div>';
+    document.body.appendChild(o);
+    function go() {
+      o.style.opacity = '0';
+      setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 520);
+      unlock();
+    }
+    ['click', 'keydown', 'touchstart', 'pointerdown'].forEach(function (t) {
+      o.addEventListener(t, go, { passive: true });
+    });
+  }
+
   function enterMuted() {
     audio.muted = true;
     audio.play().then(onPlay).catch(function () { refreshUI(); });
-    if (!unlockDone) uEvs.forEach(function (t) { document.addEventListener(t, unlock, { passive: true, once: true }); });
+    buildEnter();
   }
 
   function startAuto() {
