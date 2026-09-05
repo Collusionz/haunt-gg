@@ -300,7 +300,7 @@ setTimeout(()=>p.remove(),600);
     // ========== GUESTBOOK (SUPABASE) ==========
     const BAD_WORDS=['fuck','shit','bitch','cunt','nigger','nigga','faggot','retard','wtf','stfu','dick','pussy','slut','whore','asshole','bastard'];
     function containsProfanity(t){const x=' '+String(t||'').toLowerCase()+' ';for(let i=0;i<BAD_WORDS.length;i++){if(x.indexOf(' '+BAD_WORDS[i]+' ')!==-1)return BAD_WORDS[i]}return null}
-    function supabaseConfig(){try{const u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');return (u&&k)?{url:u,key:k}:null}catch(e){return null}}
+    function supabaseConfig(){try{const u=localStorage.getItem('supabaseUrl')||'https://dpjxjnqfqcodxvjvwvhr.supabase.co',k=localStorage.getItem('supabaseAnon')||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';return (u&&k)?{url:u,key:k}:null}catch(e){return null}}
     let gbClient=null,gbLoaded=false;
     function loadSupabase(cb){
       if(gbLoaded){cb();return}

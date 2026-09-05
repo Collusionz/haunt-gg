@@ -559,7 +559,7 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
     });
 
     /* ---------------- SUPABASE / GUESTBOOK ---------------- */
-    function supabaseConfig(){var u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');return (u&&k)?{url:u,key:k}:null}
+    function supabaseConfig(){var u=localStorage.getItem('supabaseUrl')||'https://dpjxjnqfqcodxvjvwvhr.supabase.co',k=localStorage.getItem('supabaseAnon')||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';return (u&&k)?{url:u,key:k}:null}
     var sbClient=null,sbLoaded=false;
     function getSbClient(cb){
       if(sbClient){cb(sbClient);return}
@@ -624,9 +624,9 @@ document.getElementById('resetDataBtn').addEventListener('click',function(){
       refreshCmList();showToast('Supabase connection saved');
     });
     (function prefillSupabase(){
-      var u=localStorage.getItem('supabaseUrl'),k=localStorage.getItem('supabaseAnon');
-      if(u)document.getElementById('supUrl').value=u;
-      if(k)document.getElementById('supAnon').value=k;
+      var u=localStorage.getItem('supabaseUrl')||'https://dpjxjnqfqcodxvjvwvhr.supabase.co',k=localStorage.getItem('supabaseAnon')||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';
+      document.getElementById('supUrl').value=u;
+      document.getElementById('supAnon').value=k;
     })();
     refreshCmList();
 

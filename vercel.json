@@ -18,6 +18,9 @@
     { "src": "/vault", "dest": "/vault.html" },
     { "src": "/gaming", "status": 404 },
     { "src": "/awards", "status": 404 },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
+  ],
+  "headers": [
+    { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] }
   ]
 }
