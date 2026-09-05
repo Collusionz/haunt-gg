@@ -248,12 +248,13 @@
     document.getElementById('greetingBadge').textContent=getGreeting();
     setTimeout(()=>document.getElementById('greetingBadge').style.opacity='1',200);
 
-    // ========== TYPING ANIMATION ==========
-    const typingPhrases=['building cool stuff','playing valorant','listening to music','coding at 3am','exploring new things','grinding ranked','hanging out on discord'];
-    try{const extra=JSON.parse(localStorage.getItem('vaultPhrases')||'[]');if(Array.isArray(extra)&&extra.length)typingPhrases.push(...extra)}catch(e){}
+// ========== TYPING ANIMATION (statuses from vault only) ==========
+    let typingPhrases=[];
+    try{const extra=JSON.parse(localStorage.getItem('vaultPhrases')||'[]');if(Array.isArray(extra))typingPhrases=extra.filter(x=>typeof x==='string'&&x.trim())}catch(e){}
     const typingEl=document.getElementById('typingText');
-    let phraseIdx=0,charIdx=0,isDeleting=false;
-    function typeLoop(){
+    if(typingPhrases.length){
+      let phraseIdx=0,charIdx=0,isDeleting=false;
+      function typeLoop(){
       const current=typingPhrases[phraseIdx];
       if(!isDeleting){
         typingEl.innerHTML=current.substring(0,charIdx+1)+'<span class="typing-cursor"></span>';
@@ -267,7 +268,10 @@
         setTimeout(typeLoop,40);
       }
     }
-    typeLoop();
+      typeLoop();
+    }else{
+      typingEl.style.display='none';
+    }
 
     // ========== AGE COUNTER (ticks in real-time) ==========
 const birthday=new Date('2027-06-04T00:00:00+08:00');
