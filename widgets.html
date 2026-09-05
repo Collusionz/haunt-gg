@@ -132,8 +132,14 @@
     function statusColor(s){return{online:'#23A55A',idle:'#F0B232',dnd:'#F23F43',offline:'#80848E'}[s]||'#80848E'}
     function showError(id,msg){const e=document.getElementById(id);if(!e)return;e.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;padding:12px;width:100%"><p style="font-size:0.85rem;opacity:0.5">${msg}</p></div>`}
 
-    function renderDiscord(data){
+    function renderDiscord(data,profile){
       const el=document.getElementById('discordWidget'),u=data.discord_user;
+      const puser=(profile&&profile.user)?profile.user:null;
+      const card=document.getElementById('discordCard');let bannerBox=card?card.querySelector('.dc-banner'):null;
+      if(card&&!bannerBox){bannerBox=document.createElement('div');bannerBox.className='dc-banner';bannerBox.style.cssText='position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:25px;overflow:hidden';card.insertBefore(bannerBox,card.firstChild);}
+      const banner=(puser&&puser.banner)||'';
+      if(bannerBox){if(banner){const bfmt=banner.charAt(1)==='_'?'gif':'png';bannerBox.innerHTML=`<img src="https://cdn.discordapp.com/banners/${u.id}/${banner}.${bfmt}?size=600" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%" onerror="this.style.display='none'"/><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,9,15,0.72) 0%,rgba(7,9,15,0.18) 55%,rgba(7,9,15,0.6) 100%)"></div>`;bannerBox.style.display='';bannerBox.style.background=(puser&&puser.banner_color)||'';}else{bannerBox.style.display='none';bannerBox.innerHTML='';}}
+      el.style.position='relative';el.style.zIndex='2';
       const av=u.avatar?`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`:`https://cdn.discordapp.com/embed/avatars/${parseInt(u.discriminator||'0')%5}.png`;
       const status=data.discord_status||'offline',activities=data.activities||[],spotify=data.listening_to_spotify?data.spotify:null;
       const prof=data.profile||{};
@@ -141,7 +147,8 @@
       const decoAsset=(du.avatar_decoration_data&&du.avatar_decoration_data.asset)||'';
       const nameCols=Array.isArray(du.display_name_styles&&du.display_name_styles.colors)?du.display_name_styles.colors.slice(0,6).map(function(c){return '#'+('000000'+(c>>>0).toString(16)).slice(-6)}):[];
       if(nameCols.length>=2&&!document.getElementById('hzNmKey')){const st=document.createElement('style');st.id='hzNmKey';st.textContent='@keyframes hzNameGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}';document.head.appendChild(st);}
-      const badges=Array.isArray(prof.badges)?prof.badges:[];
+      const badges=Array.isArray(profile&&profile.badges)?profile.badges:(Array.isArray(prof.badges)?prof.badges:[]);
+      const clan=(puser&&puser.clan&&puser.clan.tag)?puser.clan:null;
       const plat=[data.active_on_discord_desktop&&'desktop',data.active_on_discord_mobile&&'mobile',data.active_on_discord_web&&'web',data.active_on_discord_embedded&&'embed'].filter(Boolean);
       let detail='',aImg='';
       if(spotify&&(spotify.track||spotify.song)){
@@ -156,7 +163,7 @@
         else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
       }else{detail=`<span style="opacity:0.5">${status.charAt(0).toUpperCase()+status.slice(1)}</span>`}
       const badgeRow=badges.length?(`<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center">`+
-        badges.slice(0,8).map(b=>{if(!b.icon)return'';const src=String(b.icon).indexOf('http')===0?b.icon:'https://api.lanyard.rest/'+b.icon;return `<img src="${src}" title="${b.description||''}" style="width:20px;height:20px;border-radius:4px" onerror="this.remove()" />`}).join('')+
+        badges.slice(0,8).map(b=>{if(!b.icon)return'';const src=String(b.icon).indexOf('http')===0?b.icon:'https://cdn.discordapp.com/badge-icons/'+b.icon+'.png';return `<img src="${src}" title="${b.description||''}" style="width:20px;height:20px;border-radius:4px" onerror="this.remove()" />`}).join('')+
       `</div>`):'';
       el.innerHTML=`<div style="display:flex;align-items:center;gap:16px;width:100%">
         <div style="position:relative;width:64px;height:64px;flex-shrink:0">
@@ -165,15 +172,19 @@
           <div style="position:absolute;bottom:0;right:0;width:14px;height:14px;border-radius:50%;border:2px solid #0b0d14;background:${statusColor(status)};z-index:3"></div>
         </div>
         <div style="display:flex;flex-direction:column;min-width:0;flex:1">
-          <div style="font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${nameCols.length>=2?`background:linear-gradient(90deg,${nameCols.join(',')});background-size:200% 200%;animation:hzNameGrad 4s linear infinite;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;`:''}">${u.global_name||u.username}${u.discriminator&&u.discriminator!=='0'?'<span style="opacity:0.4;font-weight:400;margin-left:4px">#'+u.discriminator+'</span>':''}</div>
+          <div style="font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${nameCols.length>=2?`background:linear-gradient(90deg,${nameCols.join(',')});background-size:200% 200%;animation:hzNameGrad 4s linear infinite;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;`:''}">${u.global_name||u.username}${u.discriminator&&u.discriminator!=='0'?'<span style="opacity:0.4;font-weight:400;margin-left:4px">#'+u.discriminator+'</span>':''}${clan?` <span style="display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-left:4px;font-size:0.6rem;font-weight:800;letter-spacing:0.04em;padding:2px 7px;border-radius:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.16);flex-shrink:0">${clan.badge?`<img src="https://cdn.discordapp.com/clan-badges/${clan.identity_guild_id||u.id}/${clan.badge}.png" style="width:12px;height:12px;border-radius:3px" onerror="this.remove()"/>`:''}${clan.tag}</span>`:''}</div>
           <div style="display:flex;align-items:center;gap:10px;margin-top:4px;min-width:0"><span style="font-size:0.82rem;color:#b9c6ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${detail}</span>${aImg}</div>
           <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:5px;font-size:0.62rem;font-weight:700;letter-spacing:0.03em;color:${statusColor(status)}">● ${status.charAt(0).toUpperCase()+status.slice(1)}</span>${plat.length?'<span style="font-size:0.62rem;opacity:0.4">· '+plat.join(' / ')+'</span>':''}</div>
           ${badgeRow}
         </div>
       </div>`;
     }
+    let lastPresence=null,dstnProfile=null;
+    function loadDiscordProfile(){
+      return fetch(`https://dcdn.dstn.to/profile/${DISCORD_USER_ID}`).then(r=>r.json()).then(d=>{dstnProfile=d;if(lastPresence)renderDiscord(lastPresence,dstnProfile);return d}).catch(()=>{dstnProfile=null;return null});
+    }
     function loadDiscord(){
-      const renderOrError=d=>{if(d&&d.success){renderDiscord(d.data)}else{showError('discordWidget','Not found — join discord.gg/lanyard to enable')}};
+      const renderOrError=d=>{if(d&&d.success){lastPresence=d.data;renderDiscord(d.data,dstnProfile)}else{showError('discordWidget','Not found — join discord.gg/lanyard to enable')}};
       fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`)
         .then(r=>r.json()).then(renderOrError)
         .catch(()=>loadDiscordWS());
@@ -189,7 +200,7 @@
           const m=JSON.parse(ev.data||'{}');
           if(m.op===2){
             const d=(m.d&&(m.d[DISCORD_USER_ID]||(m.d.data&&m.d.data[DISCORD_USER_ID])));
-            if(d){clearTimeout(timeout);renderDiscord(d);try{ws.close()}catch(e){}}
+            if(d){clearTimeout(timeout);lastPresence=d;renderDiscord(d,dstnProfile);try{ws.close()}catch(e){}}
           }
         }catch(e){}
       };
@@ -197,7 +208,9 @@
     }
 
 
-    function renderTime(){const el=document.getElementById('timeWidget'),now=new Date();const opts={timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true};const dOpts={timeZone:TIMEZONE,weekday:'short',month:'short',day:'numeric'};const timeStr=now.toLocaleTimeString('en-US',opts),dateStr=now.toLocaleDateString('en-US',dOpts);const tzParts=now.toLocaleTimeString('en-US',{timeZone:TIMEZONE,hour:'numeric',minute:'numeric',second:'numeric',hour12:false});const[h,m,s]=tzParts.split(':').map(Number);const hDeg=((h%12)+m/60)*30,mDeg=(m+s/60)*6,sDeg=s*6;let marks='';for(let i=0;i<12;i++)marks+=`<div style="position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3);top:4px;left:calc(50% - 1px);transform-origin:bottom center;transform:translateX(-50%) rotate(${i*30}deg)"></div>`;el.innerHTML=`<div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center"><div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);position:relative;flex-shrink:0">${marks}<div style="position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);z-index:5"></div><div style="position:absolute;bottom:50%;left:50%;width:3px;height:22px;background:#fff;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${hDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:2px;height:30px;background:rgba(255,255,255,0.8);border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${mDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:1px;height:33px;background:#ff4466;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${sDeg}deg)"></div></div><div style="text-align:left"><div style="font-size:1.1rem;font-weight:600">${timeStr}</div><div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div><div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div></div></div>`}
+    function tzOffsetMin(d,tz){const p=new Intl.DateTimeFormat('en-US',{timeZone:tz,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(d),r={};for(const x of p)r[x.type]=x.value;return Math.round((Date.UTC(+r.year,+r.month-1,+r.day,+r.hour,+r.minute,+r.second)-d.getTime())/60000)}
+    function tzCompare(now,visitorTz,ownerTz){const diff=tzOffsetMin(now,visitorTz)-tzOffsetMin(now,ownerTz);if(diff===0)return"You're in the same timezone as me";const t=Math.abs(diff)/60,a=Number.isInteger(t)?String(t):t.toFixed(2).replace(/\.?0+$/,''),amount=Math.abs(diff)===60?'hour':'hours';return`You are ${a} ${amount} ${diff>0?'ahead of':'behind'} me`}
+    function renderTime(){const el=document.getElementById('timeWidget'),now=new Date();const opts={timeZone:TIMEZONE,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true};const dOpts={timeZone:TIMEZONE,weekday:'short',month:'short',day:'numeric'};const timeStr=now.toLocaleTimeString('en-US',opts),dateStr=now.toLocaleDateString('en-US',dOpts);const tzParts=now.toLocaleTimeString('en-US',{timeZone:TIMEZONE,hour:'numeric',minute:'numeric',second:'numeric',hour12:false});const[h,m,s]=tzParts.split(':').map(Number);const hDeg=((h%12)+m/60)*30,mDeg=(m+s/60)*6,sDeg=s*6;const visitorTz=(Intl.DateTimeFormat().resolvedOptions().timeZone)||'UTC';const cmpLine=tzCompare(now,visitorTz,TIMEZONE);let marks='';for(let i=0;i<12;i++)marks+=`<div style="position:absolute;width:2px;height:6px;background:rgba(255,255,255,0.3);top:4px;left:calc(50% - 1px);transform-origin:bottom center;transform:translateX(-50%) rotate(${i*30}deg)"></div>`;el.innerHTML=`<div style="display:flex;align-items:center;gap:14px;width:100%;justify-content:center"><div style="width:80px;height:80px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);position:relative;flex-shrink:0">${marks}<div style="position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);z-index:5"></div><div style="position:absolute;bottom:50%;left:50%;width:3px;height:22px;background:#fff;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${hDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:2px;height:30px;background:rgba(255,255,255,0.8);border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${mDeg}deg)"></div><div style="position:absolute;bottom:50%;left:50%;width:1px;height:33px;background:#ff4466;border-radius:2px;transform-origin:bottom center;transform:translateX(-50%) rotate(${sDeg}deg)"></div></div><div style="text-align:left"><div style="font-size:1.1rem;font-weight:600">${timeStr}</div><div style="font-size:0.75rem;color:#9CA3AF">${dateStr}</div><div style="font-size:0.7rem;color:#6B7280;margin-top:2px">${TIMEZONE}</div><div style="font-size:0.68rem;color:#556073;margin-top:3px;line-height:1.35">${cmpLine}</div></div></div>`}
     function loadTime(){renderTime();setInterval(renderTime,1000)}
 
     const WMO_CODES={0:['Clear','☀️'],1:['Mainly Clear','🌤️'],2:['Partly Cloudy','⛅'],3:['Overcast','☁️'],45:['Fog','🌫️'],48:['Rime Fog','🌫️'],51:['Light Drizzle','🌦️'],53:['Drizzle','🌦️'],55:['Heavy Drizzle','🌧️'],61:['Light Rain','🌧️'],63:['Rain','🌧️'],65:['Heavy Rain','🌧️'],71:['Light Snow','🌨️'],73:['Snow','🌨️'],75:['Heavy Snow','❄️'],80:['Light Showers','🌦️'],81:['Showers','🌧️'],82:['Heavy Showers','🌧️'],95:['Thunderstorm','⛈️'],96:['Thunderstorm + Hail','⛈️'],99:['Heavy T-storm + Hail','⛈️']};
@@ -208,7 +221,7 @@
     function loadLastfm(){const recentUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json&limit=5`;const infoUrl=`https://ws.audioscrobbler.com/2.0/?method=user.getInfo&user=${LASTFM_USERNAME}&api_key=${LASTFM_API_KEY}&format=json`;Promise.all([fetch(recentUrl).then(r=>r.json()),fetch(infoUrl).then(r=>r.json())]).then(([recent,info])=>{if(recent.recenttracks&&recent.recenttracks.track&&recent.recenttracks.track.length>0){renderLastfm(recent,info.user)}else showError('lastfmWidget','No recent tracks')}).catch(()=>showError('lastfmWidget','Unable to load'))}
 
 
-    loadDiscord();loadTime();loadWeather();loadLastfm();
+    loadDiscordProfile();loadDiscord();loadTime();loadWeather();loadLastfm();
   </script>
 
   <script>
