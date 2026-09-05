@@ -78,7 +78,6 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
-    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
   </nav>
   <nav class="mobile-nav">
 <a href="/" class="active">Home</a>
@@ -87,7 +86,6 @@
     <a href="/friends">Friends</a>
 <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
-    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;color:rgba(255,255,255,0.4);font-size:0.625rem;font-weight:300;letter-spacing:0.05em;cursor:pointer">Guestbook</button>
   </nav>
   <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
   <div class="scroll-progress" id="scrollProgress"></div>
@@ -126,7 +124,7 @@
                 </div>
                 <div class="break-words w-full text-center text-xl" style="color:#5573f4">
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
-                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm <span id="ageCounter">16</span></strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">turning 17 in <span id="countdown" style="font-weight:700">…</span></span></p>
+                  <p class="mb-2 leading-relaxed last:mb-0"><strong class="font-semibold">Im cz / collusionz :)<br/>I'm <span id="ageCounter">15</span></strong> <span class="rounded-sm px-1 py-0.5 text-[0.95em] font-medium" style="background-color:color-mix(in oklab,currentColor 12%,transparent)">turning 16 in <span id="countdown" style="font-weight:700">…</span></span></p>
                   <p class="mb-2 leading-relaxed last:mb-0 text-base opacity-70" id="typingText"></p>
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
@@ -137,44 +135,6 @@
           </div>
 
           </div>
-      </section>
-
-      <!-- about me -->
-      <section id="about-me" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
-        <div class="mx-auto w-full" style="max-width:44rem">
-          <div class="flex items-center gap-3 mb-8">
-            <span class="sec-rule"></span>
-            <h2 class="sec-title">about me.</h2>
-          </div>
-          <div class="widget-card p-8 md:p-10 anim-reveal">
-            <p id="aboutMeBio" style="font-size:1rem;line-height:1.8;color:rgba(255,255,255,0.75);margin-bottom:20px">I'm <strong style="color:#fff;font-weight:600">cz / collusionz</strong> — 16, Singapore, always building something.</p>
-            <div class="grid gap-6" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-              <div>
-                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">LOCATION</p>
-                <p style="font-size:0.92rem;line-height:1.6">Singapore 🇸🇬 · UTC+8</p>
-              </div>
-              <div>
-                <p class="mb-2 text-xs font-semibold tracking-widest" style="color:#5573f4">BIRTHDAY</p>
-                <p style="font-size:0.92rem;line-height:1.6">turning 17 in <span id="countdownBirthday" style="color:#8aa3ff;font-weight:600">…</span></p>
-              </div>
-            </div>
-            <div class="my-6" style="height:1px;background-image:linear-gradient(to right,transparent,rgba(255,255,255,0.15),transparent)"></div>
-            <p class="mb-3 text-xs font-semibold tracking-widest" style="color:#5573f4">WHAT I DO</p>
-            <ul class="flex flex-col gap-2" style="font-size:0.9rem">
-              <li>🎮 Play Valorant competitively</li>
-              <li>💬 Moderate &amp; manage Discord communities — staff in 12+ servers</li>
-              <li>🎵 Listen to music (pop, indie, and a bit of everything)</li>
-              <li>💻 Build websites and tools</li>
-              <li>🎨 Create content and designs</li>
-            </ul>
-            <ul class="about-facts flex flex-col gap-2 mt-6" style="font-size:0.9rem;color:rgba(255,255,255,0.6)">
-              <li>🗺 based in Singapore · UTC+8</li>
-              <li>🦉 night owl — most productive after midnight</li>
-              <li>👥 staff member in 12+ Discord servers</li>
-              <li>🎧 dark mode, always</li>
-            </ul>
-          </div>
-        </div>
       </section>
 
       <!-- guestbook -->
@@ -287,14 +247,19 @@
     // ========== AGE COUNTER (ticks in real-time) ==========
 const birthday=new Date('2027-06-04T00:00:00+08:00');
     function updateCountdown(){
-      const diff=birthday-new Date();
+      const txt=relUntil(birthday-new Date());
       const els=[document.getElementById('countdown'),document.getElementById('countdownBirthday')];
-      if(diff<=0){els.forEach(el=>{if(el)el.textContent='today!'});return}
-      const d=Math.floor(diff/86400000);
-      const h=Math.floor(diff%86400000/3600000);
-      const m=Math.floor(diff%3600000/60000);
-      const s=Math.floor(diff%60000/1000);
-      els.forEach(el=>{if(el)el.textContent=`${d}d ${h}h ${m}m ${s}s`});
+      els.forEach(el=>{if(el)el.textContent=txt});
+    }
+    function relUntil(diff){
+      if(diff<=0)return 'today';
+      const units=[['year',31536000000],['month',2628000000],['week',604800000],['day',86400000],['hour',3600000],['minute',60000],['second',1000]];
+      for(let i=0;i<units.length;i++){
+        if(diff/units[i][1]<1)continue;
+        const r=Math.round(diff/units[i][1]);
+        return r+' '+(r===1?units[i][0]:units[i][0]+'s');
+      }
+      return 'now';
     }
     updateCountdown();setInterval(updateCountdown,1000);
 
@@ -350,18 +315,10 @@ setTimeout(()=>p.remove(),600);
   </script>
 
   <script>
-    try{
-      const vb=localStorage.getItem('vaultBio');
-      if(vb&&document.getElementById('aboutMeBio'))document.getElementById('aboutMeBio').textContent=vb;
-      const vf=JSON.parse(localStorage.getItem('vaultFacts')||'[]');
-      if(Array.isArray(vf)&&vf.length){
-        const box=document.querySelector('#about-me .about-facts');
-        if(box)vf.forEach(f=>{const d=document.createElement('li');d.textContent=f;box.appendChild(d)});
-      }
-    }catch(e){}
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
 <script src="/bg.js" defer></script>
 <script src="/guestbook.js" defer></script>
+<script src="/player.js" defer></script>
 </body>
 </html>

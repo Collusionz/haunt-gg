@@ -121,7 +121,7 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
-    <button data-gb style="background:none;border:0;padding:0;font-family:'Satoshi',sans-serif;display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)"><span class="nav-line"></span>Guestbook</button>
+    
   </nav>
   <nav class="mobile-nav">
 <a href="/">Home</a>
@@ -158,8 +158,7 @@
           <div class="widget-card mb-10 anim-reveal anim-delay-1" style="padding:24px">
             <div class="flex items-center gap-2 mb-3">
               <div class="accent-bar" style="height:18px"></div>
-              <span class="text-xs font-bold tracking-widest" style="color:#ff4466">MY PLAYLIST</span>
-              <span class="text-xs" style="opacity:0.4;margin-left:2px">— random order</span>
+              <span class="text-xs font-bold tracking-widest" style="color:#ff4466">NOW PLAYING</span>
             </div>
             <div class="player-now">
               <img class="player-cover" id="playerCover" src="" alt="cover" />
@@ -179,7 +178,6 @@
               <div class="pprogress"><div class="pprogress-fill" id="playerProgressFill"></div></div>
               <span class="ptime" id="playerTime">0:00</span>
             </div>
-            <div class="flex flex-col gap-1 mt-2" id="playerList"></div>
           </div>
 
           <!-- Top Artists -->
@@ -335,28 +333,11 @@ const LF_PLACEHOLDER='2a96cbd8b46e442fc41c2b86b821562f';
       {src:'/audio/mystery-of-love.mp3',cover:'/assets/img/mystery-cover.jpg',title:'Mystery of Love',artist:'Sufjan Stevens'}
     ];
     const audio=new Audio();audio.preload='auto';
-    const player={order:[],cur:-1,random:true,listEl:document.getElementById('playerList')};
+    const player={order:[],cur:-1,random:true,listEl:null};
     function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t}return a}
     function pickNext(){return player.order[Math.floor(Math.random()*player.order.length)]}
     function fmt(s){if(!isFinite(s)||s<0)s=0;const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec}
-    function renderPlayerList(){
-      player.listEl.innerHTML=player.order.map((ti,i)=>{
-        const t=TRACKS[ti],on=i===player.cur;
-        const name=t.title||'untitled';
-        const activeLabel=on?'<div class="now-playing" style="flex-shrink:0"><span class="dot"></span><span>playing</span></div>':'';
-        return `<div class="track-row playlist-row ${on?'playing':''}" data-pidx="${i}" style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:12px;border:1px solid transparent">
-          <img class="track-art" src="${t.cover}" alt="" style="border:1px solid rgba(255,255,255,0.08)" />
-          <div class="flex-1 min-w-0"><p class="text-white font-medium text-sm truncate">${name}</p><p class="text-xs opacity-40">${t.artist||'—'}</p></div>
-          ${activeLabel}</div>`;
-      }).join('');
-      player.listEl.querySelectorAll('.playlist-row').forEach(function(row){
-        row.addEventListener('click',function(){
-          const i=parseInt(row.getAttribute('data-pidx'),10);
-          if(i===player.cur){audio.paused?audio.play():audio.pause();renderPlayBtn();return}
-          player.cur=i;renderPlayer();audio.play().catch(()=>{});
-        });
-      });
-    }
+    function renderPlayerList(){};
     function renderPlayBtn(){
       const b=document.getElementById('playerPlay');
       if(!b)return;b.textContent=audio.paused?'▶':'⏸';
@@ -424,6 +405,20 @@ const LF_PLACEHOLDER='2a96cbd8b46e442fc41c2b86b821562f';
     // kick off: default random order
     player.order=shuffleArr([0,1,2]);
     document.getElementById('playerShuffle').classList.toggle('off',!player.random);
+    // autoplay: try immediately, else start on first interaction (browser autoplay policy)
+    function attemptAutoPlay(){
+      if(player.cur<0){player.cur=0;renderPlayer()}
+      audio.play().catch(function(){
+        let done=false;
+        function kick(){
+          if(done)return;done=true;
+          ['pointerdown','keydown','touchstart'].forEach(function(t){document.removeEventListener(t,kick)});
+          audio.play().catch(function(){});
+        }
+        ['pointerdown','keydown','touchstart'].forEach(function(t){document.addEventListener(t,kick,{passive:true,once:true})});
+      });
+    }
+    attemptAutoPlay();
 
     loadTopArtists();loadRecentPlays();loadStats();
   </script>
