@@ -101,11 +101,11 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
               <div>
                 <label style="font-size:0.75rem;opacity:0.5">Game ID (role id)</label>
-                <input class="skeleton" id="roleId" inputmode="numeric" placeholder="e.g. 1234567890" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:#fff;font-family:'Satoshi',sans-serif;font-size:0.9rem;outline:none;margin-top:6px" />
+                <input class="skeleton" id="roleId" inputmode="numeric" placeholder="e.g. 1234567890" value="1436629574" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:#fff;font-family:'Satoshi',sans-serif;font-size:0.9rem;outline:none;margin-top:6px" />
               </div>
               <div>
                 <label style="font-size:0.75rem;opacity:0.5">Server ID (zone id)</label>
-                <input class="skeleton" id="zoneId" inputmode="numeric" placeholder="e.g. 1234" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:#fff;font-family:'Satoshi',sans-serif;font-size:0.9rem;outline:none;margin-top:6px" />
+                <input class="skeleton" id="zoneId" inputmode="numeric" placeholder="e.g. 1234" value="15962" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px 14px;color:#fff;font-family:'Satoshi',sans-serif;font-size:0.9rem;outline:none;margin-top:6px" />
               </div>
             </div>
             <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
@@ -143,7 +143,7 @@
   </div>
 
   <script>
-    const API='https://mlbb.rone.dev/api';
+    const API='https://arena.rone.dev/api';
     const TOKEN_KEY='mlbb_token';
     const CACHE_KEY='mlbb_data';
     const PROFILE_TTL=15*60*1000;
