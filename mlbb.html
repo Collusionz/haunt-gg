@@ -167,7 +167,10 @@
     async function apiGet(path,params){
       const q=params?'?'+Object.keys(params).filter(k=>params[k]!=null).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&'):'';
       const res=await fetch(API+path+q,{headers:auth?{Authorization:'Bearer '+(auth.token||auth.jwt)}:{}});
-      if(res.status===401){clearSession();throw new Error('SESSION_EXPIRED')}
+      // A failed request must not unlink the account. Some API endpoints can
+      // reject a valid saved session transiently, and clearing here made a
+      // successfully linked account disappear after a page refresh.
+      if(res.status===401)throw new Error('SESSION_EXPIRED')
       if(!res.ok)throw new Error('HTTP '+res.status);
       return res.json();
     }
@@ -189,6 +192,10 @@
       try{localStorage.removeItem(CACHE_KEY)}catch(e){}
       showLogin(true);
       document.getElementById('loginNote').textContent='' ;
+    }
+    function sessionNotice(){
+      const el=document.getElementById('profileBody');
+      if(el)el.innerHTML='<div style="text-align:center;padding:24px 8px;color:#9CA3AF">Your account is still linked, but its data could not be refreshed right now. Try refresh again later.</div>';
     }
 
     document.getElementById('sendVcBtn').addEventListener('click',async function(){
@@ -252,7 +259,10 @@
       if(!profileC){jobs.push(loadProfile());}else{renderProfile(profileC.info,profileC.stats)}
       if(!heroesC){jobs.push(loadHeroes());}else{renderHeroes(heroesC.list)}
       if(!matchesC){jobs.push(loadMatches());}else{renderMatches(matchesC.list)}
-      await Promise.all(jobs.map(j=>j.catch(e=>{if(e&&e.message==='SESSION_EXPIRED')return;console.error(e)})));
+      await Promise.all(jobs.map(j=>j.catch(e=>{
+        if(e&&e.message==='SESSION_EXPIRED'){sessionNotice();return;}
+        console.error(e);
+      })));
     }
 
     async function loadProfile(){
@@ -367,7 +377,7 @@
       document.getElementById('roleId').value=auth.role_id;
       document.getElementById('zoneId').value=auth.zone_id;
       try{await loadData(false);}
-      catch(e){if(e&&e.message==='SESSION_EXPIRED'){clearSession();return;}console.error(e)}
+      catch(e){if(e&&e.message==='SESSION_EXPIRED'){sessionNotice();return;}console.error(e)}
     })();
   </script>
 
