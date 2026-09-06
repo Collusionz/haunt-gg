@@ -230,3 +230,21 @@ revoke all on function site_upsert(text, jsonb, text) from public;
 grant execute on function site_upsert(text, jsonb, text) to anon;
 revoke all on function add_visit() from public;
 grant execute on function add_visit() to anon;
+
+-- ---------------------------------------------------------------------------
+-- Gallery media storage. This public bucket holds only display media while the
+-- gallery list itself remains owner-controlled by site_upsert above. The 100 MB
+-- limit matches the Vault uploader and prevents oversized uploads.
+-- ---------------------------------------------------------------------------
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('gallery-media', 'gallery-media', true, 104857600, array['video/mp4'])
+on conflict (id) do update set public = true, file_size_limit = 104857600,
+  allowed_mime_types = array['video/mp4'];
+
+drop policy if exists "gallery media public read" on storage.objects;
+create policy "gallery media public read" on storage.objects
+  for select to public using (bucket_id = 'gallery-media');
+drop policy if exists "gallery media vault upload" on storage.objects;
+create policy "gallery media vault upload" on storage.objects
+  for insert to anon with check (bucket_id = 'gallery-media');

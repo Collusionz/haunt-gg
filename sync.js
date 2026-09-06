@@ -119,10 +119,31 @@
     });
   }
 
+  // Gallery videos must not be converted to data URLs: localStorage has a
+  // roughly 5 MB quota. Uploading to Storage keeps gallery records small and
+  // permits files up to the bucket's configured size limit.
+  function uploadGalleryMedia(file, cb) {
+    ensure(function (c) {
+      if (!c || !c.storage || !file) { if (cb) cb('', 'Storage is unavailable'); return; }
+      var ext = ((file.name || '').split('.').pop() || 'mp4').replace(/[^a-z0-9]/gi, '').toLowerCase();
+      var name = 'gallery/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + ext;
+      c.storage.from('gallery-media').upload(name, file, {
+        contentType: file.type || 'application/octet-stream',
+        upsert: false,
+        cacheControl: '31536000'
+      }).then(function (r) {
+        if (r.error) { if (cb) cb('', r.error.message || 'Upload failed'); return; }
+        var publicUrl = c.storage.from('gallery-media').getPublicUrl(name);
+        var url = publicUrl && publicUrl.data && publicUrl.data.publicUrl;
+        if (cb) cb(url || '', url ? '' : 'Could not create media URL');
+      });
+    });
+  }
+
   window.Syn = {
     BAKED_URL: BAKED_URL, BAKED_KEY: BAKED_KEY, STORE: STORE,
     pull: pull, pullAll: pullAll, push: push, reconcileAll: reconcileAll,
     uploadMissing: uploadMissing,
-    apply: apply, touch: touch, addVisit: addVisit
+    apply: apply, touch: touch, addVisit: addVisit, uploadGalleryMedia: uploadGalleryMedia
   };
 })();

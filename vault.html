@@ -161,7 +161,7 @@
 
         <div id="secGallery" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🖼️ Gallery Manager</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">upload an image or use a URL — shows on <a href="/gallery" style="color:#8aa3ff">/gallery</a></p>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">upload an image or MP4 (up to 100 MB), crop images before saving, or use a URL — shows on <a href="/gallery" style="color:#8aa3ff">/gallery</a></p>
           <label class="fld">Title</label>
           <input class="input" id="gTitle" placeholder="e.g. Valorant Ace" />
 <label class="fld">Description</label>
@@ -171,7 +171,7 @@
             <input class="input" id="gImg" placeholder="https://... .png / .jpg / .webp / .mp4" />
             <button class="btn btn-secondary" id="gUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
           </div>
-          <input type="file" id="gFile" accept="image/*" style="display:none" />
+          <input type="file" id="gFile" accept="image/*,video/mp4" style="display:none" />
 <div class="upload-preview" id="gPreview"></div>
           <div class="flex gap-2">
             <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
@@ -577,7 +577,26 @@ var STORAGE={
     document.getElementById('gUploadBtn').addEventListener('click',function(){
       fileInput(function(f){
         var type=(f.type||'').toLowerCase();
-        if(type.indexOf('video/')===0||type==='image/gif'){
+        if(type.indexOf('video/')===0){
+          if(type!=='video/mp4'){showToast('Please upload an MP4 video');return}
+          if(f.size>100*1024*1024){showToast('MP4 must be 100 MB or smaller');return}
+          showToast('Uploading MP4…');
+          if(!window.Syn||!Syn.uploadGalleryMedia){showToast('Media storage is unavailable');return}
+          Syn.uploadGalleryMedia(f,function(url,err){
+            if(!url){showToast(err||'MP4 upload failed');return}
+            pendingGalleryImg=url;
+            var pv=document.getElementById('gPreview');
+            pv.innerHTML='';
+            var v=document.createElement('video');
+            v.src=url;v.muted=true;v.loop=true;v.playsInline=true;
+            v.setAttribute('style','width:100%;max-height:140px;object-fit:cover');
+            pv.appendChild(v);v.play().catch(function(){});pv.style.display='block';
+            var box=document.getElementById('gImg');box.value='';box.placeholder='MP4 ready (uploaded)';
+            showToast('MP4 uploaded');
+          });
+          return;
+        }
+        if(type==='image/gif'){
           var rd=new FileReader();
           rd.onload=function(){
             pendingGalleryImg=rd.result;
