@@ -245,7 +245,7 @@
           </div>
 <label class="fld">Or import from a Discord user ID</label>
           <div class="flex gap-2">
-            <input class="input" id="fDiscordId" placeholder="Discord user ID (needs Lanyard)" />
+            <input class="input" id="fDiscordId" placeholder="Discord user ID" />
             <button class="btn btn-secondary" id="fDiscordImport" style="flex-shrink:0">Import</button>
           </div>
           <div class="flex gap-2">
@@ -939,18 +939,31 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       var id=document.getElementById('fDiscordId').value.trim();
       if(!id||!/^\d+$/.test(id)){showToast('Enter a numeric Discord user ID');return}
       var btn=this;btn.disabled=true;btn.textContent='Importing…';
-      fetch('https://api.lanyard.rest/v1/users/'+encodeURIComponent(id))
+      function fill(j){
+        var u=(j&&j.data)?j.data:null;
+        if(!u||(!u.global_name&&!u.username)||!u.id)throw new Error('notfound');
+        var name=u.global_name||u.username;
+        var av=(u.avatarURL&&u.avatarURL.indexOf('cdn.discordapp.com')!==-1)?u.avatarURL:'';
+        if(!av&&u.avatar&&u.id)av='https://cdn.discordapp.com/avatars/'+u.id+'/'+u.avatar+(String(u.avatar).indexOf('a_')===0?'.gif':'.png')+'?size=256';
+        document.getElementById('fName').value=name;
+        if(av){document.getElementById('fImg').value=av;document.getElementById('fImg').placeholder='ready (imported)'}
+        showToast('Imported '+(name||'user')+(av?'':' — no avatar set'));
+      }
+      fetch('https://japi.rest/discord/v1/user/'+encodeURIComponent(id))
         .then(function(r){return r.json()})
-        .then(function(j){
-          if(!j||!j.success||!j.data||!j.data.discord_user)throw new Error('notfound');
-          var u=j.data.discord_user;
-          var name=u.global_name||u.username||'';
-          var av=u.avatar?('https://cdn.discordapp.com/avatars/'+u.id+'/'+u.avatar+(u.avatar.indexOf('a_')===0?'.gif':'.png')+'?size=256'):'';
-          if(name)document.getElementById('fName').value=name;
-          if(av){document.getElementById('fImg').value=av;document.getElementById('fImg').placeholder='ready (imported)'}
-          showToast('Imported '+(name||'user')+(av?'':' — no avatar set'));
+        .then(fill)
+        .catch(function(){
+          return fetch('https://api.lanyard.rest/v1/users/'+encodeURIComponent(id))
+            .then(function(r){return r.json()})
+            .then(function(j){
+              if(!j||!j.success||!j.data||!j.data.discord_user)throw new Error('notfound');
+              var u=j.data.discord_user;
+              var name=u.global_name||u.username||'';
+              var av=u.avatar?('https://cdn.discordapp.com/avatars/'+u.id+'/'+u.avatar+(u.avatar.indexOf('a_')===0?'.gif':'.png')+'?size=256'):'';
+              return fill({data:{id:u.id,global_name:name,username:u.username,avatar:u.avatar,avatarURL:av}});
+            });
         })
-        .catch(function(){showToast('Not found — they need Lanyard connected (join discord.gg/UrXF2cfJ7F)')})
+        .catch(function(){showToast('Not found — check the user ID')})
         .then(function(){btn.disabled=false;btn.textContent='Import'});
     });
 
