@@ -34,6 +34,30 @@ and run it. The script sets up:
 > `set search_path = public` to the functions — PostgREST hides RPC functions that
 > carry a `SET` clause, so the RPCs would 404.
 
+## Cross-browser content sync
+
+Gallery items, links, projects, acquaintances, status phrases, custom socials and
+the view counter are now synced through Supabase so they match on every browser/device
+(`/sync.js` reads/writes a `site_data` key/value table).
+
+To enable it, re-open **SQL Editor → New query** and run **only the `site_data`
+section** at the bottom of `supa-setup.sql` (the part that creates `site_data`,
+`site_upsert` and `add_visit`). It is idempotent — safe to run again.
+
+How it behaves:
+
+- **Reads** go through the public RLS policy, so visitors always see the latest owner content.
+- **Writes** are owner-only via the `site_upsert` RPC, protected by the same vault passcode
+  (`cz2026` by default) checked server-side with bcrypt — visitors can never overwrite content.
+- **Reconcile**: opening `/vault` pulls the server copy into your browser. If the server is
+  empty but this browser has content, the vault pushes it up once (first-time migration).
+- **Offline/no-SQL fallback**: still renders from localStorage, so nothing breaks if the
+  backend is unreachable.
+- The **view counter** increments atomically server-side (`add_visit`) and shows the shared
+  global count everywhere; localStorage is just a cache.
+- Not synced (deliberately): the passcode, your background preference and Supabase
+  credentials — those are per-browser settings.
+
 ## 3. Connect the site
 
 1. Open `https://cz-navy.vercel.app/vault` and unlock it (default passcode `cz2026`).

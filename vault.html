@@ -7,6 +7,7 @@
   <meta name="description" content="personal website" />
   <meta name="theme-color" content="#5573f4" />
   <meta name="robots" content="noindex,nofollow" />
+  <script src="/sync.js"></script>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
@@ -340,14 +341,27 @@ var STORAGE={
       socials:'vaultSocials', links:'vaultLinks', projects:'vaultProjects',
       friends:'vaultFriends', bg:'vaultBg', pass:'vaultPass'
     };
+    var SYNC_MAP={'vaultGallery':'gallery','vaultPhrases':'phrases','vaultSocials':'socials','vaultLinks':'links','vaultProjects':'projects','vaultFriends':'friends'};
     var DEFAULT_PASS='cz2026';
+
+    function reconcileFromServer(){
+      if(!window.Syn)return;
+      Syn.reconcileAll(function(changed){
+        if(changed)loadAllLists();
+        if(Syn.uploadMissing)Syn.uploadMissing(getPass(),function(){});
+      });
+    }
 
     function getPass(){return localStorage.getItem(STORAGE.pass)||DEFAULT_PASS}
     function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2400)}
     function isAuthed(){return sessionStorage.getItem('vaultAuth')==='1'}
     function show(lock,panel){document.getElementById('lockScreen').style.display=lock?'block':'none';document.getElementById('panelScreen').style.display=panel?'block':'none'}
     function load(k){return JSON.parse(localStorage.getItem(k)||'[]')}
-    function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+    function save(k,v){
+      localStorage.setItem(k,JSON.stringify(v));
+      var sk=SYNC_MAP[k];
+      if(window.Syn&&sk){Syn.push(sk,v,getPass())}
+    }
     function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
     function fileInput(onchange,accept){
@@ -996,7 +1010,7 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
     /* ---------------- LOCKFLOW + INIT ---------------- */
 document.getElementById('unlockBtn').addEventListener('click',function(){
       var v=document.getElementById('passInput').value;
-      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();document.getElementById('lockErr').textContent=''}
+      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();reconcileFromServer();document.getElementById('lockErr').textContent=''}
       else{document.getElementById('lockErr').textContent='wrong passcode'}
     });
     document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('unlockBtn').click()});
@@ -1014,7 +1028,7 @@ function loadAllLists(){
 
     if(isAuthed()){
       if(!sessionStorage.getItem('gbOwnerPass'))sessionStorage.setItem('gbOwnerPass',getPass());
-      show(false,true);loadAllLists()
+      show(false,true);loadAllLists();reconcileFromServer()
     }else{show(true,false)}
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}

@@ -67,7 +67,8 @@
     .sec-title{font-size:2rem;font-weight:700;letter-spacing:-0.02em;color:#fff;margin:0}
     body.light .sec-title{color:#1a1a2e}
     .sec-rule{display:block;width:16px;height:1px;background:rgba(255,255,255,0.8);flex-shrink:0}
-  </style>
+</style>
+  <script src="/sync.js"></script>
 </head>
 <body class="min-h-full flex flex-col">
   <nav class="side-nav">
@@ -174,25 +175,26 @@
     const bgVideo=document.getElementById('bgVideo');
     bgVideo.play().catch(()=>{});
 
-    // ========== VIEW COUNTER ==========
+    // ========== VIEW COUNTER (global via sync.js) ==========
+    function renderVisitCount(n){
+      const el=document.getElementById('visitCount');
+      if(!el)return;
+      el.innerHTML='<span class="vc-num">0</span> '+(n===1?'view':'views');
+      el.style.opacity='1';
+      const num=el.querySelector('.vc-num');
+      const step=Math.max(1,Math.round(n/22));
+      let cur=0;
+      const iv=setInterval(()=>{
+        cur=Math.min(n,cur+step);
+        num.textContent=cur;
+        if(cur>=n)clearInterval(iv);
+      },24);
+    }
     try {
       const KEY='hauntVisits';
-      let n=parseInt(localStorage.getItem(KEY)||'0',10)||0;
-      n++;
-      localStorage.setItem(KEY,String(n));
-      const el=document.getElementById('visitCount');
-      if(el){
-        el.innerHTML='<span class="vc-num">0</span> '+(n===1?'view':'views');
-        el.style.opacity='1';
-        const num=el.querySelector('.vc-num');
-        const step=Math.max(1,Math.round(n/22));
-        let cur=0;
-        const iv=setInterval(()=>{
-          cur=Math.min(n,cur+step);
-          num.textContent=cur;
-          if(cur>=n)clearInterval(iv);
-        },24);
-      }
+      const cached=parseInt(localStorage.getItem(KEY)||'0',10)||0;
+      renderVisitCount(cached+1);
+      if(window.Syn)Syn.addVisit(n=>{if(typeof n==='number')renderVisitCount(n)});
     }catch(e){};
 
     // ========== THEME TOGGLE ==========
@@ -237,30 +239,35 @@
     document.getElementById('greetingBadge').textContent=getGreeting();
     setTimeout(()=>document.getElementById('greetingBadge').style.opacity='1',200);
 
-// ========== TYPING ANIMATION (statuses from vault only) ==========
-    let typingPhrases=[];
-    try{const extra=JSON.parse(localStorage.getItem('vaultPhrases')||'[]');if(Array.isArray(extra))typingPhrases=extra.filter(x=>typeof x==='string'&&x.trim())}catch(e){}
-    const typingEl=document.getElementById('typingText');
-    if(typingPhrases.length){
+// ========== TYPING ANIMATION (statuses from vault, synced) ==========
+    let typingPhrases=[],typingGen=0;
+    function startTyping(){
+      const gen=++typingGen;
+      const typingEl=document.getElementById('typingText');
+      if(!typingEl)return;
+      try{const extra=JSON.parse(localStorage.getItem('vaultPhrases')||'[]');typingPhrases=Array.isArray(extra)?extra.filter(x=>typeof x==='string'&&x.trim()):[]}catch(e){typingPhrases=[]}
+      if(!typingPhrases.length){typingEl.style.display='none';return}
+      typingEl.style.display='';
       let phraseIdx=0,charIdx=0,isDeleting=false;
       function typeLoop(){
-      const current=typingPhrases[phraseIdx];
-      if(!isDeleting){
-        typingEl.innerHTML=current.substring(0,charIdx+1)+'<span class="typing-cursor"></span>';
-        charIdx++;
-        if(charIdx===current.length){isDeleting=true;setTimeout(typeLoop,2000);return}
-        setTimeout(typeLoop,80+Math.random()*40);
-      }else{
-        typingEl.innerHTML=current.substring(0,charIdx)+'<span class="typing-cursor"></span>';
-        charIdx--;
-        if(charIdx<0){isDeleting=false;charIdx=0;phraseIdx=(phraseIdx+1)%typingPhrases.length;setTimeout(typeLoop,500);return}
-        setTimeout(typeLoop,40);
+        if(gen!==typingGen)return;
+        const current=typingPhrases[phraseIdx];
+        if(!isDeleting){
+          typingEl.innerHTML=current.substring(0,charIdx+1)+'<span class="typing-cursor"></span>';
+          charIdx++;
+          if(charIdx===current.length){isDeleting=true;setTimeout(typeLoop,2000);return}
+          setTimeout(typeLoop,80+Math.random()*40);
+        }else{
+          typingEl.innerHTML=current.substring(0,charIdx)+'<span class="typing-cursor"></span>';
+          charIdx--;
+          if(charIdx<0){isDeleting=false;charIdx=0;phraseIdx=(phraseIdx+1)%typingPhrases.length;setTimeout(typeLoop,500);return}
+          setTimeout(typeLoop,40);
+        }
       }
-    }
       typeLoop();
-    }else{
-      typingEl.style.display='none';
     }
+    startTyping();
+    if(window.Syn)Syn.pull('phrases',v=>{if(v&&Syn.apply('vaultPhrases',v))startTyping()});
 
 // ========== AGE COUNTER (discord-style unix timestamp) ==========
 const BIRTHDAY_EPOCH=1812038400;
@@ -290,10 +297,14 @@ function updateCountdown(){
 }
 updateCountdown();setInterval(updateCountdown,1000);
 
-    // ========== SOCIAL LINKS ==========
-const socials=[];
-    try{const extra=JSON.parse(localStorage.getItem('vaultSocials')||'[]');if(Array.isArray(extra)&&extra.length){extra.forEach(s=>{if(s&&s.label&&s.url)socials.unshift({icon:`<span style="font-size:13px;font-weight:700">${(s.label[0]||'?').toUpperCase()}</span>`,link:s.url,label:s.label})})}}catch(e){}
-    document.getElementById('socialLinks').innerHTML=socials.map(s=>`<a href="${s.link}" target="_blank" rel="noopener" class="social-icon" title="${s.label}">${s.icon}</a>`).join('');
+// ========== SOCIAL LINKS (synced) ==========
+function renderSocialLinks(){
+  const socials=[];
+  try{const extra=JSON.parse(localStorage.getItem('vaultSocials')||'[]');if(Array.isArray(extra)&&extra.length){extra.forEach(s=>{if(s&&s.label&&s.url)socials.unshift({icon:`<span style="font-size:13px;font-weight:700">${(s.label[0]||'?').toUpperCase()}</span>`,link:s.url,label:s.label})})}}catch(e){}
+  document.getElementById('socialLinks').innerHTML=socials.map(s=>`<a href="${s.link}" target="_blank" rel="noopener" class="social-icon" title="${s.label}">${s.icon}</a>`).join('');
+}
+renderSocialLinks();
+if(window.Syn)Syn.pull('socials',v=>{if(v&&Syn.apply('vaultSocials',v))renderSocialLinks()});
 
     // ========== KONAMI CODE ==========
     const konami=[38,38,40,40,37,39,37,39,66,65];

@@ -169,3 +169,64 @@ revoke all on function delete_comment(bigint, text) from public;
 grant execute on function delete_comment(bigint, text) to anon;
 revoke all on function change_passcode(text, text) from public;
 grant execute on function change_passcode(text, text) to anon;
+
+-- ---------------------------------------------------------------------------
+-- site_data: cross-browser sync of owner content (gallery, links, projects,
+-- friends, phrases, socials) plus the global view counter. Guests read via a
+-- public RLS policy; only the owner can write, gated by the same bcrypt
+-- passcode used for the guestbook (security-definer RPC, grant to anon).
+-- This section is idempotent, so you can run just it (or re-run everything).
+-- ---------------------------------------------------------------------------
+
+create table if not exists site_data (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table site_data enable row level security;
+
+drop policy if exists "site_data public read" on site_data;
+create policy "site_data public read" on site_data
+  for select to anon using (true);
+
+create or replace function site_upsert(dkey text, dvalue jsonb, passcode text)
+returns void
+language plpgsql
+security definer
+as $$
+declare h text;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  if h <> crypt(coalesce(passcode, ''), h) then
+    raise exception 'wrong passcode';
+  end if;
+  insert into site_data (key, value, updated_at)
+  values (dkey, coalesce(dvalue, 'null'::jsonb), now())
+  on conflict (key) do update
+    set value = excluded.value, updated_at = now();
+end $$;
+
+create or replace function add_visit()
+returns bigint
+language plpgsql
+security definer
+as $$
+declare n bigint;
+begin
+  insert into site_data (key, value, updated_at)
+  values ('visits', to_jsonb(1), now())
+  on conflict (key) do update
+    set value = to_jsonb(coalesce((site_data.value #>> '{}')::int, 0) + 1),
+        updated_at = now()
+  returning (value #>> '{}')::bigint into n;
+  return n;
+end $$;
+
+revoke all on function site_upsert(text, jsonb, text) from public;
+grant execute on function site_upsert(text, jsonb, text) to anon;
+revoke all on function add_visit() from public;
+grant execute on function add_visit() to anon;

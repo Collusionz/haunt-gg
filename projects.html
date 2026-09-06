@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Projects | home</title>
   <meta name="description" content="projects and affiliations" />
+  <script src="/sync.js"></script>
   <meta name="theme-color" content="#5573f4" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -115,29 +116,33 @@
       {role:"Server Manager",title:"Arko's Kingdom",desc:"Collaborated with other staff members to improve server policies, refine rules, and implement better moderation practices.",img:"/assets/img/projects/28089fe2-3035-4d8a-a6bd-74bb3bab0c2f.webp",link:"https://discord.gg/jZyGa3dJA"},
     ];
     function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-    let projects=[];
-    try{
-      const stored=JSON.parse(localStorage.getItem('vaultProjects')||'[]');
-      const ovr={},cust=[];
-      if(Array.isArray(stored))stored.forEach(s=>{ if(s&&s.__o){ovr[s.base||s.title]=s}else{cust.push(s)} });
-      defaults.forEach(d=>{
-        const o=ovr[d.title];
-        if(o){
-          if(!o.hide){
-            const m=Object.assign({},d,o);
-            if(!m.img)m.img=d.img;
-            if(!m.link)m.link=d.link;
-            projects.push(m);
-          }
-        }else projects.push(d);
-      });
-      projects.unshift(...cust);
-    }catch(e){ projects=defaults.slice() }
-    const grid=document.getElementById('projectsGrid');
-    grid.innerHTML=projects.map((p,i)=>{
-      const isWide=(i===2);
-      return `<div class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
-    }).join('');
+    function renderProjects(){
+      let projects=[];
+      try{
+        const stored=JSON.parse(localStorage.getItem('vaultProjects')||'[]');
+        const ovr={},cust=[];
+        if(Array.isArray(stored))stored.forEach(s=>{ if(s&&s.__o){ovr[s.base||s.title]=s}else{cust.push(s)} });
+        defaults.forEach(d=>{
+          const o=ovr[d.title];
+          if(o){
+            if(!o.hide){
+              const m=Object.assign({},d,o);
+              if(!m.img)m.img=d.img;
+              if(!m.link)m.link=d.link;
+              projects.push(m);
+            }
+          }else projects.push(d);
+        });
+        projects.unshift(...cust);
+      }catch(e){ projects=defaults.slice() }
+      const grid=document.getElementById('projectsGrid');
+      grid.innerHTML=projects.map((p,i)=>{
+        const isWide=(i===2);
+        return `<div class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
+      }).join('');
+    }
+    renderProjects();
+    if(window.Syn)Syn.pull('projects',v=>{if(v&&Syn.apply('vaultProjects',v))renderProjects()});
 
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>

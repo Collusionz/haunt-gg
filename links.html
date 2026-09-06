@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Links | home</title>
+  <script src="/sync.js"></script>
   <meta name="theme-color" content="#5573f4"/>
   <link rel="preconnect" href="https://api.fontshare.com"/>
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin/>
@@ -95,7 +96,7 @@
   </div>
 
   <script>
-    (function(){
+    function renderLinks(){
       var grid=document.getElementById('linksGrid');
       if(!grid)return;
       var list=[];
@@ -125,7 +126,9 @@
           '</div>'+
         '</a>';
       }).join('');
-    })();
+    }
+    renderLinks();
+    if(window.Syn)Syn.pull('links',v=>{if(v&&Syn.apply('vaultLinks',v))renderLinks()});
   </script>
 
   <script>

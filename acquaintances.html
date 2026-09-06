@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acquaintances | home</title>
+    <script src="/sync.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -263,12 +264,15 @@
         </main>
 
 <script>
-            try{
-                const friends=JSON.parse(localStorage.getItem('vaultFriends')||'[]');
+            function renderFriends(){
                 const grid=document.getElementById('friendsGrid');
+                if(!grid)return;
+                grid.innerHTML='';
                 function escA(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+                let friends=[];
+                try{friends=JSON.parse(localStorage.getItem('vaultFriends')||'[]')}catch(e){}
                 if(Array.isArray(friends)&&friends.length){
-                    if(grid)friends.forEach(f=>{
+                    friends.forEach(f=>{
                         const card=document.createElement('div');
                         card.className='friend-card';
                         card.innerHTML='<div class="avatar" style="overflow:hidden;background:linear-gradient(135deg, '+escA(f.bg1||'#5573f4')+', '+escA(f.bg2||'#4764ec')+');">'+(f.img?'<img src="'+escA(f.img)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':escA(f.initial||'?'))+'</div>'+
@@ -276,10 +280,12 @@
                         '<p style="font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 0;">'+escA(f.note||'')+'</p>';
                         grid.appendChild(card);
                     });
-                }else if(grid){
+                }else{
                     grid.innerHTML='<p style="font-size: 14px; color: rgba(255,255,255,0.4); grid-column: 1 / -1;">no acquaintances listed yet.</p>';
                 }
-            }catch(e){}
+            }
+            renderFriends();
+            if(window.Syn)Syn.pull('friends',v=>{if(v&&Syn.apply('vaultFriends',v))renderFriends()});
             try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
         </script>
 
