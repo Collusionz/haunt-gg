@@ -255,11 +255,10 @@
   }
   function rowHtml(it) {
     var name = it.is_anon ? 'anonymous' : (it.name || 'someone');
-    var badge = it.verified ? '<span style="display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:0.65rem;font-weight:600;color:#8aa3ff;background:rgba(85,115,244,0.14);border:1px solid rgba(85,115,244,0.3);border-radius:999px;padding:1px 8px">✓ official</span>' : '';
     var delBtn = signedIn() ? '<button type="button" data-gb-del="' + it.id + '" style="' + DBTN + '">delete</button>' : '';
     return '<div class="gb-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 14px;margin-bottom:10px">' +
       '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px">' +
-      '<div style="min-width:0"><span style="font-size:0.82rem;font-weight:600;color:#9db4ff">' + esc(name) + '</span>' + badge + '</div>' +
+      '<div style="min-width:0"><span style="font-size:0.82rem;font-weight:600;color:#9db4ff">' + esc(name) + '</span></div>' +
       '<span style="font-size:0.68rem;opacity:0.4;flex-shrink:0">' + fmtDate(it.created_at) + '</span></div>' +
       '<div style="font-size:0.88rem;line-height:1.5;word-wrap:break-word;color:rgba(255,255,255,0.9)">' + esc(it.message) + '</div>' +
       '<div style="display:flex;align-items:center;gap:8px;margin-top:8px">' + likeBtn(it.id, state.likesBy[it.id] || 0) + delBtn + '</div>' +

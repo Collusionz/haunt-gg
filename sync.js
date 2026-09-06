@@ -1,6 +1,6 @@
 /* sync.js — cross-browser site-content sync through Supabase.
-   Owner-curated content (gallery / links / projects / friends / phrases /
-   socials) and the global view counter live in the site_data table.
+   Owner-curated content (gallery / links / projects / friends / phrases)
+   and the global view counter live in the site_data table.
    Reads are public (RLS); writes require the vault passcode (security-definer
    RPC site_upsert). Falls back to plain localStorage when offline or when the
    SQL hasn't been run yet, so everything keeps working without the backend. */
@@ -9,7 +9,7 @@
   if (window.Syn) return;
   var BAKED_URL = 'https://dpjxjnqfqcodxvjvwvhr.supabase.co';
   var BAKED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';
-  var STORE = { gallery: 'vaultGallery', links: 'vaultLinks', projects: 'vaultProjects', friends: 'vaultFriends', phrases: 'vaultPhrases', socials: 'vaultSocials' };
+  var STORE = { gallery: 'vaultGallery', links: 'vaultLinks', projects: 'vaultProjects', friends: 'vaultFriends', phrases: 'vaultPhrases' };
   var META = 'syn:';
 
   var client = null, loaded = false, waiters = [];

@@ -6,9 +6,20 @@
   <title>home</title>
   <meta name="description" content="personal website" />
   <meta name="theme-color" content="#5573f4" />
-  <meta property="og:title" content="collusionz" />
+<meta property="og:title" content="collusionz" />
   <meta property="og:description" content="personal website of collusionz" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cz-navy.vercel.app/" />
+  <meta property="og:site_name" content="collusionz" />
+  <meta property="og:image" content="https://cz-navy.vercel.app/assets/img/preview.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:alt" content="collusionz avatar on the site background" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="collusionz" />
+  <meta name="twitter:description" content="personal website of collusionz" />
+  <meta name="twitter:image" content="https://cz-navy.vercel.app/assets/img/preview.jpg" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
@@ -132,7 +143,6 @@
                   <p class="mb-2 leading-relaxed last:mb-0 text-base opacity-70" id="typingText"></p>
                   <div class="haunt-line mx-auto my-3 h-px w-48 max-w-full"></div>
                 </div>
-                <div class="flex justify-center gap-3 flex-wrap" id="socialLinks"></div>
                 <div style="position:fixed;right:18px;bottom:70px;z-index:56"><span id="visitCount" class="stat-badge" style="opacity:0;transition:opacity .5s"></span></div>
               </div>
             </div>
@@ -297,16 +307,7 @@ function updateCountdown(){
 }
 updateCountdown();setInterval(updateCountdown,1000);
 
-// ========== SOCIAL LINKS (synced) ==========
-function renderSocialLinks(){
-  const socials=[];
-  try{const extra=JSON.parse(localStorage.getItem('vaultSocials')||'[]');if(Array.isArray(extra)&&extra.length){extra.forEach(s=>{if(s&&s.label&&s.url)socials.unshift({icon:`<span style="font-size:13px;font-weight:700">${(s.label[0]||'?').toUpperCase()}</span>`,link:s.url,label:s.label})})}}catch(e){}
-  document.getElementById('socialLinks').innerHTML=socials.map(s=>`<a href="${s.link}" target="_blank" rel="noopener" class="social-icon" title="${s.label}">${s.icon}</a>`).join('');
-}
-renderSocialLinks();
-if(window.Syn)Syn.pull('socials',v=>{if(v&&Syn.apply('vaultSocials',v))renderSocialLinks()});
-
-    // ========== KONAMI CODE ==========
+// ========== KONAMI CODE ==========
     const konami=[38,38,40,40,37,39,37,39,66,65];
     let konamiIdx=0;
     document.addEventListener('keydown',e=>{

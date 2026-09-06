@@ -142,7 +142,7 @@
           <div class="header-accent"></div>
           <div>
             <h1 style="font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-0.02em;margin:0">Control Room</h1>
-            <p style="font-size:0.8rem;opacity:0.5;margin:2px 0 0">edit your site from here — changes live in localStorage</p>
+            <p style="font-size:0.8rem;opacity:0.5;margin:2px 0 0">edit your site from here — changes sync across all browsers automatically</p>
           </div>
           <button class="btn btn-secondary" id="lockBtn" style="margin-left:auto;padding:10px 16px">Lock</button>
         </div>
@@ -150,9 +150,7 @@
         <div class="flex gap-2 flex-wrap" style="margin-bottom:20px">
           <button class="btn btn-secondary section-jump" data-target="secGallery" style="padding:10px 16px">Gallery</button>
           <button class="btn btn-secondary section-jump" data-target="secPhrases" style="padding:10px 16px">Phrases</button>
-          <button class="btn btn-secondary section-jump" data-target="secAbout" style="padding:10px 16px">About</button>
-<button class="btn btn-secondary section-jump" data-target="secSocials" style="padding:10px 16px">Socials</button>
-          <button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
+<button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
 <button class="btn btn-secondary section-jump" data-target="secLinks" style="padding:10px 16px">Links</button>
 <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
@@ -173,7 +171,10 @@
           </div>
           <input type="file" id="gFile" accept="image/*" style="display:none" />
 <div class="upload-preview" id="gPreview"></div>
-          <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
+          <div class="flex gap-2">
+            <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
+            <button class="btn btn-secondary" id="gCancel" style="margin-top:18px;display:none">Cancel</button>
+          </div>
           <div id="galleryList" style="margin-top:20px"></div>
         </div>
 
@@ -187,40 +188,7 @@
           <div id="phraseList" style="margin-top:16px"></div>
         </div>
 
-        <div id="secAbout" class="card" style="margin-bottom:20px">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">👤 About Page</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">bio + fun facts shown on <a href="/" style="color:#8aa3ff">the homepage</a></p>
-          <label class="fld">Bio text</label>
-          <textarea class="input" id="aBio" placeholder="I'm cz, a 16 year old from Singapore..."></textarea>
-<div class="flex gap-2" style="margin-top:12px">
-            <button class="btn" id="saveBioBtn">Save bio</button>
-          </div>
-          <label class="fld" style="margin-top:20px">Add a fun fact</label>
-          <div class="flex gap-2">
-            <input class="input" id="aFact" placeholder="e.g. I have 400+ keyboard macros" />
-            <button class="btn" id="addFactBtn" style="flex-shrink:0">Add</button>
-          </div>
-          <div id="factList" style="margin-top:16px"></div>
-        </div>
-
-        <div id="secSocials" class="card" style="margin-bottom:20px">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🔗 Home Socials</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">extra icon links on the home page (letter badge)</p>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Label</label>
-              <input class="input" id="sLabel" placeholder="e.g. Spotify" />
-            </div>
-            <div>
-              <label class="fld">URL</label>
-              <input class="input" id="sUrl" placeholder="https://..." />
-            </div>
-          </div>
-          <button class="btn" id="addSocialBtn" style="margin-top:14px">＋ Add social</button>
-          <div id="socialList" style="margin-top:18px"></div>
-        </div>
-
-<div id="secProjects" class="card" style="margin-bottom:20px">
+        <div id="secProjects" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🚀 Projects</h2>
           <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">edit or hide your affiliations and add new project cards on <a href="/projects" style="color:#8aa3ff">/projects</a></p>
           <div class="grid grid-cols-2 gap-3">
@@ -265,19 +233,25 @@
               <input class="input" id="fName" placeholder="e.g. Kira" />
             </div>
             <div>
-              <label class="fld">Avatar letter</label>
-              <input class="input" id="fInit" placeholder="e.g. K" maxlength="1" />
+              <label class="fld">Note</label>
+              <input class="input" id="fNote" placeholder="e.g. valorant duo" />
             </div>
           </div>
-<label class="fld">Note</label>
-          <input class="input" id="fNote" placeholder="e.g. valorant duo" />
 <label class="fld">Avatar image</label>
           <div class="flex gap-2">
             <input class="input" id="fImg" placeholder="https://... (link or import)" />
             <input type="file" id="fImgFile" accept="image/*" style="display:none" />
             <button class="btn" id="fImgImport" style="flex-shrink:0">Import</button>
           </div>
-          <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add acquaintance</button>
+<label class="fld">Or import from a Discord user ID</label>
+          <div class="flex gap-2">
+            <input class="input" id="fDiscordId" placeholder="Discord user ID (needs Lanyard)" />
+            <button class="btn btn-secondary" id="fDiscordImport" style="flex-shrink:0">Import</button>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn" id="addFriendBtn" style="margin-top:14px">＋ Add acquaintance</button>
+            <button class="btn btn-secondary" id="fCancel" style="margin-top:14px;display:none">Cancel</button>
+          </div>
 <div id="friendList" style="margin-top:18px"></div>
         </div>
 
@@ -295,13 +269,16 @@
           </div>
           <input type="file" id="lFile" accept="image/*,video/*" style="display:none" />
           <div class="upload-preview" id="lPreview"></div>
-          <button class="btn" id="addLinkBtn" style="margin-top:14px">＋ Add link</button>
+          <div class="flex gap-2">
+            <button class="btn" id="addLinkBtn" style="margin-top:14px">＋ Add link</button>
+            <button class="btn btn-secondary" id="lCancel" style="margin-top:14px;display:none">Cancel</button>
+          </div>
           <div id="linkList" style="margin-top:18px"></div>
         </div>
 
         <div id="secComments" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">💬 Guestbook</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your vault passcode is the moderator key — you're already signed in as the owner here, so posts get the official badge.</p>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your vault passcode is the moderator key — you're already signed in as the owner here, so you can delete anything.</p>
           <button class="btn btn-secondary" id="openNewGb" style="margin-bottom:12px">Open guestbook</button>
           <p style="font-size:0.75rem;opacity:0.4;margin-bottom:8px" id="newGbNote">guests like and leave messages from the sidebar overlay on any page — you can delete anything below.</p>
           <div id="cmList" style="margin-top:4px"></div>
@@ -337,11 +314,10 @@
 
   <script>
 var STORAGE={
-      gallery:'vaultGallery', phrases:'vaultPhrases', bio:'vaultBio', facts:'vaultFacts',
-      socials:'vaultSocials', links:'vaultLinks', projects:'vaultProjects',
+      gallery:'vaultGallery', phrases:'vaultPhrases', links:'vaultLinks', projects:'vaultProjects',
       friends:'vaultFriends', bg:'vaultBg', pass:'vaultPass'
     };
-    var SYNC_MAP={'vaultGallery':'gallery','vaultPhrases':'phrases','vaultSocials':'socials','vaultLinks':'links','vaultProjects':'projects','vaultFriends':'friends'};
+    var SYNC_MAP={'vaultGallery':'gallery','vaultPhrases':'phrases','vaultLinks':'links','vaultProjects':'projects','vaultFriends':'friends'};
     var DEFAULT_PASS='cz2026';
 
     function reconcileFromServer(){
@@ -634,21 +610,60 @@ var STORAGE={
 return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')'+((it.img&&it.img.indexOf('data:')===0)?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(it.title)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45">'+(it.date?esc(it.date):'no description')+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+        '<div class="row-actions"><button class="btn btn-secondary" onclick="editGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
+        '<button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
-    window.removeGalleryItem=function(i){var l=load(STORAGE.gallery);l.splice(i,1);save(STORAGE.gallery,l);renderGalleryList();showToast('Item deleted')};
+    var editingGallery=-1;
+    window.removeGalleryItem=function(i){if(editingGallery===i)cancelGalleryEdit();var l=load(STORAGE.gallery);l.splice(i,1);save(STORAGE.gallery,l);renderGalleryList();showToast('Item deleted')};
+    window.editGalleryItem=function(i){
+      var it=load(STORAGE.gallery)[i];if(!it)return;
+      editingGallery=i;
+      document.getElementById('gTitle').value=it.title||'';
+      document.getElementById('gDate').value=it.date||'';
+      document.getElementById('gImg').value='';
+      document.getElementById('gImg').placeholder='keep current media — paste a URL or upload to change';
+      pendingGalleryImg='';
+      var pv=document.getElementById('gPreview');pv.innerHTML='';
+      if(it.img){
+        var isVideo=(it.img.indexOf('data:video')===0)||/\.(mp4|webm|mov)$/i.test(it.img);
+        if(isVideo){var v=document.createElement('video');v.src=it.img;v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('style','width:100%;max-height:140px;object-fit:cover');pv.appendChild(v);v.play().catch(function(){})}
+        else{var im=document.createElement('img');im.src=it.img;im.style.maxHeight='140px';im.style.borderRadius='10px';pv.appendChild(im)}
+        pv.style.display='block';
+      }else{pv.style.display='none'}
+      document.getElementById('addGalleryBtn').textContent='Update item';
+      document.getElementById('gCancel').style.display='';
+      document.getElementById('secGallery').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    function cancelGalleryEdit(){
+      editingGallery=-1;
+      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';
+      document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp / .gif / .mp4';
+      pendingGalleryImg='';document.getElementById('gPreview').style.display='none';document.getElementById('gPreview').innerHTML='';
+      document.getElementById('addGalleryBtn').textContent='＋ Add to Gallery';
+      document.getElementById('gCancel').style.display='none';
+    }
+    window.cancelGalleryEdit=cancelGalleryEdit;
+    document.getElementById('gCancel').addEventListener('click',cancelGalleryEdit);
 
     document.getElementById('addGalleryBtn').addEventListener('click',function(){
       var title=document.getElementById('gTitle').value.trim();
       if(!title){showToast('Title required');return}
       var urlVal=document.getElementById('gImg').value.trim();
-      var item={title:title,date:document.getElementById('gDate').value.trim(),img:pendingGalleryImg||urlVal};
-      var list=load(STORAGE.gallery);list.unshift(item);
-      try{save(STORAGE.gallery,list)}catch(e){showToast('Media too large for storage');return}
-      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp / .gif / .mp4';
-      pendingGalleryImg='';document.getElementById('gPreview').style.display='none';
-      renderGalleryList();showToast('Added to gallery');
+      var img=pendingGalleryImg||urlVal;
+      var list=load(STORAGE.gallery);
+      if(editingGallery>=0&&list[editingGallery]){
+        list[editingGallery].title=title;
+        list[editingGallery].date=document.getElementById('gDate').value.trim();
+        if(img)list[editingGallery].img=img;
+        try{save(STORAGE.gallery,list)}catch(e){showToast('Media too large for storage');return}
+        cancelGalleryEdit();renderGalleryList();showToast('Gallery item updated');
+      }else{
+        var item={title:title,date:document.getElementById('gDate').value.trim(),img:img};
+        list.unshift(item);
+        try{save(STORAGE.gallery,list)}catch(e){showToast('Media too large for storage');return}
+        cancelGalleryEdit();renderGalleryList();showToast('Added to gallery');
+      }
     });
 
     /* ---------------- PHRASES ---------------- */
@@ -668,48 +683,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       document.getElementById('pPhrase').value='';renderPhraseList();showToast('Phrase added');
     });
 
-    /* ---------------- ABOUT ---------------- */
-    function renderFactList(){
-      var list=load(STORAGE.facts),box=document.getElementById('factList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom fun facts yet</p>';return}
-      box.innerHTML=list.map(function(f,i){
-        return '<div class="item-row"><div style="flex:1;min-width:0;font-size:0.9rem;color:#fff">'+esc(f)+'</div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeFact('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
-      }).join('');
-    }
-    window.removeFact=function(i){var l=load(STORAGE.facts);l.splice(i,1);save(STORAGE.facts,l);renderFactList();showToast('Fact removed')};
-    document.getElementById('saveBioBtn').addEventListener('click',function(){
-      var v=document.getElementById('aBio').value.trim();
-      if(!v){localStorage.removeItem(STORAGE.bio);showToast('Bio cleared to default')}
-      else{localStorage.setItem(STORAGE.bio,v);showToast('Bio saved')}
-    });
-document.getElementById('addFactBtn').addEventListener('click',function(){
-      var v=document.getElementById('aFact').value.trim();
-      if(!v){showToast('Fact required');return}
-      var l=load(STORAGE.facts);l.push(v);save(STORAGE.facts,l);
-      document.getElementById('aFact').value='';renderFactList();showToast('Fact added');
-    });
-
-    /* ---------------- SOCIALS ---------------- */
-    function renderSocialList(){
-      var list=load(STORAGE.socials),box=document.getElementById('socialList');
-      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom socials yet</p>';return}
-      box.innerHTML=list.map(function(s,i){
-        return '<div class="item-row"><div class="item-avatar" style="background:linear-gradient(135deg,#4764ec,#ff4466)">'+esc((s.label||'?')[0].toUpperCase())+'</div>'+
-        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(s.label)+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(s.url)+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeSocial('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
-      }).join('');
-    }
-    window.removeSocial=function(i){var l=load(STORAGE.socials);l.splice(i,1);save(STORAGE.socials,l);renderSocialList();showToast('Social removed')};
-    document.getElementById('addSocialBtn').addEventListener('click',function(){
-      var label=document.getElementById('sLabel').value.trim(),url=document.getElementById('sUrl').value.trim();
-      if(!label||!url){showToast('Label and URL required');return}
-      var l=load(STORAGE.socials);l.push({label:label,url:url});save(STORAGE.socials,l);
-      document.getElementById('sLabel').value='';document.getElementById('sUrl').value='';renderSocialList();showToast('Social added');
-    });
-
-/* ---------------- LINKS ---------------- */
+    /* ---------------- LINKS ---------------- */
     var pendingLinkIcon='';
     function renderLinkList(){
       var list=load(STORAGE.links),box=document.getElementById('linkList');
@@ -719,10 +693,36 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
         return '<div class="item-row">'+icon+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(s.name)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(s.url)+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeLink('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+        '<div class="row-actions"><button class="btn btn-secondary" onclick="editLinkItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
+        '<button class="btn btn-danger" onclick="removeLink('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
-    window.removeLink=function(i){var l=load(STORAGE.links);l.splice(i,1);save(STORAGE.links,l);renderLinkList();showToast('Link removed')};
+    var editingLink=-1;
+    window.removeLink=function(i){if(editingLink===i)cancelLinkEdit();var l=load(STORAGE.links);l.splice(i,1);save(STORAGE.links,l);renderLinkList();showToast('Link removed')};
+    window.editLinkItem=function(i){
+      var s=load(STORAGE.links)[i];if(!s)return;
+      editingLink=i;
+      document.getElementById('lName').value=s.name||'';
+      document.getElementById('lUrl').value=s.url||'';
+      document.getElementById('lIcon').value='';
+      document.getElementById('lIcon').placeholder='keep current icon — paste a URL or upload to change';
+      pendingLinkIcon='';
+      var pv=document.getElementById('lPreview');pv.innerHTML='';
+      if(s.icon){var im=document.createElement('img');im.src=s.icon;im.style.maxHeight='120px';im.style.borderRadius='10px';pv.appendChild(im);pv.style.display='block'}else{pv.style.display='none'}
+      document.getElementById('addLinkBtn').textContent='Update link';
+      document.getElementById('lCancel').style.display='';
+      document.getElementById('secLinks').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    function cancelLinkEdit(){
+      editingLink=-1;
+      document.getElementById('lName').value='';document.getElementById('lUrl').value='';document.getElementById('lIcon').value='';
+      document.getElementById('lIcon').placeholder='https://... .png / .gif / .mp4';
+      pendingLinkIcon='';document.getElementById('lPreview').style.display='none';document.getElementById('lPreview').innerHTML='';
+      document.getElementById('addLinkBtn').textContent='＋ Add link';
+      document.getElementById('lCancel').style.display='none';
+    }
+    window.cancelLinkEdit=cancelLinkEdit;
+    document.getElementById('lCancel').addEventListener('click',cancelLinkEdit);
     document.getElementById('lUploadBtn').addEventListener('click',function(){
       fileInput(function(f){
         imageToDataUrl(f,function(data){
@@ -738,11 +738,17 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
       var name=document.getElementById('lName').value.trim(),url=document.getElementById('lUrl').value.trim();
       if(!name||!url){showToast('Name and URL required');return}
       var icon=pendingLinkIcon||document.getElementById('lIcon').value.trim();
-      var l=load(STORAGE.links);l.unshift({name:name,url:url,icon:icon});
-      try{save(STORAGE.links,l)}catch(e){showToast('Icon too large for storage');return}
-      document.getElementById('lName').value='';document.getElementById('lUrl').value='';document.getElementById('lIcon').value='';
-      pendingLinkIcon='';document.getElementById('lPreview').style.display='none';
-      renderLinkList();showToast('Link added');
+      var l=load(STORAGE.links);
+      if(editingLink>=0&&l[editingLink]){
+        l[editingLink].name=name;l[editingLink].url=url;
+        if(icon)l[editingLink].icon=icon;
+        try{save(STORAGE.links,l)}catch(e){showToast('Icon too large for storage');return}
+        cancelLinkEdit();renderLinkList();showToast('Link updated');
+      }else{
+        l.unshift({name:name,url:url,icon:icon});
+        try{save(STORAGE.links,l)}catch(e){showToast('Icon too large for storage');return}
+        cancelLinkEdit();renderLinkList();showToast('Link added');
+      }
     });
 
 /* ---------------- PROJECTS ---------------- */
@@ -871,9 +877,9 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
 
 /* ---------------- FRIENDS ---------------- */
     function avatarHtml(f){
-      var b1=esc(f.bg1||'#5573f4'),b2=esc(f.bg2||'#4764ec'),init=esc(f.initial||(f.name||'?')[0]);
+      var b1=esc(f.bg1||'#5573f4'),b2=esc(f.bg2||'#4764ec');
       if(f.img)return '<div class="item-avatar" style="overflow:hidden;background:linear-gradient(135deg,'+b1+','+b2+')"><img src="'+esc(f.img)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()"></div>';
-      return '<div class="item-avatar" style="background:linear-gradient(135deg,'+b1+','+b2+')">'+init+'</div>';
+      return '<div class="item-avatar" style="background:linear-gradient(135deg,'+b1+','+b2+')"></div>';
     }
     function renderFriendList(){
       var list=load(STORAGE.friends),box=document.getElementById('friendList');
@@ -882,24 +888,70 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
         return '<div class="item-row">'+avatarHtml(f)+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(f.name)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45">'+esc(f.note||'')+'</div></div>'+
-        '<div class="row-actions"><button class="btn btn-danger" onclick="removeFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+        '<div class="row-actions"><button class="btn btn-secondary" onclick="editFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
+        '<button class="btn btn-danger" onclick="removeFriend('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
-    window.removeFriend=function(i){var l=load(STORAGE.friends);l.splice(i,1);save(STORAGE.friends,l);renderFriendList();showToast('Acquaintance removed')};
+    var editingFriend=-1;
+    window.removeFriend=function(i){if(editingFriend===i)cancelFriendEdit();var l=load(STORAGE.friends);l.splice(i,1);save(STORAGE.friends,l);renderFriendList();showToast('Acquaintance removed')};
+    window.editFriend=function(i){
+      var f=load(STORAGE.friends)[i];if(!f)return;
+      editingFriend=i;
+      document.getElementById('fName').value=f.name||'';
+      document.getElementById('fNote').value=f.note||'';
+      document.getElementById('fImg').value='';
+      document.getElementById('fImg').placeholder='keep current avatar — paste a link or upload to change';
+      document.getElementById('addFriendBtn').textContent='Update acquaintance';
+      document.getElementById('fCancel').style.display='';
+      document.getElementById('secFriends').scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    function cancelFriendEdit(){
+      editingFriend=-1;
+      document.getElementById('fName').value='';document.getElementById('fNote').value='';document.getElementById('fImg').value='';
+      document.getElementById('fImg').placeholder='https://... (link or import)';
+      document.getElementById('fDiscordId').value='';
+      document.getElementById('addFriendBtn').textContent='＋ Add acquaintance';
+      document.getElementById('fCancel').style.display='none';
+    }
+    window.cancelFriendEdit=cancelFriendEdit;
+    document.getElementById('fCancel').addEventListener('click',cancelFriendEdit);
     document.getElementById('addFriendBtn').addEventListener('click',function(){
       var name=document.getElementById('fName').value.trim();
       if(!name){showToast('Name required');return}
-      var item={name:name,initial:document.getElementById('fInit').value.trim()||name[0].toUpperCase(),note:document.getElementById('fNote').value.trim()};
       var img=document.getElementById('fImg').value.trim();
+      var item={name:name,note:document.getElementById('fNote').value.trim()};
       if(img)item.img=img;
-      var l=load(STORAGE.friends);l.push(item);save(STORAGE.friends,l);
-      document.getElementById('fName').value='';document.getElementById('fInit').value='';document.getElementById('fNote').value='';document.getElementById('fImg').value='';
-      renderFriendList();showToast('Acquaintance added');
+      var l=load(STORAGE.friends);
+      if(editingFriend>=0&&l[editingFriend]){
+        if(!item.img&&l[editingFriend].img)item.img=l[editingFriend].img;
+        l[editingFriend]=item;save(STORAGE.friends,l);
+        cancelFriendEdit();renderFriendList();showToast('Acquaintance updated');
+      }else{
+        l.push(item);save(STORAGE.friends,l);cancelFriendEdit();renderFriendList();showToast('Acquaintance added');
+      }
     });
     document.getElementById('fImgImport').addEventListener('click',function(){document.getElementById('fImgFile').click()});
     document.getElementById('fImgFile').addEventListener('change',function(){
       var f=this.files&&this.files[0];if(!f)return;
       var rd=new FileReader();rd.onload=function(){document.getElementById('fImg').value=rd.result;showToast('Image imported')};rd.readAsDataURL(f);this.value='';
+    });
+    document.getElementById('fDiscordImport').addEventListener('click',function(){
+      var id=document.getElementById('fDiscordId').value.trim();
+      if(!id||!/^\d+$/.test(id)){showToast('Enter a numeric Discord user ID');return}
+      var btn=this;btn.disabled=true;btn.textContent='Importing…';
+      fetch('https://api.lanyard.rest/v1/users/'+encodeURIComponent(id))
+        .then(function(r){return r.json()})
+        .then(function(j){
+          if(!j||!j.success||!j.data||!j.data.discord_user)throw new Error('notfound');
+          var u=j.data.discord_user;
+          var name=u.global_name||u.username||'';
+          var av=u.avatar?('https://cdn.discordapp.com/avatars/'+u.id+'/'+u.avatar+(u.avatar.indexOf('a_')===0?'.gif':'.png')+'?size=256'):'';
+          if(name)document.getElementById('fName').value=name;
+          if(av){document.getElementById('fImg').value=av;document.getElementById('fImg').placeholder='ready (imported)'}
+          showToast('Imported '+(name||'user')+(av?'':' — no avatar set'));
+        })
+        .catch(function(){showToast('Not found — they need Lanyard connected (join discord.gg/UrXF2cfJ7F)')})
+        .then(function(){btn.disabled=false;btn.textContent='Import'});
     });
 
     /* ---------------- SETTINGS ---------------- */
@@ -960,10 +1012,9 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
             var likeCount={};
             (lr.data||[]).forEach(function(l){likeCount[l.comment_id]=(likeCount[l.comment_id]||0)+1});
             box.innerHTML=data.map(function(x){
-              var badge=x.is_verified?'<span style="font-size:0.62rem;font-weight:600;color:#8aa3ff;background:rgba(85,115,244,0.14);border:1px solid rgba(85,115,244,0.3);border-radius:999px;padding:1px 8px;margin-left:6px">✓ official</span>':'';
               var likes=likeCount[x.id]||0;
               return '<div class="item-row"><div style="flex:1;min-width:0">'+
-                '<div style="font-size:0.85rem;font-weight:600;color:#fff">'+esc(x.is_anon?'anonymous':(x.name||'someone'))+badge+
+                '<div style="font-size:0.85rem;font-weight:600;color:#fff">'+esc(x.is_anon?'anonymous':(x.name||'someone'))+
                 '<span style="font-weight:400;opacity:0.4;font-size:0.7rem;margin-left:8px">'+new Date(x.created_at).toLocaleString()+'</span></div>'+
                 '<div style="font-size:0.8rem;opacity:0.75;word-wrap:break-word">'+esc(x.message)+'</div>'+
                 '<div style="font-size:0.7rem;opacity:0.5;margin-top:4px">♡ '+likes+(likes===1?' like':' likes')+'</div></div>'+
@@ -1022,8 +1073,7 @@ document.getElementById('unlockBtn').addEventListener('click',function(){
     });
 
 function loadAllLists(){
-      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderProjectList();renderDefaultProjectList();renderFriendList();renderLinkList();
-      var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
+      renderGalleryList();renderPhraseList();renderProjectList();renderDefaultProjectList();renderFriendList();renderLinkList();
     }
 
     if(isAuthed()){

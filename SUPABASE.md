@@ -18,7 +18,7 @@ gated by a passcode (bcrypt-hashed server-side, never shipped to the browser).
 Open **SQL Editor → New query**, paste everything from `supa-setup.sql` (in this repo),
 and run it. The script sets up:
 
-- `comments` — messages, `is_anon`, `is_verified` (owner badge), timestamps
+- `comments` — messages, `is_anon`, `is_verified`, timestamps
 - `owner` — a single bcrypt-hashed passcode (default `cz2026`)
 - `likes` — one row per `(comment_id, liker)`; guests use a random id, the owner uses `liker = 'owner'`
 - RLS: public read on `comments`/`likes`; insert on `comments` only with `is_verified = false`;
@@ -36,7 +36,7 @@ and run it. The script sets up:
 
 ## Cross-browser content sync
 
-Gallery items, links, projects, acquaintances, status phrases, custom socials and
+Gallery items, links, projects, acquaintances, status phrases and
 the view counter are now synced through Supabase so they match on every browser/device
 (`/sync.js` reads/writes a `site_data` key/value table).
 
@@ -69,10 +69,10 @@ How it behaves:
 ## How the guestbook behaves
 
 - **Owner post/sign-in**: open the guestbook → **Sign in** with the passcode. Signed-in, your
-  posts get the "✓ official" badge and your likes use the dedicated owner row. The passcode is
+  likes use the dedicated owner row and you can delete comments from `/vault`. The passcode is
   kept in `sessionStorage` only while the tab is open.
 - **Guest likes**: liked entries are remembered per-browser via a random id in localStorage —
-  no account needed, guests can never fake an owner like or the verified badge.
+  no account needed, guests can never fake an owner like.
 - **Profanity** is filtered on the client before posting; it is not a substitute for
   moderation, which is why the delete flow exists.
 

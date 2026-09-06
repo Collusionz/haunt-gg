@@ -275,7 +275,7 @@
                     friends.forEach(f=>{
                         const card=document.createElement('div');
                         card.className='friend-card';
-                        card.innerHTML='<div class="avatar" style="overflow:hidden;background:linear-gradient(135deg, '+escA(f.bg1||'#5573f4')+', '+escA(f.bg2||'#4764ec')+');">'+(f.img?'<img src="'+escA(f.img)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':escA(f.initial||'?'))+'</div>'+
+                        card.innerHTML='<div class="avatar" style="overflow:hidden;background:linear-gradient(135deg, '+escA(f.bg1||'#5573f4')+', '+escA(f.bg2||'#4764ec')+');">'+(f.img?'<img src="'+escA(f.img)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>'+
                         '<h3 style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">'+escA(f.name)+'</h3>'+
                         '<p style="font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 0;">'+escA(f.note||'')+'</p>';
                         grid.appendChild(card);
