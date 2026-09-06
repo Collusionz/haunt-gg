@@ -17,6 +17,7 @@
     { "src": "/acquaintances", "dest": "/acquaintances.html" },
     { "src": "/friends", "status": 404 },
     { "src": "/vault", "dest": "/vault.html" },
+    { "src": "/links", "dest": "/links.html" },
     { "src": "/gaming", "status": 404 },
     { "src": "/awards", "status": 404 },
     { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
