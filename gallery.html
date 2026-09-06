@@ -79,43 +79,91 @@
       margin-bottom: 8px;
     }
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery | home</title>
+  <script src="/sync.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <style>
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after { cursor: url('cursor.png') 17 17, auto !important; }
+
+    body {
+      font-family: 'Satoshi', sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Video Background */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    /* Sidebar */
+    .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+    @media(min-width:768px){.side-nav{display:flex}}
+    .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+    .side-nav a:hover{color:rgba(255,255,255,0.7)}
+    .side-nav a.active{color:#fff}
+    .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+    .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+    .side-nav a.active .nav-line{width:16px;background:#fff}
+    .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+    @media(min-width:768px){.mobile-nav{display:none}}
+    .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+    .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+
+/* Main Content */
+    .main-content {
+      padding-bottom: 90px;
+      padding: 40px 40px 100px 120px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .section-header {
+      margin-bottom: 40px;
+    }
+
+    .accent-bar {
+      width: 50px;
+      height: 4px;
+      background: linear-gradient(90deg, #5573f4, #4764ec);
+      border-radius: 2px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h1 {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
     .section-header p {
       color: rgba(255, 255, 255, 0.4);
       font-size: 16px;
       font-weight: 400;
-    }
-
-    /* Filter Tabs */
-    .filter-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: 8px 20px;
-      border-radius: 50px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(255, 255, 255, 0.04);
-      color: rgba(255, 255, 255, 0.6);
-      font-family: 'Satoshi', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      user-select: none;
-    }
-
-    .filter-btn:hover {
-      border-color: rgba(255, 255, 255, 0.2);
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .filter-btn.active {
-      background: rgba(71, 100, 236, 0.25);
-      border-color: rgba(71, 100, 236, 0.5);
-      color: #fff;
     }
 
     /* Photo Grid */
@@ -175,10 +223,6 @@
       font-size: 12px;
       color: rgba(255, 255, 255, 0.5);
       font-weight: 400;
-    }
-
-    .gallery-card.hidden-card {
-      display: none;
     }
 
     /* Lightbox */
@@ -351,16 +395,7 @@
       <p>moments and memories</p>
     </div>
 
-    <!-- Filter Tabs -->
-    <div class="filter-tabs anim-reveal anim-delay-1">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="screenshots">Screenshots</button>
-      <button class="filter-btn" data-filter="art">Art</button>
-      <button class="filter-btn" data-filter="irl">IRL</button>
-      <button class="filter-btn" data-filter="memes">Memes</button>
-    </div>
-
-<!-- Photo Grid -->
+    <!-- Photo Grid -->
     <div class="gallery-grid anim-reveal anim-delay-2">
     </div>
   </main>
@@ -372,12 +407,10 @@
       grid.innerHTML='';
       try{
         var items=JSON.parse(localStorage.getItem('vaultGallery')||'[]');
-        var catMap={'screenshots':'Screenshots','art':'Art','irl':'IRL','memes':'Memes'};
         if(!items.length){grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.35);padding:48px 0;font-size:0.9rem">nothing here yet</p>';return}
         items.forEach(function(it){
           var el=document.createElement('div');
           el.className='gallery-card';
-          el.setAttribute('data-category',it.category||'screenshots');
           el.setAttribute('data-title',it.title||'Untitled');
           el.setAttribute('data-date',it.date||'');
           var bg='';
@@ -417,29 +450,6 @@
   </div>
 
   <script>
-    // Filter functionality
-    var filterBtns = document.querySelectorAll('.filter-btn');
-
-    function applyFilter(){
-      var active=(document.querySelector('.filter-btn.active')||filterBtns[0]||{dataset:{}}).dataset;
-      var filter=active.filter||'all';
-      document.querySelectorAll('.gallery-card').forEach(function(card){
-        if(filter==='all'||card.dataset.category===filter){
-          card.classList.remove('hidden-card');
-        }else{
-          card.classList.add('hidden-card');
-        }
-      });
-    }
-
-    filterBtns.forEach(function(btn){
-      btn.addEventListener('click',function(){
-        filterBtns.forEach(function(b){b.classList.remove('active')});
-        btn.classList.add('active');
-        applyFilter();
-      });
-    });
-
     // Lightbox functionality (delegated so re-rendered cards stay clickable)
     var lightbox = document.getElementById('lightbox');
     var lightboxBg = document.getElementById('lightboxBg');
@@ -500,7 +510,6 @@ function closeLightbox() {
       lightbox.classList.remove('active');
       document.body.style.overflow = '';
     }
-    applyFilter();
   </script>
 
   <script>
