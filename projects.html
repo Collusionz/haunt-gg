@@ -40,6 +40,13 @@
     .mobile-nav a { flex: 1; text-align: center; padding: 12px 4px; font-size: 0.625rem; font-weight: 300; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
     .mobile-nav a.active, .mobile-nav a:hover { color: #fff; }
     @media (min-width: 768px) { #mainContent { padding-left: 80px; } }
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .anim-reveal{animation:fadeInUp 0.5s ease forwards}
+    .anim-delay-1{animation-delay:0.1s;opacity:0}
+    .anim-delay-2{animation-delay:0.2s;opacity:0}
+    .anim-delay-3{animation-delay:0.3s;opacity:0}
+    .anim-delay-4{animation-delay:0.4s;opacity:0}
+    .anim-delay-5{animation-delay:0.5s;opacity:0}
   </style>
 </head>
 <body class="min-h-full flex flex-col">
@@ -52,6 +59,7 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/links"><span class="nav-line"></span>Links</a>
     
   </nav>
   <nav class="mobile-nav">
@@ -63,22 +71,31 @@
     
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <a href="/links">Links</a>
   </nav>
   <div class="dark contents">
-    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000">
-      <video src="/audio/background.mp4#t=0.001" loop muted playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover" style="opacity:0.3"></video>
-    </div>
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000;background-image:radial-gradient(circle at 20% 15%,rgba(255,70,85,0.16),transparent 55%),radial-gradient(circle at 80% 10%,rgba(85,115,244,0.12),transparent 55%),radial-gradient(circle at 50% 90%,rgba(255,255,255,0.03),transparent 60%)"></div>
 
-    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent" style="padding-top:48px;padding-bottom:48px">
-      <div class="flex w-full flex-col gap-3 max-w-5xl px-4">
-        <header class="text-start">
-          <div class="break-words text-2xl font-semibold" style="color:#f4f7f8"><p class="mb-2 leading-relaxed last:mb-0">Affiliations</p></div>
-          <div class="break-words mt-1 text-sm" style="color:#e6f6f9"><p class="mb-2 leading-relaxed last:mb-0">Servers or projects i am actively involved in</p></div>
-        </header>
-        <div class="flex w-full flex-col gap-4">
-          <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:14rem" id="projectsGrid"></div>
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
+      <!-- Header -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:48px;padding-bottom:16px">
+        <div class="w-full max-w-3xl anim-reveal">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
+            <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Projects</h1>
+          </div>
+          <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">servers or projects i am actively involved in</p>
         </div>
-      </div>
+      </section>
+
+      <!-- Projects Grid -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:16px;padding-bottom:48px">
+        <div class="w-full max-w-3xl anim-reveal anim-delay-1">
+          <div class="w-full">
+            <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" style="grid-auto-rows:14rem" id="projectsGrid"></div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 

@@ -74,6 +74,7 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/links"><span class="nav-line"></span>Links</a>
     
   </nav>
   <nav class="mobile-nav">
@@ -85,6 +86,7 @@
     
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <a href="/links">Links</a>
     
   </nav>
   <div id="toast" class="toast"></div>
@@ -150,6 +152,7 @@
           <button class="btn btn-secondary section-jump" data-target="secAbout" style="padding:10px 16px">About</button>
 <button class="btn btn-secondary section-jump" data-target="secSocials" style="padding:10px 16px">Socials</button>
           <button class="btn btn-secondary section-jump" data-target="secProjects" style="padding:10px 16px">Projects</button>
+<button class="btn btn-secondary section-jump" data-target="secLinks" style="padding:10px 16px">Links</button>
 <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
           <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
@@ -277,6 +280,24 @@
 <div id="friendList" style="margin-top:18px"></div>
         </div>
 
+        <div id="secLinks" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🔗 Links</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">socials and links shown on <a href="/links" style="color:#8aa3ff">/links</a> — add an icon with a URL or upload</p>
+          <label class="fld">Name</label>
+          <input class="input" id="lName" placeholder="e.g. GitHub" />
+          <label class="fld">Link URL</label>
+          <input class="input" id="lUrl" placeholder="https://..." />
+          <label class="fld">Icon (image URL or upload)</label>
+          <div class="flex gap-2">
+            <input class="input" id="lIcon" placeholder="https://... .png / .gif / .mp4" />
+            <button class="btn btn-secondary" id="lUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
+          </div>
+          <input type="file" id="lFile" accept="image/*,video/*" style="display:none" />
+          <div class="upload-preview" id="lPreview"></div>
+          <button class="btn" id="addLinkBtn" style="margin-top:14px">＋ Add link</button>
+          <div id="linkList" style="margin-top:18px"></div>
+        </div>
+
         <div id="secComments" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">💬 Guestbook</h2>
           <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">your vault passcode is the moderator key — you're already signed in as the owner here, so posts get the official badge.</p>
@@ -316,7 +337,7 @@
   <script>
 var STORAGE={
       gallery:'vaultGallery', phrases:'vaultPhrases', bio:'vaultBio', facts:'vaultFacts',
-      socials:'vaultSocials', projects:'vaultProjects',
+      socials:'vaultSocials', links:'vaultLinks', projects:'vaultProjects',
       friends:'vaultFriends', bg:'vaultBg', pass:'vaultPass'
     };
     var DEFAULT_PASS='cz2026';
@@ -329,9 +350,9 @@ var STORAGE={
     function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
     function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
-    function fileInput(onchange){
+    function fileInput(onchange,accept){
       var inp=document.createElement('input');
-      inp.type='file';inp.accept='image/*';inp.style.display='none';
+      inp.type='file';inp.accept=accept||'image/*';inp.style.display='none';
       inp.onchange=function(){var f=inp.files&&inp.files[0];if(f)onchange(f);inp.remove()};
       document.body.appendChild(inp);inp.click();
     }
@@ -560,6 +581,27 @@ var STORAGE={
     var pendingGalleryImg='',pendingProjectImg='';
     document.getElementById('gUploadBtn').addEventListener('click',function(){
       fileInput(function(f){
+        var type=(f.type||'').toLowerCase();
+        if(type.indexOf('video/')===0||type==='image/gif'){
+          var rd=new FileReader();
+          rd.onload=function(){
+            pendingGalleryImg=rd.result;
+            var pv=document.getElementById('gPreview');
+            pv.innerHTML='';
+            if(type.indexOf('video/')===0){
+              var v=document.createElement('video');
+              v.src=rd.result;v.muted=true;v.loop=true;v.playsInline=true;
+              v.setAttribute('style','width:100%;max-height:140px;object-fit:cover');
+              pv.appendChild(v);v.play().catch(function(){});
+            }else{
+              var im=document.createElement('img');im.src=rd.result;pv.appendChild(im);
+            }
+            pv.style.display='block';
+            var box=document.getElementById('gImg');box.value='';box.placeholder='media ready (uploaded)';
+          };
+          rd.readAsDataURL(f);
+          return;
+        }
         openCrop(f,function(data){
           if(!data){showToast('Failed to read image');return}
           pendingGalleryImg=data;
@@ -567,7 +609,7 @@ var STORAGE={
           pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
           var box=document.getElementById('gImg');box.value='';box.placeholder='image ready (cropped)';
         });
-      });
+      },'image/*,video/*');
     });
     bindUpload('prUploadBtn','prImg','prPreview',function(d){pendingProjectImg=d});
 
@@ -588,8 +630,9 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       if(!title){showToast('Title required');return}
       var urlVal=document.getElementById('gImg').value.trim();
       var item={title:title,date:document.getElementById('gDate').value.trim(),img:pendingGalleryImg||urlVal};
-      var list=load(STORAGE.gallery);list.unshift(item);save(STORAGE.gallery,list);
-      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp / .mp4';
+      var list=load(STORAGE.gallery);list.unshift(item);
+      try{save(STORAGE.gallery,list)}catch(e){showToast('Media too large for storage');return}
+      document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp / .gif / .mp4';
       pendingGalleryImg='';document.getElementById('gPreview').style.display='none';
       renderGalleryList();showToast('Added to gallery');
     });
@@ -650,6 +693,42 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
       if(!label||!url){showToast('Label and URL required');return}
       var l=load(STORAGE.socials);l.push({label:label,url:url});save(STORAGE.socials,l);
       document.getElementById('sLabel').value='';document.getElementById('sUrl').value='';renderSocialList();showToast('Social added');
+    });
+
+/* ---------------- LINKS ---------------- */
+    var pendingLinkIcon='';
+    function renderLinkList(){
+      var list=load(STORAGE.links),box=document.getElementById('linkList');
+      if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no links yet</p>';return}
+      box.innerHTML=list.map(function(s,i){
+        var icon=s.icon&&s.icon.indexOf('data:')===0?'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#ff4466);background-image:linear-gradient(135deg,#4764ec,#ff4466),url(\''+esc(s.icon)+'\')"></div>':(s.icon?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(s.icon)+'\')"></div>':'<div class="item-avatar" style="background:linear-gradient(135deg,#4764ec,#ff4466)">'+esc((s.name||'?')[0].toUpperCase())+'</div>');
+        return '<div class="item-row">'+icon+
+        '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(s.name)+'</div>'+
+        '<div style="font-size:0.75rem;opacity:0.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(s.url)+'</div></div>'+
+        '<div class="row-actions"><button class="btn btn-danger" onclick="removeLink('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
+      }).join('');
+    }
+    window.removeLink=function(i){var l=load(STORAGE.links);l.splice(i,1);save(STORAGE.links,l);renderLinkList();showToast('Link removed')};
+    document.getElementById('lUploadBtn').addEventListener('click',function(){
+      fileInput(function(f){
+        imageToDataUrl(f,function(data){
+          if(!data){showToast('Failed to read image');return}
+          pendingLinkIcon=data;
+          document.getElementById('lIcon').value='';
+          var pv=document.getElementById('lPreview');
+          pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
+        });
+      },'image/*,video/*');
+    });
+    document.getElementById('addLinkBtn').addEventListener('click',function(){
+      var name=document.getElementById('lName').value.trim(),url=document.getElementById('lUrl').value.trim();
+      if(!name||!url){showToast('Name and URL required');return}
+      var icon=pendingLinkIcon||document.getElementById('lIcon').value.trim();
+      var l=load(STORAGE.links);l.unshift({name:name,url:url,icon:icon});
+      try{save(STORAGE.links,l)}catch(e){showToast('Icon too large for storage');return}
+      document.getElementById('lName').value='';document.getElementById('lUrl').value='';document.getElementById('lIcon').value='';
+      pendingLinkIcon='';document.getElementById('lPreview').style.display='none';
+      renderLinkList();showToast('Link added');
     });
 
 /* ---------------- PROJECTS ---------------- */
@@ -929,7 +1008,7 @@ document.getElementById('unlockBtn').addEventListener('click',function(){
     });
 
 function loadAllLists(){
-      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderProjectList();renderDefaultProjectList();renderFriendList();
+      renderGalleryList();renderPhraseList();renderFactList();renderSocialList();renderProjectList();renderDefaultProjectList();renderFriendList();renderLinkList();
       var bio=localStorage.getItem(STORAGE.bio);if(bio)document.getElementById('aBio').value=bio;
     }
 

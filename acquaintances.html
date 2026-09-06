@@ -205,7 +205,14 @@
                 margin-bottom: 70px;
                 padding: 20px;
             }
-        }
+}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        .anim-reveal{animation:fadeInUp 0.5s ease forwards}
+        .anim-delay-1{animation-delay:0.1s;opacity:0}
+        .anim-delay-2{animation-delay:0.2s;opacity:0}
+        .anim-delay-3{animation-delay:0.3s;opacity:0}
+        .anim-delay-4{animation-delay:0.4s;opacity:0}
+        .anim-delay-5{animation-delay:0.5s;opacity:0}
     </style>
 </head>
 <body>
@@ -223,6 +230,7 @@
     
         <a href="/widgets"><span class="nav-line"></span>Widgets</a>
         <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+        <a href="/links"><span class="nav-line"></span>Links</a>
         
     </nav>
     <nav class="mobile-nav">
@@ -234,18 +242,19 @@
         
         <a href="/widgets">Widgets</a>
         <a href="/valorant">Valorant</a>
+        <a href="/links">Links</a>
         
     </nav>
 
     <main class="main-content">
 
-        <div style="margin-bottom: 48px;">
+        <div style="margin-bottom: 48px;" class="anim-reveal">
             <div class="accent-bar"></div>
             <h1 style="font-size: 40px; font-weight: 900; color: white; margin-bottom: 6px;">Acquaintances</h1>
             <p style="font-size: 16px; color: rgba(255,255,255,0.4);">people I appreciate</p>
         </div>
 
-<div style="margin-bottom: 56px;">
+<div style="margin-bottom: 56px;" class="anim-reveal anim-delay-1">
             <div class="section-title">Acquaintances</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;" id="friendsGrid">
             </div>

@@ -298,6 +298,13 @@
         height: 60vh;
       }
     }
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .anim-reveal{animation:fadeInUp 0.5s ease forwards}
+    .anim-delay-1{animation-delay:0.1s;opacity:0}
+    .anim-delay-2{animation-delay:0.2s;opacity:0}
+    .anim-delay-3{animation-delay:0.3s;opacity:0}
+    .anim-delay-4{animation-delay:0.4s;opacity:0}
+    .anim-delay-5{animation-delay:0.5s;opacity:0}
   </style>
 </head>
 <body>
@@ -317,6 +324,7 @@
 
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/links"><span class="nav-line"></span>Links</a>
     
   </nav>
   <nav class="mobile-nav">
@@ -328,6 +336,7 @@
     
     <a href="/widgets">Widgets</a>
     <a href="/valorant">Valorant</a>
+    <a href="/links">Links</a>
     
   </nav>
 
@@ -335,14 +344,14 @@
   <main class="main-content">
 
     <!-- Header -->
-    <div class="section-header">
+    <div class="section-header anim-reveal">
       <div class="accent-bar"></div>
       <h1>Gallery</h1>
       <p>moments and memories</p>
     </div>
 
     <!-- Filter Tabs -->
-    <div class="filter-tabs">
+    <div class="filter-tabs anim-reveal anim-delay-1">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="screenshots">Screenshots</button>
       <button class="filter-btn" data-filter="art">Art</button>
@@ -351,7 +360,7 @@
     </div>
 
 <!-- Photo Grid -->
-    <div class="gallery-grid">
+    <div class="gallery-grid anim-reveal anim-delay-2">
     </div>
   </main>
 
@@ -374,7 +383,7 @@ items.forEach(function(it){
           }else{
             bg='linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')';
           }
-          var isVid=(it.img||'').match(/\.(mp4|webm|ogg)([?#]|$)/i);
+          var m0=(it.img||'');var isVid=m0.indexOf('data:video/')===0||/\.(mp4|webm|ogg)([?#]|$)/i.test(m0);
           var media;
           if(isVid){
             media='<video src="'+it.img+'" muted loop playsinline preload="auto" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>';
