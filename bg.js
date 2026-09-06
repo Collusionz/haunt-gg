@@ -45,7 +45,7 @@
   var hid = document.createElement('video');
   hid.setAttribute('style', BASE + ';opacity:0');
   shape(hid);
-  document.body.insertBefore(hid, vis);
+  vis.parentNode.insertBefore(hid, vis);
 
   // Both stream from the start so a toggle is instant (no re-buffer, no black flash).
   setSrc(vis, srcFor(mode));
