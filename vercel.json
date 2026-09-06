@@ -8,6 +8,7 @@
   ],
   "routes": [
     { "src": "/valorant", "dest": "/valorant.html" },
+    { "src": "/mlbb", "dest": "/mlbb.html" },
     { "src": "/widgets", "dest": "/widgets.html" },
     { "src": "/projects", "dest": "/projects.html" },
     { "src": "/about", "status": 404 },

@@ -8,59 +8,80 @@
 
   var mode = 'old';
   try {
-    var stored = localStorage.getItem('bgMode');
-    if (stored === 'other') mode = 'other';
+    if (localStorage.getItem('bgMode') === 'other') mode = 'other';
   } catch (e) {}
 
-  var videoEl;
+  var BASE = 'position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none';
 
-  function videoSrc() {
-    if (vaultBg) return vaultBg;
-    return mode === 'other' ? OTHER_VIDEO : OLD_VIDEO;
-  }
+  function srcFor(m) { return vaultBg || (m === 'other' ? OTHER_VIDEO : OLD_VIDEO); }
+  function otherOf(m) { return m === 'other' ? 'old' : 'other'; }
 
-  function baseStyle() {
-    return 'position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;pointer-events:none';
-  }
-
-  function findBgVideo() {
-    if (document.getElementById('bgVideo')) return document.getElementById('bgVideo');
-    if (document.getElementById('bg-video')) return document.getElementById('bg-video');
-    var cls = document.querySelector('video.bg-video');
-    if (cls) return cls;
-    var wrap = document.querySelector('.pointer-events-none.fixed.inset-0 video');
-    if (wrap) return wrap;
+  function findExisting() {
+    var el;
+    el = document.getElementById('bgVideo'); if (el) return el;
+    el = document.getElementById('bg-video'); if (el) return el;
+    el = document.querySelector('video.bg-video'); if (el) return el;
+    el = document.querySelector('.pointer-events-none.fixed.inset-0 video'); if (el) return el;
     return null;
   }
 
-  function ensureVideo() {
-    videoEl = findBgVideo();
-    if (!videoEl) {
-      videoEl = document.createElement('video');
-      videoEl.id = 'bgVideo';
-      videoEl.setAttribute('style', baseStyle() + ';opacity:0.6');
-      videoEl.loop = true; videoEl.muted = true; videoEl.playsInline = true; videoEl.autoplay = true;
-      document.body.insertBefore(videoEl, document.body.firstChild);
-    }
-    videoEl.loop = true; videoEl.muted = true; videoEl.playsInline = true;
-    var kids = videoEl.querySelectorAll('source');
+  function setSrc(v, s) {
+    var kids = v.querySelectorAll('source');
     for (var i = 0; i < kids.length; i++) kids[i].remove();
-    if (videoEl.getAttribute('src') !== videoSrc()) {
-      videoEl.src = videoSrc();
-      videoEl.load();
-    }
-    videoEl.style.zIndex = '-1';
-    videoEl.style.opacity = '0.6';
-    videoEl.play().catch(function () {});
+    if (v.getAttribute('src') !== s) { v.src = s; v.load(); }
   }
 
-  function applyMode() {
-    ensureVideo();
+  function shape(v) { v.loop = true; v.muted = true; v.playsInline = true; v.autoplay = true; }
+
+  var vis = findExisting();
+  if (!vis) {
+    vis = document.createElement('video');
+    vis.id = 'bgVideo';
+    document.body.insertBefore(vis, document.body.firstChild);
+  }
+  vis.setAttribute('style', BASE + ';opacity:0.6');
+  shape(vis);
+
+  var hid = document.createElement('video');
+  hid.setAttribute('style', BASE + ';opacity:0');
+  shape(hid);
+  document.body.insertBefore(hid, vis);
+
+  // Both stream from the start so a toggle is instant (no re-buffer, no black flash).
+  setSrc(vis, srcFor(mode));
+  setSrc(hid, srcFor(otherOf(mode)));
+  vis.play().catch(function () {});
+  hid.play().catch(function () {});
+
+  function toggle() {
+    mode = otherOf(mode);
+    try { localStorage.setItem('bgMode', mode); } catch (e) {}
+    var t = vis;
+    vis = hid;
+    hid = t;
+    vis.style.opacity = '0.6';
+    hid.style.opacity = '0';
+    setSrc(hid, srcFor(otherOf(mode)));
+    vis.play().catch(function () {});
+    hid.play().catch(function () {});
+    paint();
+  }
+
+  var btn = null;
+  function paint() {
+    if (!btn) return;
+    if (mode === 'other') {
+      btn.innerHTML = '&#9664;';
+      btn.title = 'switch to default background';
+    } else {
+      btn.innerHTML = '&#9654;';
+      btn.title = 'switch to animated background';
+    }
+    btn.setAttribute('aria-label', btn.title);
   }
 
   function addToggle() {
-    var btn = document.getElementById('bgToggle');
-    if (btn) return;
+    btn = document.getElementById('bgToggle');
     btn = document.createElement('button');
     btn.id = 'bgToggle';
     btn.setAttribute('style',
@@ -68,28 +89,12 @@
       'border:1px solid rgba(255,255,255,0.18);background:rgba(20,22,35,0.55);backdrop-filter:blur(8px);' +
       'color:#ccd8ec;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;' +
       'transition:transform 0.2s,color 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.35)');
-    function paint() {
-      if (mode === 'other') {
-        btn.innerHTML = '&#9664;';
-        btn.title = 'switch to default background';
-      } else {
-        btn.innerHTML = '&#9654;';
-        btn.title = 'switch to animated background';
-      }
-      btn.setAttribute('aria-label', btn.title);
-    }
-    btn.addEventListener('click', function () {
-      mode = mode === 'other' ? 'old' : 'other';
-      try { localStorage.setItem('bgMode', mode); } catch (e) {}
-      applyMode();
-      paint();
-    });
+    btn.addEventListener('click', toggle);
     btn.addEventListener('mouseenter', function () { btn.style.transform = 'scale(1.08)'; });
     btn.addEventListener('mouseleave', function () { btn.style.transform = 'scale(1)'; });
     document.body.appendChild(btn);
     paint();
   }
 
-  ensureVideo();
   addToggle();
 })();
