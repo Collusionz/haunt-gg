@@ -282,7 +282,7 @@ function discordFull(ep){
   return new Date(ep*1000).toLocaleString('en-GB',{timeZone:'Asia/Singapore',weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
 }
 function updateCountdown(){
-  const txt=discordRelative(BIRTHDAY_EPOCH)+' · '+discordDate(BIRTHDAY_EPOCH);
+  const txt=discordRelative(BIRTHDAY_EPOCH);
   const els=[document.getElementById('countdown'),document.getElementById('countdownBirthday')];
   els.forEach(el=>{if(el){el.textContent=txt;el.title=discordFull(BIRTHDAY_EPOCH)+'\n<t:'+BIRTHDAY_EPOCH+':d>  <t:'+BIRTHDAY_EPOCH+':R>'}});
 }
