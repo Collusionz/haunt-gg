@@ -106,7 +106,7 @@
       var list=[];
       try{list=JSON.parse(localStorage.getItem('vaultLinks')||'[]')}catch(e){}
       if(!list.length){
-        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:#6B7280;font-size:0.9rem">no links yet — add them in <a href="/vault" style="color:#8aa3ff">the vault</a></div>';
+        grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:#6B7280;font-size:0.9rem">no links yet</div>';
         return;
       }
       function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
