@@ -29,11 +29,15 @@
     .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
     .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
     @media(min-width:768px){#mainContent{padding-left:80px}}
-    .links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-    .links-grid a{display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);color:#fff;text-decoration:none;transition:border-color 0.25s,transform 0.25s,background 0.25s}
-    .links-grid a:hover{border-color:rgba(85,115,244,0.55);background:rgba(85,115,244,0.08);transform:translateY(-2px)}
-    .links-grid .link-icon{width:52px;height:52px;border-radius:12px;overflow:hidden;flex-shrink:0;border:1px solid rgba(255,255,255,0.06)}
+    .links-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+    .links-grid a{display:flex;align-items:center;gap:14px;padding:18px 16px;border-radius:18px;background:rgba(255,255,255,0.045);border:2px solid rgba(255,255,255,0.1);color:#fff;text-decoration:none;transition:border-color 0.25s,transform 0.25s,background 0.25s,box-shadow 0.25s;position:relative;overflow:hidden}
+    .links-grid a::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 18% 0%,rgba(85,115,244,0.20),transparent 55%);opacity:0;transition:opacity 0.25s;pointer-events:none}
+    .links-grid a:hover{border-color:rgba(85,115,244,0.55);background:rgba(85,115,244,0.08);transform:translateY(-3px);box-shadow:0 12px 32px rgba(85,115,244,0.16)}
+    .links-grid a:hover::after{opacity:1}
+    .links-grid .link-icon{width:54px;height:54px;border-radius:14px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#4764ec,#ff4466);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1)}
     .links-grid .link-icon img,.links-grid .link-icon video{width:100%;height:100%;object-fit:cover;display:block}
+    .links-grid .link-arrow{opacity:0.3;font-size:0.95rem;transition:opacity 0.2s,transform 0.2s;flex-shrink:0;position:relative;z-index:1}
+    .links-grid a:hover .link-arrow{opacity:1;transform:translateX(3px)}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     .anim-reveal{animation:fadeInUp 0.5s ease forwards}
     .anim-delay-1{animation-delay:0.1s;opacity:0}
@@ -105,25 +109,25 @@
         grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:#6B7280;font-size:0.9rem">no links yet — add them in <a href="/vault" style="color:#8aa3ff">the vault</a></div>';
         return;
       }
-      function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+      function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+      function host(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return String(u||'').replace(/^https?:\/\//i,'').replace(/\/.*$/,'').replace(/^www\./,'')}}
       grid.innerHTML=list.map(function(l){
         var name=String(l.name||'Untitled'),url=String(l.url||'#'),icon=l.icon||'';
         var iconHtml;
-        if(icon){
-          if(icon.indexOf('data:video')===0){
-            iconHtml='<video src="'+esc(icon)+'" muted loop playsinline preload="auto"></video>';
-          }else{
-            iconHtml='<img src="'+esc(icon)+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
-          }
+        if(icon.indexOf('data:video')===0){
+          iconHtml='<video src="'+esc(icon)+'" muted loop playsinline preload="auto"></video>';
+        }else if(icon){
+          iconHtml='<img src="'+esc(icon)+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
         }else{
-          iconHtml='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.3rem;color:#fff;background:linear-gradient(135deg,#4764ec,#ff4466)">'+esc((name[0]||'?').toUpperCase())+'</div>';
+          iconHtml='<img src="https://www.google.com/s2/favicons?domain='+esc(host(url))+'&sz=64" loading="lazy" decoding="async" onerror="this.remove()"/>';
         }
         return '<a href="'+esc(url)+'" target="_blank" rel="noreferrer noopener">'+
           '<div class="link-icon">'+iconHtml+'</div>'+
-          '<div style="flex:1;min-width:0">'+
+          '<div style="flex:1;min-width:0;position:relative;z-index:1">'+
             '<div style="font-size:1rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(name)+'</div>'+
-            '<div style="font-size:0.75rem;color:#6B7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(url)+'</div>'+
+            '<div style="font-size:0.75rem;color:#6B7280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(host(url)||url)+'</div>'+
           '</div>'+
+          '<span class="link-arrow">↗</span>'+
         '</a>';
       }).join('');
     }

@@ -257,11 +257,14 @@
 
         <div id="secLinks" class="card" style="margin-bottom:20px">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">🔗 Links</h2>
-          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">socials and links shown on <a href="/links" style="color:#8aa3ff">/links</a> — add an icon with a URL or upload</p>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">socials and links shown on <a href="/links" style="color:#8aa3ff">/links</a> — paste a URL and hit <span style="color:#fff">Auto-fill</span> to grab its name + icon</p>
           <label class="fld">Name</label>
           <input class="input" id="lName" placeholder="e.g. GitHub" />
           <label class="fld">Link URL</label>
-          <input class="input" id="lUrl" placeholder="https://..." />
+          <div class="flex gap-2">
+            <input class="input" id="lUrl" placeholder="https://..." />
+            <button class="btn btn-secondary" id="lAuto" style="flex-shrink:0;padding:12px 16px" title="fetch name + icon from the URL">Auto-fill</button>
+          </div>
           <label class="fld">Icon (image URL or upload)</label>
           <div class="flex gap-2">
             <input class="input" id="lIcon" placeholder="https://... .png / .gif / .mp4" />
@@ -733,6 +736,27 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
           pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
         });
       },'image/*,video/*');
+    });
+    document.getElementById('lAuto').addEventListener('click',function(){
+      var url=document.getElementById('lUrl').value.trim();
+      if(!url){showToast('Paste a URL first');return}
+      var d;try{d=new URL(url).hostname.replace(/^www\./,'')}catch(e){d=String(url).replace(/^https?:\/\//i,'').split('/')[0].replace(/^www\./,'')}
+      if(!d){showToast('Could not read that URL');return}
+      var nameEl=document.getElementById('lName');
+      if(!nameEl.value.trim()){
+        var base=d.split('.')[0];
+        nameEl.value=base?base.charAt(0).toUpperCase()+base.slice(1):'';
+      }
+      if(!pendingLinkIcon&&!document.getElementById('lIcon').value.trim()){
+        var fv='https://www.google.com/s2/favicons?domain='+encodeURIComponent(d)+'&sz=64';
+        document.getElementById('lIcon').value=fv;
+        var pv=document.getElementById('lPreview');
+        pv.innerHTML='';var im=document.createElement('img');im.src=fv;im.style.maxHeight='120px';im.style.borderRadius='10px';pv.appendChild(im);pv.style.display='block';
+      }
+      showToast('Auto-filled from URL');
+    });
+    document.getElementById('lUrl').addEventListener('change',function(){
+      if(this.value.trim())document.getElementById('lAuto').click();
     });
     document.getElementById('addLinkBtn').addEventListener('click',function(){
       var name=document.getElementById('lName').value.trim(),url=document.getElementById('lUrl').value.trim();
