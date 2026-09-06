@@ -136,7 +136,7 @@
     <a href="/mlbb">MLBB</a>
     <a href="/links">Links</a>
   </nav>
-  <button class="theme-toggle" id="themeToggle" title="Toggle theme">&#9728;</button>
+
   <div class="scroll-progress" id="scrollProgress"></div>
   <div id="cursorSpotlight"></div>
   <div id="toast" class="toast"></div>
@@ -202,26 +202,6 @@
           </div>
 
         </div>
-      </section>
-    </main>
-  </div>
-
-  <script>
-    const themeToggle=document.getElementById('themeToggle');
-    const savedTheme=localStorage.getItem('theme')||'dark';
-    if(savedTheme==='light'){document.body.classList.add('light');themeToggle.textContent='\u263E'}
-    themeToggle.addEventListener('click',()=>{
-      document.body.classList.toggle('light');
-      const isLight=document.body.classList.contains('light');
-      themeToggle.textContent=isLight?'\u263E':'\u2600';
-      localStorage.setItem('theme',isLight?'light':'dark');
-    });
-
-    window.addEventListener('scroll',()=>{
-      const h=document.documentElement.scrollHeight-window.innerHeight;
-      document.getElementById('scrollProgress').style.width=h>0?(window.scrollY/h*100)+'%':'0';
-    });
-
     const spotlight=document.getElementById('cursorSpotlight');
     document.addEventListener('mousemove',e=>{spotlight.style.left=e.clientX+'px';spotlight.style.top=e.clientY+'px'});
 

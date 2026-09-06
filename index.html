@@ -104,7 +104,7 @@
     <a href="/mlbb">MLBB</a>
     <a href="/links">Links</a>
   </nav>
-  <button class="theme-toggle" id="themeToggle" title="Toggle theme">☀</button>
+
   <div class="scroll-progress" id="scrollProgress"></div>
   <div id="cursorSpotlight"></div>
   <div id="toast" class="toast"></div>
@@ -209,16 +209,7 @@
       if(window.Syn)Syn.addVisit(n=>{if(typeof n==='number')renderVisitCount(n)});
     }catch(e){};
 
-    // ========== THEME TOGGLE ==========
-    const themeToggle=document.getElementById('themeToggle');
-    const savedTheme=localStorage.getItem('theme')||'dark';
-    if(savedTheme==='light'){document.body.classList.add('light');themeToggle.textContent='☾'}
-    themeToggle.addEventListener('click',()=>{
-      document.body.classList.toggle('light');
-      const isLight=document.body.classList.contains('light');
-      themeToggle.textContent=isLight?'☾':'☀';
-      localStorage.setItem('theme',isLight?'light':'dark');
-    });
+    // ========== THEME TOGGLE REMOVED ==========
 
     // ========== SCROLL PROGRESS ==========
     window.addEventListener('scroll',()=>{

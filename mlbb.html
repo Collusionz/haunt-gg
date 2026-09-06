@@ -260,7 +260,7 @@
       if(!heroesC){jobs.push(loadHeroes());}else{renderHeroes(heroesC.list)}
       if(!matchesC){jobs.push(loadMatches());}else{renderMatches(matchesC.list)}
       await Promise.all(jobs.map(j=>j.catch(e=>{
-        if(e&&e.message==='SESSION_EXPIRED'){sessionNotice();return;}
+        if(e&&e.message==='SESSION_EXPIRED'){clearSession();return;}
         console.error(e);
       })));
     }
@@ -377,7 +377,7 @@
       document.getElementById('roleId').value=auth.role_id;
       document.getElementById('zoneId').value=auth.zone_id;
       try{await loadData(false);}
-      catch(e){if(e&&e.message==='SESSION_EXPIRED'){sessionNotice();return;}console.error(e)}
+      catch(e){if(e&&e.message==='SESSION_EXPIRED'){clearSession();return;}console.error(e)}
     })();
   </script>
 
