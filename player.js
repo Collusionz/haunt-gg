@@ -1,9 +1,6 @@
 (function () {
   'use strict';
 
-  var HOME = location.pathname === '/' || location.pathname === '/index.html';
-  if (!HOME) return;
-
   var TRACKS = [
     { src: '/audio/song-1.mp3', cover: '/audio/song-1-cover.jpg', title: 'untitled', artist: 'song 1' },
     { src: '/audio/song-2.mp3', cover: '/audio/song-2-cover.jpg', title: 'untitled', artist: 'song 2' },
