@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var DEFAULT_VIDEO = 'https://akryst.moe/videos/background.mp4#t=0.001';
+  var DEFAULT_VIDEO = '/audio/background.mp4#t=0.001';
   var vaultBg = null;
   try { vaultBg = localStorage.getItem('vaultBg') || null; } catch (e) {}
   var mode = 'video';
