@@ -34,8 +34,9 @@
     .links-grid a::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 18% 0%,rgba(85,115,244,0.20),transparent 55%);opacity:0;transition:opacity 0.25s;pointer-events:none}
     .links-grid a:hover{border-color:rgba(85,115,244,0.55);background:rgba(85,115,244,0.08);transform:translateY(-3px);box-shadow:0 12px 32px rgba(85,115,244,0.16)}
     .links-grid a:hover::after{opacity:1}
-    .links-grid .link-icon{width:54px;height:54px;border-radius:14px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#4764ec,#ff4466);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1)}
+    .links-grid .link-icon{width:54px;height:54px;border-radius:14px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1)}
     .links-grid .link-icon img,.links-grid .link-icon video{width:100%;height:100%;object-fit:cover;display:block}
+    .links-grid .link-icon img.link-fav{object-fit:contain;padding:12px;box-sizing:border-box}
     .links-grid .link-arrow{opacity:0.3;font-size:0.95rem;transition:opacity 0.2s,transform 0.2s;flex-shrink:0;position:relative;z-index:1}
     .links-grid a:hover .link-arrow{opacity:1;transform:translateX(3px)}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -114,12 +115,12 @@
       grid.innerHTML=list.map(function(l){
         var name=String(l.name||'Untitled'),url=String(l.url||'#'),icon=l.icon||'';
         var iconHtml;
-        if(icon.indexOf('data:video')===0){
+        if(icon.indexOf('s2/favicons')>-1||!icon){
+          iconHtml='<img class="link-fav" src="'+esc(icon||'https://www.google.com/s2/favicons?domain='+host(url)+'&sz=128')+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
+        }else if(icon.indexOf('data:video')===0){
           iconHtml='<video src="'+esc(icon)+'" muted loop playsinline preload="auto"></video>';
-        }else if(icon){
-          iconHtml='<img src="'+esc(icon)+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
         }else{
-          iconHtml='<img src="https://www.google.com/s2/favicons?domain='+esc(host(url))+'&sz=64" loading="lazy" decoding="async" onerror="this.remove()"/>';
+          iconHtml='<img src="'+esc(icon)+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
         }
         return '<a href="'+esc(url)+'" target="_blank" rel="noreferrer noopener">'+
           '<div class="link-icon">'+iconHtml+'</div>'+

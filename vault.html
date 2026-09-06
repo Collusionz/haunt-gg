@@ -748,7 +748,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
         nameEl.value=base?base.charAt(0).toUpperCase()+base.slice(1):'';
       }
       if(!pendingLinkIcon&&!document.getElementById('lIcon').value.trim()){
-        var fv='https://www.google.com/s2/favicons?domain='+encodeURIComponent(d)+'&sz=64';
+        var fv='https://www.google.com/s2/favicons?domain='+encodeURIComponent(d)+'&sz=128';
         document.getElementById('lIcon').value=fv;
         var pv=document.getElementById('lPreview');
         pv.innerHTML='';var im=document.createElement('img');im.src=fv;im.style.maxHeight='120px';im.style.borderRadius='10px';pv.appendChild(im);pv.style.display='block';
