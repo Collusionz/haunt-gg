@@ -200,6 +200,16 @@
           </div>
 
         </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    window.addEventListener('scroll',()=>{
+      const h=document.documentElement.scrollHeight-window.innerHeight;
+      document.getElementById('scrollProgress').style.width=h>0?(window.scrollY/h*100)+'%':'0';
+    });
+
     const spotlight=document.getElementById('cursorSpotlight');
     document.addEventListener('mousemove',e=>{spotlight.style.left=e.clientX+'px';spotlight.style.top=e.clientY+'px'});
 
