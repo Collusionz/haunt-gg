@@ -124,38 +124,15 @@
           <p style="font-size:0.8rem;opacity:0.45;margin-bottom:8px">upload an image or use a URL — shows on <a href="/gallery" style="color:#8aa3ff">/gallery</a></p>
           <label class="fld">Title</label>
           <input class="input" id="gTitle" placeholder="e.g. Valorant Ace" />
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Category</label>
-              <select class="input" id="gCategory">
-                <option value="screenshots">Screenshots</option>
-                <option value="art">Art</option>
-                <option value="irl">IRL</option>
-                <option value="memes">Memes</option>
-              </select>
-            </div>
-            <div>
-              <label class="fld">Date</label>
-              <input class="input" id="gDate" placeholder="e.g. Sep 2026" />
-            </div>
-          </div>
+<label class="fld">Description</label>
+          <input class="input" id="gDate" placeholder="e.g. my first ace" />
           <label class="fld">Image (upload or paste a URL)</label>
           <div class="flex gap-2">
             <input class="input" id="gImg" placeholder="https://... .png / .jpg / .webp / .mp4" />
             <button class="btn btn-secondary" id="gUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
           </div>
           <input type="file" id="gFile" accept="image/*" style="display:none" />
-          <div class="upload-preview" id="gPreview"></div>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Gradient start</label>
-              <input type="color" class="input" id="gBg1" value="#4764ec" style="height:46px;padding:4px" />
-            </div>
-            <div>
-              <label class="fld">Gradient end</label>
-              <input type="color" class="input" id="gBg2" value="#ff4466" style="height:46px;padding:4px" />
-            </div>
-          </div>
+<div class="upload-preview" id="gPreview"></div>
           <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
           <div id="galleryList" style="margin-top:20px"></div>
         </div>
@@ -252,18 +229,8 @@
               <input class="input" id="fInit" placeholder="e.g. K" maxlength="1" />
             </div>
           </div>
-          <label class="fld">Note</label>
+<label class="fld">Note</label>
           <input class="input" id="fNote" placeholder="e.g. valorant duo" />
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="fld">Avatar start</label>
-              <input type="color" class="input" id="fBg1" value="#5573f4" style="height:46px;padding:4px" />
-            </div>
-            <div>
-              <label class="fld">Avatar end</label>
-              <input type="color" class="input" id="fBg2" value="#4764ec" style="height:46px;padding:4px" />
-            </div>
-          </div>
 <label class="fld">Avatar image</label>
           <div class="flex gap-2">
             <input class="input" id="fImg" placeholder="https://... (link or import)" />
@@ -374,9 +341,9 @@ var STORAGE={
       var list=load(STORAGE.gallery),box=document.getElementById('galleryList');
       if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom items yet</p>';return}
       box.innerHTML=list.map(function(it,i){
-        return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+it.bg1+','+it.bg2+')'+((it.img&&it.img.indexOf('data:')===0)?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+it.bg1+','+it.bg2+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
+return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')'+((it.img&&it.img.indexOf('data:')===0)?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(it.title)+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45">'+esc(it.category)+' · '+(it.date?esc(it.date):'no date')+'</div></div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+(it.date?esc(it.date):'no description')+'</div></div>'+
         '<div class="row-actions"><button class="btn btn-danger" onclick="removeGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
     }
@@ -386,7 +353,7 @@ var STORAGE={
       var title=document.getElementById('gTitle').value.trim();
       if(!title){showToast('Title required');return}
       var urlVal=document.getElementById('gImg').value.trim();
-      var item={title:title,category:document.getElementById('gCategory').value,date:document.getElementById('gDate').value.trim(),img:pendingGalleryImg||urlVal,bg1:document.getElementById('gBg1').value,bg2:document.getElementById('gBg2').value};
+      var item={title:title,date:document.getElementById('gDate').value.trim(),img:pendingGalleryImg||urlVal};
       var list=load(STORAGE.gallery);list.unshift(item);save(STORAGE.gallery,list);
       document.getElementById('gTitle').value='';document.getElementById('gDate').value='';document.getElementById('gImg').value='';document.getElementById('gImg').placeholder='https://... .png / .jpg / .webp / .mp4';
       pendingGalleryImg='';document.getElementById('gPreview').style.display='none';
@@ -595,7 +562,7 @@ document.getElementById('addFactBtn').addEventListener('click',function(){
     document.getElementById('addFriendBtn').addEventListener('click',function(){
       var name=document.getElementById('fName').value.trim();
       if(!name){showToast('Name required');return}
-      var item={name:name,initial:document.getElementById('fInit').value.trim()||name[0].toUpperCase(),note:document.getElementById('fNote').value.trim(),bg1:document.getElementById('fBg1').value,bg2:document.getElementById('fBg2').value};
+      var item={name:name,initial:document.getElementById('fInit').value.trim()||name[0].toUpperCase(),note:document.getElementById('fNote').value.trim()};
       var img=document.getElementById('fImg').value.trim();
       if(img)item.img=img;
       var l=load(STORAGE.friends);l.push(item);save(STORAGE.friends,l);
