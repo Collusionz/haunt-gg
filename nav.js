@@ -151,6 +151,14 @@
       try { window.guestbookBootstrap(); } catch (e) {}
     }
 
+    // The Tailwind Play CDN generates its stylesheet from whatever DOM was
+    // present at load time; after the body swap the previous page's rules
+    // linger (handy-home styling leaks into every soft-navigated page).
+    // Touch the config to force a rescan against the freshly swapped body.
+    if (window.tailwind && window.tailwind.config) {
+      window.tailwind.config = window.tailwind.config;
+    }
+
     window.scrollTo(0, y || 0);
   }
 
@@ -217,11 +225,4 @@
       })
       .catch(function () { location.reload(); });
   });
-
-  // Diagnostic hook (only active with ?navtest=): soft-navigate to the given
-  // path once loaded, so headless DOM dumps can inspect the swapped page.
-  try {
-    var navTest = new URLSearchParams(location.search).get('navtest');
-    if (navTest) setTimeout(function () { go(navTest, true); }, 1200);
-  } catch (e) {}
 })();
