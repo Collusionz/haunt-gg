@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "headers": [
     { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
     { "source": "/nav.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
