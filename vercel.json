@@ -10,17 +10,11 @@
     { "src": "/valorant", "dest": "/valorant.html" },
     { "src": "/widgets", "dest": "/widgets.html" },
     { "src": "/projects", "dest": "/projects.html" },
-    { "src": "/about", "status": 404 },
-    { "src": "/skills", "status": 404 },
     { "src": "/gallery", "dest": "/gallery.html" },
     { "src": "/music", "dest": "/music.html" },
     { "src": "/acquaintances", "dest": "/acquaintances.html" },
-    { "src": "/friends", "status": 404 },
     { "src": "/vault", "dest": "/vault.html" },
-    { "src": "/links", "dest": "/links.html" },
-    { "src": "/gaming", "status": 404 },
-    { "src": "/awards", "status": 404 },
-    { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
+    { "src": "/links", "dest": "/links.html" }
   ],
   "headers": [
     { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
