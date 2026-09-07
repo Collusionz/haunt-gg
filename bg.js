@@ -67,31 +67,54 @@
     paint();
   }
 
+  /* ---- sleek dark/light background switcher ----
+     mode 'old'   = dark background (default)  -> shows the sun (click = go light)
+     mode 'other' = light background           -> shows the moon (click = go dark) */
   var btn = null;
+  var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.2v2.4M12 19.4v2.4M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M2.2 12h2.4M19.4 12h2.4M4.9 19.1l1.7-1.7M17.4 6.6l1.7-1.7"/></svg>';
+  var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>';
+
   function paint() {
     if (!btn) return;
-    if (mode === 'other') {
-      btn.innerHTML = '&#9664;';
-      btn.title = 'switch to default background';
-    } else {
-      btn.innerHTML = '&#9654;';
-      btn.title = 'switch to animated background';
-    }
+    var light = (mode === 'other');
+    btn.setAttribute('data-mode', light ? 'light' : 'dark');
+    btn.title = light ? 'switch to dark background' : 'switch to light background';
     btn.setAttribute('aria-label', btn.title);
+    if (btn.__setIcons) btn.__setIcons(light);
   }
 
   function addToggle() {
-    btn = document.getElementById('bgToggle');
+    if (document.getElementById('bgToggle')) { btn = document.getElementById('bgToggle'); paint(); return; }
     btn = document.createElement('button');
     btn.id = 'bgToggle';
-    btn.setAttribute('style',
-      'position:fixed;right:18px;bottom:18px;z-index:60;width:40px;height:40px;border-radius:50%;' +
-      'border:1px solid rgba(255,255,255,0.18);background:rgba(20,22,35,0.55);backdrop-filter:blur(8px);' +
-      'color:#ccd8ec;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;' +
-      'transition:transform 0.2s,color 0.2s;box-shadow:0 2px 12px rgba(0,0,0,0.35)');
-    btn.addEventListener('click', toggle);
-    btn.addEventListener('mouseenter', function () { btn.style.transform = 'scale(1.08)'; });
-    btn.addEventListener('mouseleave', function () { btn.style.transform = 'scale(1)'; });
+    btn.setAttribute('role', 'switch');
+    btn.setAttribute('aria-label', 'toggle background mode');
+    btn.style.cssText =
+      'position:fixed;right:18px;bottom:18px;z-index:60;width:44px;height:44px;border-radius:50%;' +
+      'border:1px solid rgba(255,255,255,0.16);background:rgba(16,18,30,0.6);backdrop-filter:blur(12px);' +
+      '-webkit-backdrop-filter:blur(12px);color:#e6ecf7;cursor:pointer;display:flex;align-items:center;' +
+      'justify-content:center;overflow:hidden;' +
+      'transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s ease;' +
+      'box-shadow:0 4px 18px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);outline:none';
+    var s1 = document.createElement('span');
+    s1.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease,transform .5s cubic-bezier(.34,1.56,.64,1)';
+    s1.innerHTML = SUN;
+    var s2 = document.createElement('span');
+    s2.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease,transform .5s cubic-bezier(.34,1.56,.64,1)';
+    s2.innerHTML = MOON;
+    btn.appendChild(s1);
+    btn.appendChild(s2);
+    btn.__setIcons = function (light) {
+      s1.style.opacity = light ? '0' : '1';
+      s1.style.transform = light ? 'rotate(-90deg) scale(0.6)' : 'rotate(0deg) scale(1)';
+      s2.style.opacity = light ? '1' : '0';
+      s2.style.transform = light ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.6)';
+    };
+    btn.addEventListener('click', function (e) { e.preventDefault(); toggle(); });
+    btn.addEventListener('mouseenter', function () { btn.style.transform = 'scale(1.08)'; btn.style.boxShadow = '0 6px 24px rgba(71,100,236,0.35),inset 0 1px 0 rgba(255,255,255,0.1)'; });
+    btn.addEventListener('mouseleave', function () { btn.style.transform = 'scale(1)'; btn.style.boxShadow = '0 4px 18px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08)'; });
+    btn.addEventListener('focus', function () { btn.style.borderColor = 'rgba(85,115,244,0.7)'; });
+    btn.addEventListener('blur', function () { btn.style.borderColor = 'rgba(255,255,255,0.16)'; });
     document.body.appendChild(btn);
     paint();
   }
