@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>404 | collusionz</title>
+  <meta name="description" content="page not found — collusionz" />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#5573f4" />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{satoshi:['"Satoshi"','sans-serif']}}}}</script>
+  <style>
+*,*::before,*::after{box-sizing:border-box}
+    *,*::before,*::after{cursor:url('cursor.png') 17 17,auto!important}
+    body{margin:0;padding:0;font-family:'Satoshi',sans-serif;background:#000;color:#ccd8ec;min-height:100vh;overflow-x:hidden}
+    .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+    @media(min-width:768px){.side-nav{display:flex}}
+    .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+    .side-nav a:hover{color:rgba(255,255,255,0.7)}
+    .side-nav a.active{color:#fff}
+    .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+    .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+    .side-nav a.active .nav-line{width:16px;background:#fff}
+    .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+    @media(min-width:768px){.mobile-nav{display:none}}
+    .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+    .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .anim-reveal{animation:fadeInUp 0.6s ease forwards}
+    .num-glow{color:#4764ec;text-shadow:0 0 16px rgba(71,100,236,0.55);animation:glowPulse 3s ease-in-out infinite}
+    @keyframes glowPulse{0%,100%{text-shadow:0 0 16px rgba(71,100,236,0.55)}50%{text-shadow:0 0 34px rgba(71,100,236,0.95),0 0 64px rgba(71,100,236,0.35)}}
+    .quip{font-size:0.85rem;color:rgba(255,255,255,0.45);margin:0}
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);padding:8px 20px;border-radius:12px;background:rgba(71,100,236,0.92);color:#fff;font-size:0.8rem;font-weight:500;backdrop-filter:blur(8px);z-index:200;opacity:0;transition:all 0.3s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  </style>
+  <script src="/nav.js"></script>
+  <script src="/fx.js" defer></script>
+</head>
+<body class="min-h-full flex flex-col">
+  <nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/music"><span class="nav-line"></span>Music</a>
+    <a href="/gallery"><span class="nav-line"></span>Gallery</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/acquaintances"><span class="nav-line"></span>Acquaintances</a>
+    <a href="/widgets"><span class="nav-line"></span>Widgets</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/links"><span class="nav-line"></span>Links</a>
+  </nav>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/music">Music</a>
+    <a href="/projects">Projects</a>
+    <a href="/acquaintances">Acquaintances</a>
+    <a href="/widgets">Widgets</a>
+    <a href="/valorant">Valorant</a>
+    <a href="/links">Links</a>
+  </nav>
+  <div id="toast" class="toast"></div>
+
+  <div class="dark contents">
+    <div class="pointer-events-none fixed inset-0 -z-10" style="background-color:#000"></div>
+
+    <main class="relative flex min-h-screen w-full flex-col items-center justify-center px-4 py-20 text-center font-satoshi" id="mainContent">
+      <div class="w-full max-w-xl anim-reveal">
+        <div class="text-[6.5rem] sm:text-[9rem] font-black leading-none" style="color:#fff;letter-spacing:-0.03em">
+          <span class="num-glow">4</span><span style="color:#4764ec">0</span><span class="num-glow">4</span>
+        </div>
+        <h1 class="mt-2 text-2xl sm:text-3xl font-bold" style="color:#fff;margin-top:6px">lost in the static</h1>
+        <p class="mt-2" style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-top:10px">the page you're after doesn't exist — or it got beamed somewhere else.</p>
+        <p id="quip" class="quip mt-4" style="margin-top:14px"></p>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-2" style="margin-top:28px">
+          <a href="/" class="btn-primary">back to home</a>
+          <a href="/projects" class="btn-chip">projects</a>
+          <a href="/links" class="btn-chip">links</a>
+          <button type="button" data-gb class="btn-chip">guestbook</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const quips = [
+      "error 404: page ran away to join the circus",
+      "nothing here but echoes and good intentions",
+      "this link went ghost 👻",
+      "you've reached the void — mind the drop",
+      "404: the page found a better timeline",
+      "somewhere, this page exists. spawn accuracy: off",
+    ];
+    document.getElementById('quip').textContent = quips[Math.floor(Math.random() * quips.length)];
+  </script>
+  <style>
+    .btn-primary{background:linear-gradient(90deg,#5573f4,#4764ec);color:#fff;border-radius:12px;padding:10px 22px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all .25s;display:inline-block}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(71,100,236,0.4)}
+    .btn-chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border-radius:12px;padding:10px 18px;font-size:0.8rem;font-weight:500;text-decoration:none;transition:all .25s;font-family:inherit}
+    .btn-chip:hover{color:#fff;border-color:rgba(255,255,255,0.3);transform:translateY(-2px)}
+  </style>
+<script src="/analytics.js" defer></script>
+<script src="/guestbook.js" defer></script>
+</body>
+</html>
