@@ -200,7 +200,12 @@
       var pass = ownerPass();
       if (pass) {
         c.rpc('owner_post', { name: cfg.name, message: cfg.message, is_anon: !!cfg.is_anon, passcode: pass }).then(function (r) {
-          if (r.error || !r.data) { toast('could not post'); if (cb) cb(false); return; }
+          if (r.error) {
+            if (String(r.error.message || r.error.details || r.error.hint || '').toLowerCase().indexOf('passcode') !== -1) {
+              ssDel('gbOwnerPass'); toast('owner session expired — sign in again');
+            } else { toast('could not post'); }
+            if (cb) cb(false); return;
+          }
           if (cb) cb(true);
         });
       } else {
