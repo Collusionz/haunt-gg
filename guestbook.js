@@ -348,7 +348,7 @@
     var anon = root.querySelector('[data-gb-anon]');
     if (anon && !anon.getAttribute('data-gb-anon-bound')) {
       anon.setAttribute('data-gb-anon-bound', '1');
-      anon.addEventListener('change', function () {
+      looseAdd(anon, 'change', function () {
         if (name) name.style.display = anon.checked ? 'none' : '';
       });
     }
@@ -375,7 +375,13 @@
   }
 
   /* ---------------- delegation ---------------- */
-  document.addEventListener('click', function (e) {
+  // These hooks must outlive body swaps (soft navigation), so register them as
+  // permanent listeners that nav.js never cleans up.
+  function looseAdd(t, type, fn, opt) {
+    if (typeof window.__navPermEventListener === 'function') return window.__navPermEventListener(t, type, fn, opt);
+    return t.addEventListener(type, fn, opt);
+  }
+  looseAdd(document, 'click', function (e) {
     var t = e.target;
     var o = overlay && overlay.style.display !== 'none' ? overlay : document.body;
     var el, aid;
@@ -415,7 +421,7 @@
       return;
     }
   });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay && overlay.style.display !== 'none') close(); });
+  looseAdd(document, 'keydown', function (e) { if (e.key === 'Escape' && overlay && overlay.style.display !== 'none') close(); });
 
   /* ---------------- bootstrap ---------------- */
   function attachSidebarBoot() {

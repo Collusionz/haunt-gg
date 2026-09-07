@@ -23,6 +23,10 @@
     { "src": "/((?!.*\\.).*)", "dest": "/index.html" }
   ],
   "headers": [
-    { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] }
+    { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
+    { "source": "/nav.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
+    { "source": "/player.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
+    { "source": "/guestbook.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
+    { "source": "/sync.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] }
   ]
 }
