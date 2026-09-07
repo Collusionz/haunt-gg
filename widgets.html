@@ -49,6 +49,26 @@
     .anim-delay-3{animation-delay:0.3s;opacity:0}
     .anim-delay-4{animation-delay:0.4s;opacity:0}
     .anim-delay-5{animation-delay:0.5s;opacity:0}
+    /* ---- gallery widget + zoom lightbox ---- */
+    .wgallery{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media(max-width:640px){.wgallery{grid-template-columns:repeat(2,1fr)}}
+    .wgallery-card{position:relative;aspect-ratio:1/1;border-radius:16px;overflow:hidden;cursor:zoom-in;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);transition:transform .3s cubic-bezier(.25,.46,.45,.94),box-shadow .3s ease}
+    .wgallery-card:hover{transform:scale(1.04);box-shadow:0 12px 40px rgba(0,0,0,0.45);z-index:2}
+    .wgallery-card img,.wgallery-card video{width:100%;height:100%;object-fit:cover;display:block}
+    .wgallery-card .wg-card-bg{position:absolute;inset:0;width:100%;height:100%}
+    .wlightbox{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+    .wlightbox.active{opacity:1;pointer-events:all}
+    .wlightbox-content{position:relative;max-width:92vw;max-height:88vh;border-radius:18px;overflow:hidden;transform:scale(.92);transition:transform .35s cubic-bezier(.25,.46,.45,.94)}
+    .wlightbox.active .wlightbox-content{transform:scale(1)}
+    .wlightbox-bg{width:82vw;height:76vh;position:relative;overflow:hidden;border-radius:18px;background:#000}
+    @media(max-width:640px){.wlightbox-bg{width:94vw;height:70vh}}
+    .wlightbox-bg img,.wlightbox-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+    .wlightbox-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.18);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:10}
+    .wlightbox-close:hover{background:rgba(255,255,255,0.22)}
+    .wlightbox-info{position:absolute;left:0;right:0;bottom:0;padding:18px 22px;background:linear-gradient(to top,rgba(0,0,0,0.85),transparent);border-radius:0 0 18px 18px;color:#fff}
+    .wlightbox-info h3{margin:0;font-size:1rem;font-weight:600}
+    .wlightbox-info span{font-size:0.72rem;color:rgba(255,255,255,0.5)}
+    .wempty{grid-column:1/-1;text-align:center;color:rgba(255,255,255,0.35);padding:40px 0;font-size:0.85rem}
   </style>
 <script src="/nav.js"></script>
   <script src="/fx.js" defer></script>
@@ -155,7 +175,31 @@
           </div>
         </div>
       </section>
+
+      <!-- Gallery -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:48px">
+        <div class="w-full max-w-3xl anim-reveal anim-delay-4">
+          <h2 style="font-size:1.1rem;font-weight:600;color:#f4f7f8;margin:0 0 12px 4px">Gallery</h2>
+          <div class="widget-card relative w-full" style="border-radius:25px;overflow:hidden;padding:14px">
+            <div class="wgallery" id="wlgGrid"></div>
+          </div>
+        </div>
+      </section>
     </main>
+  </div>
+
+  <!-- Zoom Lightbox -->
+  <div class="wlightbox" id="wlightbox">
+    <button class="wlightbox-close" id="wlightboxClose">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="wlightbox-content">
+      <div class="wlightbox-bg" id="wlightboxBg"></div>
+      <div class="wlightbox-info">
+        <h3 id="wlightboxTitle"></h3>
+        <span id="wlightboxDate"></span>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -257,6 +301,74 @@
   <script>
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+  <script>
+    // ===== Widgets gallery: render images from vaultGallery + zoom lightbox =====
+    (function () {
+      var grid = document.getElementById('wlgGrid');
+      if (!grid) return;
+      function render() {
+        grid.innerHTML = '';
+        var items = [];
+        try { items = JSON.parse(localStorage.getItem('vaultGallery') || '[]'); } catch (e) { items = []; }
+        if (!items.length) { grid.innerHTML = '<div class="wempty">nothing here yet — add images in the vault gallery</div>'; return; }
+        items.forEach(function (it) {
+          var card = document.createElement('div');
+          card.className = 'wgallery-card';
+          card.setAttribute('data-title', it.title || 'Untitled');
+          card.setAttribute('data-date', it.date || '');
+          var m0 = it.img || '';
+          var isVid = m0.indexOf('data:video/') === 0 || /\.(mp4|webm|ogg)([?#]|$)/i.test(m0);
+          var media = isVid
+            ? '<video src="' + m0 + '" muted loop playsinline preload="auto"></video>'
+            : '<img src="' + m0 + '" alt="' + (it.title || '') + '" onerror="this.style.display=\'none\'"/>';
+          card.innerHTML = '<div class="wg-card-bg" style="background:linear-gradient(135deg,' + (it.bg1 || '#4764ec') + ',' + (it.bg2 || '#ff4466') + ')">' + media + '</div>';
+          grid.appendChild(card);
+        });
+      }
+      render();
+      if (window.Syn) Syn.pull('gallery', function (v) { if (v && Syn.apply('vaultGallery', v)) render(); });
+    })();
+  </script>
+
+  <script>
+    // ===== Zoom lightbox =====
+    (function () {
+      var lb = document.getElementById('wlightbox');
+      var lbBg = document.getElementById('wlightboxBg');
+      var lbTitle = document.getElementById('wlightboxTitle');
+      var lbDate = document.getElementById('wlightboxDate');
+      var lbClose = document.getElementById('wlightboxClose');
+      if (!lb || !lbBg) return;
+      function open(card) {
+        var m = card.querySelector('.wg-card-bg img, .wg-card-bg video');
+        lbBg.innerHTML = '';
+        if (m) {
+          var clone = m.cloneNode(false);
+          if (clone.tagName === 'VIDEO') { clone.controls = true; clone.autoplay = true; clone.loop = true; }
+          clone.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;';
+          lbBg.appendChild(clone);
+        }
+        lbTitle.textContent = card.dataset.title;
+        lbDate.textContent = card.dataset.date;
+        lb.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      function close() {
+        var v = lbBg.querySelector('video');
+        if (v) { v.pause(); v.removeAttribute('controls'); }
+        lb.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      document.addEventListener('click', function (e) {
+        var card = e.target.closest('.wgallery-card');
+        if (card) open(card);
+      });
+      lbClose.addEventListener('click', close);
+      lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    })();
+  </script>
+
 <script src="/analytics.js" defer></script>
 <script src="/player.js" defer></script>
 <script src="/bg.js" defer></script>
