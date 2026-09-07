@@ -94,16 +94,16 @@
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
             <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
             <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Projects</h1>
-            <div style="margin-left:auto"><span class="btn-badge" id="roleCount">–</span></div>
+            <div style="margin-left:auto"><span class="btn-badge" id="roleCount" aria-live="polite">–</span></div>
           </div>
           <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">servers or projects i am actively involved in</p>
 
           <div class="flex flex-wrap gap-2" style="margin:18px 0 0 16px" id="roleFilters">
-            <button type="button" data-role="all" class="chip active">All</button>
-            <button type="button" data-role="Manager" class="chip">Manager</button>
-            <button type="button" data-role="Moderator" class="chip">Moderator</button>
-            <button type="button" data-role="Tester" class="chip">Tester</button>
-            <button type="button" data-role="Administrator" class="chip">Administrator</button>
+            <button type="button" data-role="all" class="chip active" aria-pressed="true">All</button>
+            <button type="button" data-role="Manager" class="chip" aria-pressed="false">Manager</button>
+            <button type="button" data-role="Moderator" class="chip" aria-pressed="false">Moderator</button>
+            <button type="button" data-role="Tester" class="chip" aria-pressed="false">Tester</button>
+            <button type="button" data-role="Administrator" class="chip" aria-pressed="false">Administrator</button>
           </div>
         </div>
       </section>
@@ -176,7 +176,7 @@
         if(!b)return;
         const key=b.getAttribute('data-role');
         const list=chips.querySelectorAll('button[data-role]');
-        for(let i=0;i<list.length;i++)list[i].classList.toggle('active',list[i]===b);
+        for(let i=0;i<list.length;i++){list[i].classList.toggle('active',list[i]===b);list[i].setAttribute('aria-pressed',list[i]===b?'true':'false');}
         const cards=document.getElementById('projectsGrid').children;
         for(let i=0;i<cards.length;i++){
           const c=cards[i];
