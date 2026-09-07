@@ -164,6 +164,32 @@
 
   /* ---------- navigation ---------- */
   var pending = 0;
+
+  // Page-crossfade: a fixed wipe layer lives on <html> (survives body swaps),
+  // fades to the site background, the mount happens underneath, then fades in.
+  var fadeOv = document.createElement('div');
+  fadeOv.id = 'navFade';
+  fadeOv.setAttribute('style', 'position:fixed;inset:0;z-index:400;background:#000;opacity:0;pointer-events:none;transition:opacity .22s ease');
+  document.documentElement.appendChild(fadeOv);
+  var fxReduced = false;
+  try { fxReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+  function mountFx(doc, y) {
+    fadeOv.style.opacity = '1';
+    var d = fxReduced ? 8 : 200;
+    window.setTimeout(function () {
+      try {
+        mount(doc, y);
+      } catch (e) {
+        document.documentElement.appendChild(fadeOv);
+        fadeOv.style.opacity = '0';
+        location.reload();
+        return;
+      }
+      requestAnimationFrame(function () { fadeOv.style.opacity = '0'; });
+    }, d);
+  }
+
   function go(path, push) {
     var token = ++pending;
     fetch(path, { headers: { Accept: 'text/html' }, credentials: 'same-origin' })
@@ -175,7 +201,7 @@
         if (!doc || !doc.querySelector('main')) throw new Error('no main');
         if (push) history.pushState({ path: path, y: window.scrollY || 0 }, '', path);
         var sy = push ? 0 : ((history.state && history.state.y) || 0);
-        mount(doc, sy);
+        mountFx(doc, sy);
       })
       .catch(function () {
         if (token !== pending) return;
@@ -221,7 +247,7 @@
         var doc;
         try { doc = new DOMParser().parseFromString(html, 'text/html'); } catch (e) { throw e; }
         if (!doc || !doc.querySelector('main')) throw new Error('no main');
-        mount(doc, (history.state && history.state.y) || 0);
+        mountFx(doc, (history.state && history.state.y) || 0);
       })
       .catch(function () { location.reload(); });
   });

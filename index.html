@@ -81,6 +81,7 @@
 </style>
   <script src="/sync.js"></script>
 <script src="/nav.js"></script>
+<script src="/fx.js" defer></script>
   </head>
 <body class="min-h-full flex flex-col">
   <nav class="side-nav">
@@ -121,7 +122,9 @@
             <div class="profile-card-inner" style="margin:-2rem;margin-bottom:0;padding:2rem;padding-bottom:0">
               <div class="-mx-8 -mt-8 overflow-hidden" style="border-top-left-radius:42px;border-top-right-radius:42px">
                 <div class="relative w-full overflow-hidden" style="height:160px;mask-image:linear-gradient(to top,transparent 0%,black 100%);-webkit-mask-image:linear-gradient(to top,transparent 0%,black 100%)">
-                  <img alt="Banner" src="/assets/img/banner.jpg" class="absolute inset-0 w-full h-full object-cover" />
+                  <div class="absolute inset-0" data-fx-parallax="0.2">
+                    <img alt="Banner" src="/assets/img/banner.jpg" class="absolute inset-0 w-full h-full object-cover" style="transform:scale(1.12)" />
+                  </div>
                 </div>
               </div>
               <div class="flex flex-col gap-4">
@@ -153,13 +156,13 @@
       </section>
 
       <!-- guestbook -->
-      <section id="guestbook" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
+      <section data-fx-reveal id="guestbook" class="relative w-full px-4 py-16" style="scroll-margin-top:80px">
         <div class="mx-auto w-full" style="max-width:44rem">
           <div class="flex items-center gap-3 mb-8">
             <span class="sec-rule"></span>
             <h2 class="sec-title">guestbook.</h2>
           </div>
-          <div class="widget-card p-8 md:p-10" data-gb-board>
+          <div data-fx-reveal class="widget-card p-8 md:p-10" data-gb-board>
             <p class="mb-4" style="font-size:0.9rem;opacity:0.7">leave a message — no account needed ✍️</p>
             <div data-gb-counts style="min-height:18px"></div>
             <div data-gb-list></div>
