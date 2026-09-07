@@ -44,6 +44,15 @@ To enable it, re-open **SQL Editor → New query** and run **only the `site_data
 section** at the bottom of `supa-setup.sql` (the part that creates `site_data`,
 `site_upsert` and `add_visit`). It is idempotent — safe to run again.
 
+## Analytics
+
+View + click analytics (see `/analytics.js` and the **Analytics** card in the vault) use a
+new `analytics_events` table plus `log_event` and `analyze_stats` RPCs at the bottom of
+`supa-setup.sql`. To enable, run that **Analytics section** in **SQL Editor → New query**
+(idempotent — safe to re-run; the vault shows a hint until the functions exist). Inserts
+are open to visitors (anonymous, no identity data); reading the dashboard is owner-only,
+gated by the same bcrypt vault passcode.
+
 How it behaves:
 
 - **Reads** go through the public RLS policy, so visitors always see the latest owner content.
