@@ -105,7 +105,7 @@
       <section class="relative flex w-full flex-col items-center px-4" style="padding-top:16px;padding-bottom:48px">
         <div class="w-full max-w-3xl anim-reveal anim-delay-1">
           <div class="w-full">
-            <div class="grid w-full grid-cols-1 gap-3 sm:grid-cols-2" id="projectsGrid"></div>
+            <div class="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3" id="projectsGrid"></div>
           </div>
         </div>
       </section>
@@ -149,7 +149,7 @@
       }catch(e){ projects=defaults.slice() }
       const grid=document.getElementById('projectsGrid');
       grid.innerHTML=projects.map((p,i)=>{
-        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0" style="aspect-ratio:1/1;transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full" data-ana="${esc(p.title)}"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
+        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0" style="aspect-ratio:1/1;transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full" data-ana="${esc(p.title)}"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute left-2 top-2 z-10"><span class="btn-badge" style="font-size:0.7rem;padding:0.15rem 0.5rem">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-2 sm:p-4 z-10"><h3 class="mb-1 font-bold text-sm sm:text-lg leading-tight" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-xs sm:text-sm leading-snug" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
       }).join('');
       const countEl=document.getElementById('roleCount');
       if(countEl)countEl.textContent=projects.length+(projects.length===1?' role':' roles');
