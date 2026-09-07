@@ -48,6 +48,14 @@
     .anim-delay-3{animation-delay:0.3s;opacity:0}
     .anim-delay-4{animation-delay:0.4s;opacity:0}
     .anim-delay-5{animation-delay:0.5s;opacity:0}
+    .chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:4px 14px;font-size:0.75rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .25s;backdrop-filter:blur(8px)}
+    .chip:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+    .chip.active{background:#ff4655;border-color:#ff4655;color:#fff}
+    .affiliation-card::after{content:'';position:absolute;inset:0;border-radius:42px;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(85,115,244,0.18),transparent 70%)}
+    .group:hover .affiliation-card::after{opacity:1}
+    .affiliation-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--role-col,#ff4655);border-radius:42px 42px 0 0;opacity:0.9;z-index:15}
+    .group:hover .affiliation-card{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.45)}
+    .projects-hidden{display:none!important}
   </style>
 <script src="/nav.js"></script>
   <script src="/fx.js" defer></script>
@@ -86,8 +94,17 @@
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
             <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
             <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Projects</h1>
+            <div style="margin-left:auto"><span class="btn-badge" id="roleCount">–</span></div>
           </div>
           <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">servers or projects i am actively involved in</p>
+
+          <div class="flex flex-wrap gap-2" style="margin:18px 0 0 16px" id="roleFilters">
+            <button type="button" data-role="all" class="chip active">All</button>
+            <button type="button" data-role="Manager" class="chip">Manager</button>
+            <button type="button" data-role="Moderator" class="chip">Moderator</button>
+            <button type="button" data-role="Tester" class="chip">Tester</button>
+            <button type="button" data-role="Administrator" class="chip">Administrator</button>
+          </div>
         </div>
       </section>
 
@@ -138,13 +155,50 @@
         projects.unshift(...cust);
       }catch(e){ projects=defaults.slice() }
       const grid=document.getElementById('projectsGrid');
+      const roleCols={'Manager':'#ff4655','Server Manager':'#ff4655','Moderator':'#5573f4','Tester':'#F0B232','Administrator':'#23A55A'};
       grid.innerHTML=projects.map((p,i)=>{
         const isWide=(i===2);
-        return `<div class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
+        const col=roleCols[p.role]||'#5573f4';
+        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}" style="transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card" style="--role-col:${col}"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute right-3 top-3 z-10 text-lg transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" style="color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))">↗</div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge" style="background:${col}1a;border-color:${col}66;color:${col}">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
       }).join('');
+      const countEl=document.getElementById('roleCount');
+      if(countEl)countEl.textContent=projects.length+(projects.length===1?' role':' roles');
     }
     renderProjects();
     if(window.Syn)Syn.pull('projects',v=>{if(v&&Syn.apply('vaultProjects',v))renderProjects()});
+
+    // ========== ROLE FILTER CHIPS ==========
+    (function bindFilters(){
+      const chips=document.getElementById('roleFilters');
+      if(!chips)return;
+      chips.addEventListener('click',e=>{
+        const b=e.target.closest('button[data-role]');
+        if(!b)return;
+        const key=b.getAttribute('data-role');
+        const list=chips.querySelectorAll('button[data-role]');
+        for(let i=0;i<list.length;i++)list[i].classList.toggle('active',list[i]===b);
+        const cards=document.getElementById('projectsGrid').children;
+        for(let i=0;i<cards.length;i++){
+          const c=cards[i];
+          const role=c.getAttribute('data-role');
+          if(key==='all'||role===key||(key==='Manager'&&(role==='Server Manager'||role==='Manager')))c.classList.remove('projects-hidden');
+          else c.classList.add('projects-hidden');
+        }
+      });
+    })();
+
+    // ========== CARD HOVER SPOTLIGHT ==========
+    (function bindSpotlight(){
+      const grid=document.getElementById('projectsGrid');
+      if(!grid)return;
+      grid.addEventListener('mousemove',e=>{
+        const card=e.target.closest?e.target.closest('.affiliation-card'):null;
+        if(!card)return;
+        const r=card.getBoundingClientRect();
+        card.style.setProperty('--mx',(e.clientX-r.left)+'px');
+        card.style.setProperty('--my',(e.clientY-r.top)+'px');
+      });
+    })();
 
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
