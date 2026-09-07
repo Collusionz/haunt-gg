@@ -140,10 +140,37 @@
     });
   }
 
+  // Privacy-minded analytics: anonymous view + click events. Inserts are open
+  // to anon (like the guestbook); aggregation is owner-only via analyze_stats.
+  function logEvent(kind, extra, cb) {
+    ensure(function (c) {
+      if (!c) { if (cb) cb(false); return; }
+      c.rpc('log_event', {
+        kind: kind || 'view',
+        page: (extra && extra.page) || '',
+        host: (extra && extra.host) || '',
+        ref: (extra && extra.ref) || '',
+        device: (extra && extra.device) || '',
+        country: (extra && extra.country) || '',
+        target: (extra && extra.target) || ''
+      }).then(function (r) { if (cb) cb(!r.error); });
+    });
+  }
+  function queryStats(pass, sinceISO, cb) {
+    ensure(function (c) {
+      if (!c) { if (cb) cb(null); return; }
+      c.rpc('analyze_stats', { passcode: String(pass || ''), since: sinceISO || null }).then(function (r) {
+        if (r.error || !r.data) { if (cb) cb(null); return; }
+        if (cb) cb(r.data);
+      });
+    });
+  }
+
   window.Syn = {
     BAKED_URL: BAKED_URL, BAKED_KEY: BAKED_KEY, STORE: STORE,
     pull: pull, pullAll: pullAll, push: push, reconcileAll: reconcileAll,
     uploadMissing: uploadMissing,
-    apply: apply, touch: touch, addVisit: addVisit, uploadGalleryMedia: uploadGalleryMedia
+    apply: apply, touch: touch, addVisit: addVisit, uploadGalleryMedia: uploadGalleryMedia,
+    logEvent: logEvent, queryStats: queryStats
   };
 })();

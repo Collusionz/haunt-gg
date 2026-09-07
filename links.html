@@ -124,7 +124,7 @@
         }else{
           iconHtml='<img src="'+esc(icon)+'" loading="lazy" decoding="async" onerror="this.remove()"/>';
         }
-        return '<a href="'+esc(url)+'" target="_blank" rel="noreferrer noopener">'+
+        return '<a href="'+esc(url)+'" target="_blank" rel="noreferrer noopener" data-ana="'+esc(name)+'">'+
           '<div class="link-icon">'+iconHtml+'</div>'+
           '<div style="flex:1;min-width:0;position:relative;z-index:1">'+
             '<div style="font-size:1rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(name)+'</div>'+
@@ -141,6 +141,7 @@
   <script>
     try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/analytics.js" defer></script>
 <script src="/player.js" defer></script>
 <script src="/bg.js" defer></script>
 <script src="/guestbook.js" defer></script>

@@ -248,3 +248,75 @@ create policy "gallery media public read" on storage.objects
 drop policy if exists "gallery media vault upload" on storage.objects;
 create policy "gallery media vault upload" on storage.objects
   for insert to anon with check (bucket_id = 'gallery-media');
+
+-- ---------------------------------------------------------------------------
+-- Analytics events (views + clicks). Inserts are open to guests (privacy-
+-- minded, no identity data); aggregation is owner-only through analyze_stats.
+-- Idempotent — safe to re-run, or run just this section.
+-- ---------------------------------------------------------------------------
+
+create table if not exists analytics_events (
+  id bigint generated always as identity primary key,
+  kind text not null default 'view',
+  page text not null default '',
+  host text not null default '',
+  ref text not null default '',
+  device text not null default '',
+  country text not null default '',
+  target text not null default '',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists analytics_events_created_at_idx
+  on analytics_events (created_at desc);
+
+alter table analytics_events enable row level security;
+
+drop policy if exists "analytics events public insert" on analytics_events;
+create policy "analytics events public insert" on analytics_events
+  for insert to anon with check (length(kind) <= 10 and length(page) <= 120);
+
+create or replace function log_event(kind text, page text, host text, ref text,
+  device text, country text, target text)
+returns void
+language sql
+security definer
+as $$
+  insert into analytics_events (kind, page, host, ref, device, country, target)
+  values (kind, page, host, ref, device, country, target);
+$$;
+
+create or replace function analyze_stats(passcode text, since timestamptz)
+returns table (
+  created_at timestamptz,
+  kind text,
+  page text,
+  host text,
+  ref text,
+  device text,
+  country text,
+  target text
+)
+language plpgsql
+security definer
+as $$
+declare h text;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  if h <> crypt(coalesce(passcode, ''), h) then
+    raise exception 'wrong passcode';
+  end if;
+  return query
+    select e.created_at, e.kind, e.page, e.host, e.ref, e.device, e.country, e.target
+    from analytics_events e
+    where since is null or e.created_at >= since
+    order by e.created_at desc;
+end $$;
+
+revoke all on function log_event(text, text, text, text, text, text, text) from public;
+grant execute on function log_event(text, text, text, text, text, text, text) to anon;
+revoke all on function analyze_stats(text, timestamptz) from public;
+grant execute on function analyze_stats(text, timestamptz) to anon;

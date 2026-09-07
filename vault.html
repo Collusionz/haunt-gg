@@ -52,6 +52,15 @@
     .upload-preview{margin-top:10px;border-radius:14px;overflow:hidden;max-height:140px;display:none;border:1px solid rgba(255,255,255,0.1)}
     .upload-preview img{width:100%;height:auto;display:block;max-height:140px;object-fit:cover}
     .row-actions{display:flex;gap:8px;flex-shrink:0}
+    .ana-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:0.75rem}
+    .ana-bar .lbl{width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(255,255,255,0.7)}
+    .ana-bar .trk{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden}
+    .ana-bar .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#4764ec,#5573f4)}
+    .ana-bar .val{width:44px;text-align:right;flex-shrink:0;color:rgba(255,255,255,0.5)}
+    .ana-range.active{background:#5573f4!important;border-color:#5573f4!important;color:#fff!important}
+    .ana-stat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 14px}
+    .ana-stat .k{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45)}
+    .ana-stat .v{font-size:1.15rem;font-weight:700;color:#fff;margin-top:4px;word-break:break-word}
     #cropModal{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);padding:16px}
     #cropModal.open{display:flex}
     #cropBox{display:flex;flex-direction:column;background:#101320;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:16px;width:min(720px,100%)}
@@ -156,6 +165,7 @@
 <button class="btn btn-secondary section-jump" data-target="secLinks" style="padding:10px 16px">Links</button>
 <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
+          <button class="btn btn-secondary section-jump" data-target="secAnalytics" style="padding:10px 16px">Analytics</button>
           <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
         </div>
 
@@ -290,6 +300,32 @@
           <div id="cmNote" style="font-size:0.8rem;opacity:0.4;margin-top:12px"></div>
         </div>
 
+        <div id="secAnalytics" class="card">
+          <div class="flex gap-2" style="align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px">
+            <h2 class="h2" style="margin-bottom:0">Analytics</h2>
+            <div class="flex gap-2" id="anaRanges">
+              <button class="btn btn-secondary ana-range" data-h="24" style="padding:8px 14px;font-size:0.75rem">24h</button>
+              <button class="btn btn-secondary ana-range active" data-h="168" style="padding:8px 14px;font-size:0.75rem">7d</button>
+              <button class="btn btn-secondary ana-range" data-h="336" style="padding:8px 14px;font-size:0.75rem">14d</button>
+              <button class="btn btn-secondary ana-range" data-h="720" style="padding:8px 14px;font-size:0.75rem">30d</button>
+            </div>
+          </div>
+          <p id="anaStatus" style="opacity:0.55;font-size:0.8rem;margin:0 0 14px">loading…</p>
+          <div class="grid gap-2" id="anaStats" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:18px"></div>
+          <div style="border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;margin-bottom:16px;background:rgba(255,255,255,0.02)">
+            <p style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.45;margin:0 0 8px">Views over time</p>
+            <canvas id="anaChart" style="width:100%;height:150px"></canvas>
+          </div>
+          <div class="grid gap-2" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:16px">
+            <div><h3 style="font-size:0.8rem;opacity:0.6;margin:0 0 10px">By device</h3><div id="anaDevice"></div></div>
+            <div><h3 style="font-size:0.8rem;opacity:0.6;margin:0 0 10px">By country</h3><div id="anaCountry"></div></div>
+            <div><h3 style="font-size:0.8rem;opacity:0.6;margin:0 0 10px">Alias / domain</h3><div id="anaHost"></div></div>
+            <div><h3 style="font-size:0.8rem;opacity:0.6;margin:0 0 10px">Referrer</h3><div id="anaRef"></div></div>
+          </div>
+          <h3 style="font-size:0.8rem;opacity:0.6;margin:0 0 10px">Link & project clicks</h3>
+          <div id="anaClicks"></div>
+        </div>
+
         <div id="secSettings" class="card">
           <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">⚙️ Settings</h2>
           <label class="fld">Background video URL</label>
@@ -298,7 +334,12 @@
             <button class="btn" id="applyBgBtn" style="flex-shrink:0">Apply</button>
           </div>
           <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">applies site-wide (home, pages, and this one). leave empty + apply to restore the default.</p>
-<label class="fld" style="margin-top:18px">Change passcode</label>
+<label class="fld" style="margin-top:18px">Username / alias <span style="opacity:0.4;font-weight:400">(shown in Analytics)</span></label>
+          <div class="flex gap-2" style="max-width:360px">
+            <input class="input" id="setUser" placeholder="your username" />
+            <button class="btn" id="saveUserBtn" style="flex-shrink:0">Save</button>
+          </div>
+          <label class="fld" style="margin-top:18px">Change passcode</label>
           <div class="flex gap-2" style="max-width:360px">
             <input class="input" id="newPass" type="password" placeholder="new passcode" />
             <button class="btn" id="changePassBtn" style="flex-shrink:0">Save</button>
@@ -1116,10 +1157,126 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
     })();
     refreshCmList();
 
+    /* ---------------- ANALYTICS ---------------- */
+    var anaRangeH = 168;
+    function refreshAnalytics(){
+      var st = document.getElementById('anaStatus');
+      if(!st) return;
+      if(!window.Syn || !Syn.queryStats){ st.textContent = 'supabase not connected — add url + anon key in Settings.'; return }
+      st.textContent = 'loading…';
+      var since = new Date(Date.now() - anaRangeH * 3600000).toISOString();
+      Syn.queryStats(getPass(), since, function(data){
+        if(!data){ st.textContent = 'analytics not configured — run the analytics section in supa-setup.sql (see SUPABASE.md).'; return }
+        st.textContent = '';
+        renderAna(data);
+      });
+    }
+    function anaGroups(rows, key){
+      var map = {};
+      rows.forEach(function(r){ var v = String(r[key] || '').trim(); if(!v) return; map[v] = (map[v] || 0) + 1 });
+      var arr = [];
+      for(var k in map) arr.push({ k: k, n: map[k] });
+      arr.sort(function(a, b){ return b.n - a.n });
+      return arr.slice(0, 6);
+    }
+    function renderAnaBars(elId, rows, key){
+      var box = document.getElementById(elId); if(!box) return;
+      var g = anaGroups(rows, key), max = 0;
+      g.forEach(function(x){ if(x.n > max) max = x.n });
+      if(!g.length){ box.innerHTML = '<p style="font-size:0.75rem;opacity:0.4">no data</p>'; return }
+      box.innerHTML = g.map(function(x){
+        return '<div class="ana-bar"><span class="lbl" title="' + esc(x.k) + '">' + esc(x.k) + '</span><span class="trk"><span class="fill" style="width:' + (max ? Math.round(x.n / max * 100) : 0) + '%"></span></span><span class="val">' + x.n + '</span></div>';
+      }).join('');
+    }
+    function renderAnaClicks(rows){
+      var box = document.getElementById('anaClicks'); if(!box) return;
+      var g = anaGroups(rows, 'target'), max = 0;
+      g.forEach(function(x){ if(x.n > max) max = x.n });
+      if(!g.length){ box.innerHTML = '<p style="font-size:0.75rem;opacity:0.4">no clicks yet — visit /projects or /links and tap a card</p>'; return }
+      box.innerHTML = g.map(function(x){
+        return '<div class="ana-bar"><span class="lbl" title="' + esc(x.k) + '">' + esc(x.k) + '</span><span class="trk"><span class="fill" style="width:' + (max ? Math.round(x.n / max * 100) : 0) + '%"></span></span><span class="val">' + x.n + '</span></div>';
+      }).join('');
+    }
+    function drawAnaChart(rows){
+      var c = document.getElementById('anaChart'); if(!c) return;
+      var hours = anaRangeH, ms = hours * 3600000, now = Date.now(), start = now - ms;
+      var n = hours <= 24 ? 24 : (hours <= 168 ? 14 : 30), step = ms / n;
+      var data = []; for(var i = 0; i < n; i++) data.push(0);
+      rows.forEach(function(r){
+        var t = new Date(r.created_at).getTime();
+        if(t < start || t > now) return;
+        var bi = Math.min(n - 1, Math.floor((t - start) / step)); data[bi]++;
+      });
+      var dpr = window.devicePixelRatio || 1, w = Math.max(c.clientWidth || 600, 100), h = 150;
+      c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+      var ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+      var max = 1, barW = Math.min(22, (w - 8) / n), gap = barW > 8 ? 3 : 1, ux = (w - 8) / n;
+      for(i = 0; i < n; i++) if(data[i] > max) max = data[i];
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(0, 0, w, h - 18);
+      for(i = 0; i < n; i++){
+        var bh = data[i] / max * (h - 18 - 4);
+        var x = 4 + i * ux + (ux - barW) / 2;
+        ctx.fillStyle = '#5573f4';
+        ctx.fillRect(x, h - 18 - bh, barW - gap, Math.max(1, bh));
+        if(i % 4 === 0){
+          ctx.fillStyle = 'rgba(255,255,255,0.35)';
+          ctx.font = '9px Satoshi,sans-serif';
+          ctx.textAlign = 'center';
+          var lab = '';
+          var then = new Date(start + i * step);
+          if(hours <= 24) lab = then.getHours() + ':00';
+          else lab = (then.getMonth() + 1) + '/' + then.getDate();
+          ctx.fillText(lab, x + barW / 2, h - 4);
+        }
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '10px Satoshi,sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(max, w - 2, 10);
+    }
+    function renderAna(data){
+      var rows = ((data && data.rows) || []).filter(function(r){ return r.page !== '/vault' });
+      var views = rows.filter(function(r){ return r.kind === 'view' });
+      var clicks = rows.filter(function(r){ return r.kind === 'click' });
+      var uname = localStorage.getItem('vaultUsername') || 'collusionz';
+      var total = parseInt(localStorage.getItem('hauntVisits') || '0', 10) || 0;
+      var cards = [
+        { k: 'User', v: esc(uname), t: 'username used across the site' },
+        { k: 'Profile views', v: total, t: 'visits to the home page' },
+        { k: 'Views (range)', v: views.length, t: 'page views in this range' },
+        { k: 'Clicks (range)', v: clicks.length, t: 'link + project clicks in this range' }
+      ];
+      document.getElementById('anaStats').innerHTML = cards.map(function(x){
+        return '<div class="ana-stat" title="' + esc(x.t) + '"><div class="k">' + esc(x.k) + '</div><div class="v">' + x.v + '</div></div>';
+      }).join('');
+      drawAnaChart(views);
+      renderAnaBars('anaDevice', views, 'device');
+      renderAnaBars('anaCountry', views, 'country');
+      renderAnaBars('anaHost', views, 'host');
+      renderAnaBars('anaRef', views, 'ref');
+      renderAnaClicks(clicks);
+    }
+    document.querySelectorAll('#anaRanges .ana-range').forEach(function(b){
+      b.addEventListener('click', function(){
+        document.querySelectorAll('#anaRanges .ana-range').forEach(function(x){ x.classList.toggle('active', x === b) });
+        anaRangeH = parseInt(b.getAttribute('data-h'), 10) || 168;
+        refreshAnalytics();
+      });
+    });
+    document.getElementById('saveUserBtn').addEventListener('click', function(){
+      var v = document.getElementById('setUser').value.trim();
+      if(!v){ localStorage.removeItem('vaultUsername'); showToast('Username cleared') }
+      else { localStorage.setItem('vaultUsername', v); showToast('Username saved') }
+      document.getElementById('setUser').value = '';
+    });
+    (function(){ var u = localStorage.getItem('vaultUsername'); if(u) document.getElementById('setUser').value = u })();
+
     /* ---------------- LOCKFLOW + INIT ---------------- */
 document.getElementById('unlockBtn').addEventListener('click',function(){
       var v=document.getElementById('passInput').value;
-      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();reconcileFromServer();document.getElementById('lockErr').textContent=''}
+      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();document.getElementById('lockErr').textContent=''}
       else{document.getElementById('lockErr').textContent='wrong passcode'}
     });
     document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('unlockBtn').click()});
@@ -1136,11 +1293,12 @@ function loadAllLists(){
 
     if(isAuthed()){
       if(!sessionStorage.getItem('gbOwnerPass'))sessionStorage.setItem('gbOwnerPass',getPass());
-      show(false,true);loadAllLists();reconcileFromServer()
+      show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer()
     }else{show(true,false)}
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
+<script src="/analytics.js" defer></script>
 <script src="/player.js" defer></script>
 <script src="/bg.js" defer></script>
 <script src="/guestbook.js" defer></script>
