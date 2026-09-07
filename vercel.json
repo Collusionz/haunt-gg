@@ -14,7 +14,8 @@
     { "src": "/music", "dest": "/music.html" },
     { "src": "/acquaintances", "dest": "/acquaintances.html" },
     { "src": "/vault", "dest": "/vault.html" },
-    { "src": "/links", "dest": "/links.html" }
+    { "src": "/links", "dest": "/links.html" },
+    { "src": "/((?!.*\\.).*)", "dest": "/404.html", "status": 404 }
   ],
   "headers": [
     { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
