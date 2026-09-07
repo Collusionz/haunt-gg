@@ -187,6 +187,14 @@
         return;
       }
       requestAnimationFrame(function () { fadeOv.style.opacity = '0'; });
+      // Entrance animation for the freshly swapped page content.
+      requestAnimationFrame(function () {
+        var m = document.querySelector('main');
+        if (m) {
+          m.classList.add('nav-enter');
+          requestAnimationFrame(function () { m.classList.remove('nav-enter'); });
+        }
+      });
     }, d);
   }
 

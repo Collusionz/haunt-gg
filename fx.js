@@ -22,12 +22,14 @@
     '#fxGlow{position:fixed;top:0;left:0;width:360px;height:360px;border-radius:50%;pointer-events:none;z-index:45;' +
     'mix-blend-mode:screen;background:radial-gradient(circle,rgba(85,115,244,0.22) 0%,rgba(71,100,236,0.10) 40%,transparent 72%);' +
     'transform:translate(-50%,-50%);transition:transform .3s ease,opacity .3s ease;will-change:left,top}' +
-    '#fxGlow.fx-hot{transform:translate(-50%,-50%) scale(1.7)}';
+    '#fxGlow.fx-hot{transform:translate(-50%,-50%) scale(1.7)}' +
+    'main.nav-enter{animation:navEnter .5s ease}@keyframes navEnter{from{opacity:0;transform:translateY(14px) scale(.995)}to{opacity:1;transform:none}}' +
+    '@media(prefers-reduced-motion:reduce){main.nav-enter{animation:none}}';
   if (reduced) {
     css += '[data-fx-reveal]{opacity:1;transform:none}';
   } else {
     css +=
-      '[data-fx-reveal]{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}' +
+      '[data-fx-reveal]{opacity:0;transform:translate(var(--fx-x,0px),var(--fx-y,26px)) var(--fx-s,scale(1));transition:opacity .7s ease,transform .7s ease}' +
       '[data-fx-reveal].fx-in{opacity:1;transform:none}' +
       '@media(prefers-reduced-motion:reduce){[data-fx-reveal]{opacity:1;transform:none;transition:none}}';
   }
@@ -62,6 +64,37 @@
   } catch (e) {}
 
   /* ================= SCROLL: PARALLAX + REVEAL ================= */
+  // Directional reveal: data-fx-reveal="up|down|left|right|zoom"
+  // Optional data-fx-delay="150" (ms). Wrap children in data-fx-stagger to
+  // auto-stagger them by index.
+  var DIR = {
+    up:    [0,   '26px'],
+    down:  [0,   '-26px'],
+    left:  ['26px',  0],
+    right: ['-26px', 0],
+    zoom:  ['0px', '0px']
+  };
+  function applyRevealStyles(el) {
+    try {
+      var dir = (el.getAttribute('data-fx-reveal') || 'up').toLowerCase();
+      var d = DIR[dir] || DIR.up;
+      var zoom = (dir === 'zoom') ? 'scale(0.92)' : 'scale(1)';
+      el.style.setProperty('--fx-x', d[0]);
+      el.style.setProperty('--fx-y', d[1]);
+      el.style.setProperty('--fx-s', zoom);
+      var del = parseFloat(el.getAttribute('data-fx-delay')) || 0;
+      if (del) el.style.transitionDelay = del + 'ms';
+    } catch (e) {}
+  }
+  function applyStagger(container) {
+    var kids = container.children;
+    var base = parseFloat(container.getAttribute('data-fx-stagger')) || 60;
+    for (var i = 0; i < kids.length; i++) {
+      var k = kids[i];
+      if (!k.hasAttribute('data-fx-reveal')) continue;
+      try { k.style.transitionDelay = (i * base) + 'ms'; } catch (e) {}
+    }
+  }
   var parallaxEls = [];
   var revealObs = null;
   function collectFx() {
@@ -73,6 +106,9 @@
         sp: parseFloat(pl[i].getAttribute('data-fx-parallax')) || 0.25
       });
     }
+    // stagger containers first so child delays attach before observers run
+    var st = root.querySelectorAll('[data-fx-stagger]');
+    for (var s = 0; s < st.length; s++) applyStagger(st[s]);
     if (reduced) return;
     if (!('IntersectionObserver' in window)) return;
     if (!revealObs) {
@@ -83,10 +119,13 @@
             revealObs.unobserve(entries[i].target);
           }
         }
-      }, { threshold: 0.12 });
+      }, { threshold: 0.1 });
     }
     var rv = root.querySelectorAll('[data-fx-reveal]');
-    for (var j = 0; j < rv.length; j++) revealObs.observe(rv[j]);
+    for (var j = 0; j < rv.length; j++) {
+      applyRevealStyles(rv[j]);
+      revealObs.observe(rv[j]);
+    }
   }
   collectFx();
 
