@@ -1,11 +1,6 @@
-/* Home-page entry music. Deliberately has no persistent mini-player UI. */
+/* Site-wide entry music. Deliberately has no persistent mini-player UI. */
 (function () {
   'use strict';
-
-  // The entry gate belongs only to a direct visit to the home page. Sidebar
-  // navigation must never make visitors click Enter again.
-  var isHome = window.location.pathname === '/' || window.location.pathname === '/index.html';
-  if (!isHome) return;
 
   var tracks = [
     '/audio/song-1.mp3',
