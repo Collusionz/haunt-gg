@@ -217,4 +217,11 @@
       })
       .catch(function () { location.reload(); });
   });
+
+  // Diagnostic hook (only active with ?navtest=): soft-navigate to the given
+  // path once loaded, so headless DOM dumps can inspect the swapped page.
+  try {
+    var navTest = new URLSearchParams(location.search).get('navtest');
+    if (navTest) setTimeout(function () { go(navTest, true); }, 1200);
+  } catch (e) {}
 })();
