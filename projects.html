@@ -51,7 +51,6 @@
     .chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:4px 14px;font-size:0.75rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .25s;backdrop-filter:blur(8px)}
     .chip:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
     .chip.active{background:#ff4655;border-color:#ff4655;color:#fff}
-    .tag-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(204,216,236,0.85);border-radius:999px;padding:2px 9px;font-size:0.65rem;font-weight:500;letter-spacing:0.02em}
     .affiliation-card::after{content:'';position:absolute;inset:0;border-radius:42px;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(85,115,244,0.18),transparent 70%)}
     .group:hover .affiliation-card::after{opacity:1}
     .group:hover .affiliation-card{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.45)}
@@ -98,13 +97,7 @@
           </div>
           <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">servers or projects i am actively involved in</p>
 
-          <div class="flex flex-wrap gap-2" style="margin:18px 0 0 16px" id="roleFilters">
-            <button type="button" data-role="all" class="chip active" aria-pressed="true">All</button>
-            <button type="button" data-role="Manager" class="chip" aria-pressed="false">Manager</button>
-            <button type="button" data-role="Moderator" class="chip" aria-pressed="false">Moderator</button>
-            <button type="button" data-role="Tester" class="chip" aria-pressed="false">Tester</button>
-            <button type="button" data-role="Administrator" class="chip" aria-pressed="false">Administrator</button>
-          </div>
+          <div class="flex flex-wrap gap-2" style="margin:18px 0 0 16px" id="roleFilters"></div>
         </div>
       </section>
 
@@ -157,15 +150,37 @@
       const grid=document.getElementById('projectsGrid');
       grid.innerHTML=projects.map((p,i)=>{
         const isWide=(i===2);
-        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}" style="transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p>${p.tags&&p.tags.length?'<div class="flex flex-wrap gap-1 mt-2">'+p.tags.map(t=>'<span class="tag-pill">'+esc(t)+'</span>').join('')+'</div>':''}</div></div></div></a></div>`;
+        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}" style="transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
       }).join('');
       const countEl=document.getElementById('roleCount');
       if(countEl)countEl.textContent=projects.length+(projects.length===1?' role':' roles');
+      renderRoleFilters(projects);
     }
     renderProjects();
     if(window.Syn)Syn.pull('projects',v=>{if(v&&Syn.apply('vaultProjects',v))renderProjects()});
 
-    // ========== ROLE FILTER CHIPS ==========
+    // ========== ROLE FILTER CHIPS (auto-built from roles) ==========
+    function applyFilter(key){
+      const cards=document.getElementById('projectsGrid').children;
+      for(let i=0;i<cards.length;i++){
+        const role=cards[i].getAttribute('data-role');
+        if(key==='all'||role===key)cards[i].classList.remove('projects-hidden');
+        else cards[i].classList.add('projects-hidden');
+      }
+    }
+    function renderRoleFilters(projects){
+      const box=document.getElementById('roleFilters');
+      if(!box)return;
+      const roles=[];
+      projects.forEach(p=>{const r=(p.role||'').trim(); if(r&&roles.indexOf(r)===-1)roles.push(r)});
+      roles.sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
+      const cur=box.querySelector('.chip.active');
+      let curKey=cur?cur.getAttribute('data-role'):'all';
+      if(curKey!=='all'&&roles.indexOf(curKey)===-1)curKey='all';
+      const labels=[{role:'all',label:'All'}].concat(roles.map(r=>({role:r,label:r})));
+      box.innerHTML=labels.map(o=>'<button type="button" data-role="'+esc(o.role)+'" class="chip'+(o.role===curKey?' active':'')+'" aria-pressed="'+(o.role===curKey?'true':'false')+'">'+esc(o.label)+'</button>').join('');
+      applyFilter(curKey);
+    }
     (function bindFilters(){
       const chips=document.getElementById('roleFilters');
       if(!chips)return;
@@ -175,13 +190,7 @@
         const key=b.getAttribute('data-role');
         const list=chips.querySelectorAll('button[data-role]');
         for(let i=0;i<list.length;i++){list[i].classList.toggle('active',list[i]===b);list[i].setAttribute('aria-pressed',list[i]===b?'true':'false');}
-        const cards=document.getElementById('projectsGrid').children;
-        for(let i=0;i<cards.length;i++){
-          const c=cards[i];
-          const role=c.getAttribute('data-role');
-          if(key==='all'||role===key||(key==='Manager'&&(role==='Server Manager'||role==='Manager')))c.classList.remove('projects-hidden');
-          else c.classList.add('projects-hidden');
-        }
+        applyFilter(key);
       });
     })();
 

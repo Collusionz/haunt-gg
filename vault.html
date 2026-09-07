@@ -207,8 +207,6 @@
           <textarea class="input" id="prDesc" placeholder="What do you do there?"></textarea>
           <label class="fld">Link</label>
           <input class="input" id="prLink" placeholder="https://discord.gg/..." />
-          <label class="fld">Tags (comma separated)</label>
-          <input class="input" id="prTags" placeholder="e.g. discord, moderation, events" />
           <label class="fld">Image (upload or URL)</label>
           <div class="flex gap-2">
             <input class="input" id="prImg" placeholder="https://... .png / .webp" />
@@ -821,7 +819,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
     }
     function resetProjectForm(){
       editingProjectKey=null;editingProjectImg='';
-      ['prRole','prTitle','prDesc','prLink','prTags','prImg'].forEach(function(id){document.getElementById(id).value=''});
+      ['prRole','prTitle','prDesc','prLink','prImg'].forEach(function(id){document.getElementById(id).value=''});
       document.getElementById('prImg').placeholder='https://... .png / .webp';
       pendingProjectImg='';document.getElementById('prPreview').style.display='none';
       document.getElementById('addProjectBtn').textContent='＋ Add project';
@@ -832,7 +830,6 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       document.getElementById('prTitle').value=p.title||'';
       document.getElementById('prDesc').value=p.desc||'';
       document.getElementById('prLink').value=p.link||'';
-      document.getElementById('prTags').value=(p.tags||[]).join(', ');
       if(p.img&&p.img.indexOf('data:')===0){document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='image ready (uploaded)'}
       else if(p.img){document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='keep current image (update to change)'}
       else{document.getElementById('prImg').value='';document.getElementById('prImg').placeholder='https://... .png / .webp'}
@@ -846,7 +843,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       box.innerHTML=cust.map(function(p,i){
         return '<div class="item-row">'+(p.img?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(p.img)+'\')"></div>':'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#1a1a2e)"></div>')+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(p.title)+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45">'+esc(p.role)+(p.tags&&p.tags.length?' · '+esc(p.tags.join(', ')):'')+'</div></div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(p.role)+'</div></div>'+
         '<div class="row-actions"><button class="btn btn-secondary" onclick="editCustomProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
         '<button class="btn btn-danger" onclick="removeProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Delete</button></div></div>';
       }).join('');
@@ -871,7 +868,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
         var t=o.title||d.title,r=o.role||d.role,img=o.img||d.img,hidden=o.hide;
         return '<div class="item-row" style="'+(hidden?'opacity:0.4':'')+'">'+(img?'<div class="item-swatch" style="background-size:cover;background-position:center;background-image:url(\''+esc(img)+'\')"></div>':'<div class="item-swatch" style="background:linear-gradient(135deg,#4764ec,#1a1a2e)"></div>')+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(t)+'</div>'+
-        '<div style="font-size:0.75rem;opacity:0.45">'+esc(r)+(o.tags&&o.tags.length?' · '+esc(o.tags.join(', ')):'')+(hidden?' · hidden':'')+'</div></div>'+
+        '<div style="font-size:0.75rem;opacity:0.45">'+esc(r)+(hidden?' · hidden':'')+'</div></div>'+
         '<div class="row-actions"><button class="btn btn-secondary" onclick="editDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
         (hidden?'<button class="btn btn-secondary" onclick="toggleDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Restore</button>':'<button class="btn btn-danger" onclick="toggleDefaultProject('+i+')" style="padding:8px 12px;font-size:0.75rem">Hide</button>')+
         '</div></div>';
@@ -900,8 +897,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       var title=document.getElementById('prTitle').value.trim();
       if(!title){showToast('Title required');return}
       var img=pendingProjectImg||document.getElementById('prImg').value.trim()||editingProjectImg||'';
-      var tags=document.getElementById('prTags').value.split(',').map(function(s){return s.trim()}).filter(function(s){return s});
-      var item={role:document.getElementById('prRole').value.trim()||'Member',title:title,desc:document.getElementById('prDesc').value.trim(),img:img,link:document.getElementById('prLink').value.trim()||'#',tags:tags};
+      var item={role:document.getElementById('prRole').value.trim()||'Member',title:title,desc:document.getElementById('prDesc').value.trim(),img:img,link:document.getElementById('prLink').value.trim()||'#'};
       var list=load(STORAGE.projects);
       if(editingProjectKey!==null){
         if(editingProjectKey.substring(0,2)==='d:'){
