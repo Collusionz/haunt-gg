@@ -51,9 +51,9 @@
     .chip{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:999px;padding:4px 14px;font-size:0.75rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .25s;backdrop-filter:blur(8px)}
     .chip:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
     .chip.active{background:#ff4655;border-color:#ff4655;color:#fff}
+    .tag-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(204,216,236,0.85);border-radius:999px;padding:2px 9px;font-size:0.65rem;font-weight:500;letter-spacing:0.02em}
     .affiliation-card::after{content:'';position:absolute;inset:0;border-radius:42px;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(85,115,244,0.18),transparent 70%)}
     .group:hover .affiliation-card::after{opacity:1}
-    .affiliation-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--role-col,#ff4655);border-radius:42px 42px 0 0;opacity:0.9;z-index:15}
     .group:hover .affiliation-card{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.45)}
     .projects-hidden{display:none!important}
   </style>
@@ -155,11 +155,9 @@
         projects.unshift(...cust);
       }catch(e){ projects=defaults.slice() }
       const grid=document.getElementById('projectsGrid');
-      const roleCols={'Manager':'#ff4655','Server Manager':'#ff4655','Moderator':'#5573f4','Tester':'#F0B232','Administrator':'#23A55A'};
       grid.innerHTML=projects.map((p,i)=>{
         const isWide=(i===2);
-        const col=roleCols[p.role]||'#5573f4';
-        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}" style="transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card" style="--role-col:${col}"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute right-3 top-3 z-10 text-lg transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" style="color:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.8))">↗</div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge" style="background:${col}1a;border-color:${col}66;color:${col}">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p></div></div></div></a></div>`;
+        return `<div data-role="${esc(p.role)}" data-fx-reveal class="min-w-0 relative min-h-0 ${isWide?'sm:col-span-2':'col-span-1'}" style="transition-delay:${(i%5)*60}ms"><a href="${esc(p.link)}" target="_blank" rel="noreferrer noopener" class="block size-full"><div class="group relative h-full affiliation-card profile-card"><div class="relative size-full overflow-hidden" style="border-radius:42px"><div class="affiliation-bg" style="background-image:url('${esc(p.img)}')"></div><div class="affiliation-gradient"></div><div class="absolute start-3 top-3 flex flex-wrap gap-1 sm:gap-2 z-10"><span class="btn-badge">${esc(p.role)}</span></div><div class="absolute inset-x-0 bottom-0 p-3 sm:p-4 z-10"><h3 class="mb-1 font-bold text-lg sm:text-xl" style="color:#ccd8ec">${esc(p.title)}</h3><p class="line-clamp-2 text-base" style="color:rgba(204,216,236,0.9)">${esc(p.desc)}</p>${p.tags&&p.tags.length?'<div class="flex flex-wrap gap-1 mt-2">'+p.tags.map(t=>'<span class="tag-pill">'+esc(t)+'</span>').join('')+'</div>':''}</div></div></div></a></div>`;
       }).join('');
       const countEl=document.getElementById('roleCount');
       if(countEl)countEl.textContent=projects.length+(projects.length===1?' role':' roles');
