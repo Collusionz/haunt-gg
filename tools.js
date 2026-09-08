@@ -438,6 +438,97 @@
   }
 
   /* ---------- events ---------- */
+  /* ---------- discord timestamp generator ---------- */
+  var DC_FLAGS = [
+    { flag: 't', name: 'Short Time', opts: { hour: '2-digit', minute: '2-digit' } },
+    { flag: 'T', name: 'Long Time', opts: { hour: '2-digit', minute: '2-digit', second: '2-digit' } },
+    { flag: 'd', name: 'Short Date', opts: { day: '2-digit', month: '2-digit', year: 'numeric' } },
+    { flag: 'D', name: 'Long Date', opts: { day: 'numeric', month: 'long', year: 'numeric' } },
+    { flag: 'f', name: 'Short Date/Time', opts: { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' } },
+    { flag: 'F', name: 'Long Date/Time', opts: { day: 'long', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' } },
+    { flag: 'R', name: 'Relative Time', rel: true }
+  ];
+
+  function dcPad(n) { return String(n).padStart(2, '0'); }
+
+  function dcToLocalInput(d) {
+    return d.getFullYear() + '-' + dcPad(d.getMonth() + 1) + '-' + dcPad(d.getDate())
+      + 'T' + dcPad(d.getHours()) + ':' + dcPad(d.getMinutes()) + ':' + dcPad(d.getSeconds());
+  }
+
+  function dcRelative(unix) {
+    var diff = unix - Math.floor(Date.now() / 1000);
+    var abs = Math.abs(diff);
+    var units = [[31536000, 'year'], [2592000, 'month'], [604800, 'week'], [86400, 'day'], [3600, 'hour'], [60, 'minute'], [1, 'second']];
+    var v = 0, unit = 'second';
+    for (var i = 0; i < units.length; i++) {
+      v = Math.round(abs / units[i][0]);
+      if (v >= 1) { unit = units[i][1]; break; }
+    }
+    var s = v + ' ' + unit + (v === 1 ? '' : 's');
+    if (abs < 2) return 'just now';
+    return diff > 0 ? 'in ' + s : s + ' ago';
+  }
+
+  function dcRender() {
+    var d = new Date($('dcDt').value);
+    if (isNaN(d.getTime())) return;
+    var unix = Math.floor(d.getTime() / 1000);
+    $('dcUnix').textContent = unix;
+    var html = '';
+    DC_FLAGS.forEach(function (f) {
+      var preview = f.rel ? dcRelative(unix) : new Intl.DateTimeFormat(undefined, f.opts).format(d);
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,0.06)">'
+        + '<div style="width:46px;height:30px;border-radius:9px;background:rgba(85,115,244,0.18);border:1px solid rgba(85,115,244,0.5);display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;color:#fff;flex-shrink:0">' + f.flag + '</div>'
+        + '<div style="flex:1;min-width:0"><div style="font-size:0.78rem;color:#9CA3AF">' + f.name + '</div>'
+        + '<div style="font-size:0.95rem;color:#fff;font-weight:500;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(preview) + '</div></div>'
+        + '<div style="flex-shrink:0;display:flex;align-items:center;gap:8px;max-width:46%">'
+        + '<code style="font-family:monospace;font-size:0.76rem;color:#9CA3AF;background:rgba(255,255,255,0.05);padding:6px 10px;border-radius:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">&lt;t:' + unix + ':' + f.flag + '&gt;</code>'
+        + '<button class="scheme dc-copy" data-code="&lt;t:' + unix + ':' + f.flag + '&gt;" style="border-radius:9px;font-size:0.72rem">Copy</button></div></div>';
+    });
+    $('dcRows').innerHTML = html;
+  }
+
+  function dcCopy(text, btn) {
+    function done() {
+      var old = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(function () { btn.textContent = old; }, 1200);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  }
+
+  function wireDiscord() {
+    var dt = $('dcDt');
+    dt.value = dcToLocalInput(new Date());
+    dt.addEventListener('input', dcRender);
+    document.querySelectorAll('[data-jump]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var d = new Date(dt.value);
+        if (isNaN(d.getTime())) d = new Date();
+        d.setSeconds(d.getSeconds() + parseInt(b.getAttribute('data-jump'), 10));
+        dt.value = dcToLocalInput(d);
+        dcRender();
+      });
+    });
+    $('dcCopyUnix').addEventListener('click', function () { dcCopy($('dcUnix').textContent || '', this); });
+    $('dcRows').addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('.dc-copy') : null;
+      if (b) dcCopy(b.getAttribute('data-code') || '', b);
+    });
+    dcRender();
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -506,6 +597,7 @@
     });
 
     wireYt();
+    wireDiscord();
   }
 
   wire();

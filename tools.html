@@ -114,6 +114,7 @@
             <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08)">
               <button class="tab-btn active" data-tab="img" style="display:flex;align-items:center;justify-content:center;gap:8px">🖼️ <span>Image Compressor</span></button>
               <button class="tab-btn" data-tab="yt">▶️ <span>YouTube Downloader</span></button>
+              <button class="tab-btn" data-tab="dc"># <span>Discord</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -256,6 +257,35 @@
                   </div>
                   <a id="ytDl" target="_blank" rel="noopener" style="padding:9px 16px;border-radius:11px;background:#5573f4;color:#fff;font-size:0.8rem;font-weight:600;text-decoration:none;display:none">Download</a>
                 </div>
+              </div>
+            </div>
+
+            <!-- ============ DISCORD TIMESTAMPS ============ -->
+            <div class="tool-tab" id="tab-dc" style="padding:20px">
+              <div class="field" style="margin-bottom:14px">
+                <label>Date &amp; time</label>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                  <input id="dcDt" class="inp" type="datetime-local" step="1" style="flex:1;min-width:230px" />
+                  <div style="display:flex;gap:6px">
+                    <button class="scheme" data-jump="0">Now</button>
+                    <button class="scheme" data-jump="3600">+1h</button>
+                    <button class="scheme" data-jump="86400">+1d</button>
+                    <button class="scheme" data-jump="604800">+1w</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="widget-card" style="border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <div style="font-size:0.72rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase">Unix seconds</div>
+                  <div id="dcUnix" style="font-family:monospace;font-size:0.95rem;color:#fff;margin-top:2px"></div>
+                </div>
+                <button id="dcCopyUnix" class="scheme" style="border-radius:9px;font-size:0.72rem">Copy</button>
+              </div>
+
+              <div class="widget-card" style="border-radius:14px;padding:16px;overflow:hidden">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px">Format styles</div>
+                <div id="dcRows"></div>
               </div>
             </div>
           </div>
