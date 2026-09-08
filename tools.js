@@ -294,9 +294,8 @@
     });
   }
 
-  /* ---------- youtube downloader (savenow v2 — same backend as cur.et) ---------- */
-  var YT_API = 'https://p.savenow.to/api/v2/download';
-  var YT_KEY = 'dfcb6d76f2f6a9894gjkege8a4ab232222';
+  /* ---------- youtube downloader (savenow v2 via serverless proxy) ---------- */
+  var YT_API = '/api/yt';
   var yt = { mode: 'audio', fmt: 'mp3', res: '360', kbps: 128, busy: false };
   var ytTimer = null;
 
@@ -335,6 +334,7 @@
   function ytPoll(progressUrl, attempts) {
     attempts = attempts || 0;
     clearTimeout(ytTimer);
+    if (!progressUrl) { ytFail('No progress url returned'); return; }
     if (attempts > 90) {
       ytSetState('Timed out after ~3 min — try again');
       yt.busy = false;
@@ -373,7 +373,7 @@
     yt.busy = true;
     setYtBusy(true);
     var fmt = yt.mode === 'audio' ? yt.fmt : yt.res;
-    var api = YT_API + '?url=' + encodeURIComponent(url) + '&format=' + fmt + '&apikey=' + YT_KEY;
+    var api = YT_API + '?url=' + encodeURIComponent(url) + '&format=' + fmt;
     if (yt.mode === 'audio') api += '&quality=' + yt.kbps;
     try {
       var resp = await fetch(api, { cache: 'no-store' });
@@ -383,8 +383,10 @@
       var dl = d.download_url || d.url || d.downloadUrl || d.file_url || d.file || d.link;
       if (dl) { ytReady(dl, d); return; }
       if (d.progress_url) {
+        var m = String(d.progress_url).match(/[?&]id=([^&]+)/);
+        var proxied = m ? '/api/yt?id=' + decodeURIComponent(m[1]) : null;
         ytSetState(d.text || 'Preparing streaming download…', 4);
-        ytPoll(d.progress_url, 0);
+        ytPoll(proxied, 0);
       } else {
         ytFail((d && d.text) || 'No download url returned');
       }
