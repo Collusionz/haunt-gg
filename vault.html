@@ -1241,7 +1241,7 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
       ctx.fillText(max, w - 2, 10);
     }
     function renderAna(data){
-      var rows = ((data && data.rows) || []).filter(function(r){ return r.page !== '/vault' });
+      var rows = (data || []).filter(function(r){ return r.page !== '/vault' });
       var views = rows.filter(function(r){ return r.kind === 'view' });
       var clicks = rows.filter(function(r){ return r.kind === 'click' });
       var uname = localStorage.getItem('vaultUsername') || 'collusionz';
