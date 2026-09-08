@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tools | home</title>
+  <meta name="description" content="image compressor & more" />
+  <meta name="theme-color" content="#5573f4" />
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { fontFamily: { satoshi: ['"Satoshi"', 'sans-serif'] } } }
+    }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { cursor: url('cursor.png') 17 17, auto !important; }
+    body { margin: 0; padding: 0; font-family: 'Satoshi', sans-serif; background: #000; color: #ccd8ec; min-height: 100vh; overflow-x: hidden; }
+    .widget-card { background: rgba(255,255,255,0.05); background-clip: padding-box; color: #fff; border: 2px solid rgba(255,255,255,0.1); border-radius: 25px; }
+    .skeleton { animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite; background: rgba(255,255,255,0.1); border-radius: 0.375rem; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .side-nav { position: fixed; left: 24px; top: 50%; z-index: 50; transform: translateY(-50%); display: none; flex-direction: column; gap: 12px; }
+    @media (min-width: 768px) { .side-nav { display: flex; } }
+    .side-nav a { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 300; letter-spacing: 0.05em; text-decoration: none; transition: color 0.2s; color: rgba(255,255,255,0.4); }
+    .side-nav a:hover { color: rgba(255,255,255,0.7); }
+    .side-nav a.active { color: #fff; }
+    .side-nav a .nav-line { height: 1px; width: 8px; background: rgba(255,255,255,0.4); transition: all 0.2s; flex-shrink: 0; }
+    .side-nav a:hover .nav-line { width: 12px; background: rgba(255,255,255,0.7); }
+    .side-nav a.active .nav-line { width: 16px; background: #fff; }
+    .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; }
+    @media (min-width: 768px) { .mobile-nav { display: none; } }
+    .mobile-nav a { flex: 1; text-align: center; padding: 12px 4px; font-size: 0.625rem; font-weight: 300; letter-spacing: 0.05em; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+    .mobile-nav a.active, .mobile-nav a:hover { color: #fff; }
+    @media (min-width: 768px) { #mainContent { padding-left: 80px; } }
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .anim-reveal{animation:fadeInUp 0.5s ease forwards}
+    .anim-delay-1{animation-delay:0.1s;opacity:0}
+    .anim-delay-2{animation-delay:0.2s;opacity:0}
+    .anim-delay-3{animation-delay:0.3s;opacity:0}
+    .anim-delay-4{animation-delay:0.4s;opacity:0}
+    .anim-delay-5{animation-delay:0.5s;opacity:0}
+    .field { display:flex; flex-direction:column; gap:6px; }
+    .field label { font-size:0.72rem; letter-spacing:0.04em; color:#9CA3AF; text-transform:uppercase; }
+    .inp { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#fff; padding:10px 12px; font-size:0.9rem; outline:none; transition:border-color .2s, box-shadow .2s; font-family:inherit; }
+    .inp:focus { border-color:rgba(85,115,244,0.7); box-shadow:0 0 0 3px rgba(85,115,244,0.18); }
+    .inp::placeholder { color:rgba(255,255,255,0.28); }
+    .tab-btn { flex:1; padding:12px 8px; font-size:0.85rem; font-weight:500; color:#9CA3AF; background:transparent; border:none; cursor:pointer; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
+    .tab-btn.active { color:#fff; border-bottom-color:#5573f4; }
+    .tool-tab { display:none; }
+    .tool-tab.active { display:block; animation:fadeInUp .4s ease forwards; }
+    .dropzone { border:2px dashed rgba(255,255,255,0.18); border-radius:20px; transition:border-color .2s, background .2s; }
+    .dropzone.drag { border-color:#5573f4; background:rgba(85,115,244,0.08); }
+    .range { -webkit-appearance:none; appearance:none; height:6px; border-radius:6px; background:rgba(255,255,255,0.12); outline:none; }
+    .range::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background:#5573f4; cursor:pointer; box-shadow:0 2px 8px rgba(85,115,244,0.5); }
+    .range::-moz-range-thumb { width:18px; height:18px; border:none; border-radius:50%; background:#5573f4; cursor:pointer; }
+    .scheme { border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:6px 10px; font-size:0.8rem; cursor:pointer; transition:border-color .2s, background .2s; }
+    .scheme.active { border-color:#5573f4; background:rgba(85,115,244,0.14); color:#fff; }
+  </style>
+<script src="/nav.js"></script>
+  <script src="/fx.js" defer></script>
+  <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+  <script src="/fx2.js" defer></script>
+  </head>
+<body class="min-h-full flex flex-col">
+<nav class="side-nav">
+    <a href="/"><span class="nav-line"></span>Home</a>
+    <a href="/music"><span class="nav-line"></span>Music</a>
+    <a href="/gallery"><span class="nav-line"></span>Gallery</a>
+    <a href="/projects"><span class="nav-line"></span>Projects</a>
+    <a href="/acquaintances"><span class="nav-line"></span>Acquaintances</a>
+
+    <a href="/widgets"><span class="nav-line"></span>Widgets</a>
+    <a href="/tools" class="active"><span class="nav-line"></span>Tools</a>
+    <a href="/valorant"><span class="nav-line"></span>Valorant</a>
+    <a href="/links"><span class="nav-line"></span>Links</a>
+    
+  </nav>
+  <nav class="mobile-nav">
+    <a href="/">Home</a>
+    <a href="/music">Music</a>
+    <a href="/gallery">Gallery</a>
+    <a href="/projects">Projects</a>
+    <a href="/acquaintances">Acquaintances</a>
+    
+    <a href="/widgets">Widgets</a>
+    <a href="/tools" class="active">Tools</a>
+    <a href="/valorant">Valorant</a>
+    <a href="/links">Links</a>
+    
+  </nav>
+  <div class="dark contents">
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style="background-color:#000"></div>
+
+    <main class="relative flex w-full flex-col items-center text-white font-satoshi" id="mainContent">
+      <!-- Header -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:48px;padding-bottom:16px">
+        <div class="w-full max-w-3xl anim-reveal">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+            <div style="width:4px;height:32px;background:#ff4655;border-radius:2px"></div>
+            <h1 style="font-size:1.75rem;font-weight:700;color:#fff;margin:0">Tools</h1>
+          </div>
+          <p style="font-size:0.9rem;color:#9CA3AF;margin:0 0 0 16px">compress, convert &amp; more</p>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:16px">
+        <div class="w-full max-w-3xl anim-reveal anim-delay-1">
+          <div class="widget-card" style="border-radius:16px;overflow:hidden">
+            <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08)">
+              <button class="tab-btn active" data-tab="img" style="display:flex;align-items:center;justify-content:center;gap:8px">🖼️ <span>Image Compressor</span></button>
+              <button class="tab-btn" data-tab="yt" disabled title="Not available on static hosting">▶️ <span>YouTube Downloader</span></button>
+            </div>
+
+            <!-- ============ IMAGE COMPRESSOR ============ -->
+            <div class="tool-tab active" id="tab-img" style="padding:20px">
+              <div class="dropzone" id="dropzone" style="padding:36px 20px;text-align:center;cursor:pointer">
+                <div style="font-size:2.2rem;margin-bottom:10px">🖼️</div>
+                <div style="font-weight:600;font-size:1.05rem;color:#fff">Drag &amp; drop images here</div>
+                <div style="font-size:0.8rem;color:#9CA3AF;margin-top:6px">PNG · JPG · WebP · GIF · SVG · BMP — or</div>
+                <button id="pickBtn" style="margin-top:14px;padding:9px 20px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s">Choose files</button>
+                <input id="fileInput" type="file" accept="image/*" multiple hidden />
+              </div>
+
+              <!-- Settings -->
+              <div class="widget-card" style="border-radius:16px;padding:16px;margin-top:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Output settings</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                  <div class="field">
+                    <label>Mode</label>
+                    <div style="display:flex;gap:6px">
+                      <button class="scheme active" id="mode-auto">Auto size</button>
+                      <button class="scheme" id="mode-manual">Quality</button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Format</label>
+                    <div style="display:flex;gap:6px">
+                      <button class="scheme active" data-fmt="image/jpeg">JPEG</button>
+                      <button class="scheme" data-fmt="image/webp">WebP</button>
+                      <button class="scheme" data-fmt="image/png">PNG</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Auto size mode -->
+                <div id="autoFields" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+                  <div class="field">
+                    <label>Max size</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="sizeNum" class="inp" type="number" value="500" min="1" style="flex:1" />
+                      <select id="sizeUnit" class="inp" style="width:84px;background:#1a1c2c">
+                        <option value="1024">KB</option>
+                        <option value="1048576">MB</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Max dimension <span style="text-transform:none;opacity:0.6">(px)</span></label>
+                    <input id="maxDim" class="inp" type="number" value="4096" min="16" placeholder="4096 (off)" />
+                  </div>
+                </div>
+
+                <!-- Manual mode -->
+                <div id="manualFields" style="display:none;margin-top:14px">
+                  <div class="field">
+                    <label>Quality: <span id="qVal" style="color:#fff;font-weight:600">85</span></label>
+                    <input id="quality" class="range" type="range" min="5" max="100" value="85" style="width:100%" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results -->
+              <div id="results" style="display:none;margin-top:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase">Results</div>
+                  <div style="font-size:0.8rem;color:#9CA3AF"><span id="statDone">0</span>/<span id="statTotal">0</span> · <span id="statSaved">saved 0%</span></div>
+                </div>
+                <div id="resultList" style="display:flex;flex-direction:column;gap:10px"></div>
+                <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+                  <button id="dlAll" style="padding:10px 18px;border-radius:12px;border:none;background:#5573f4;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Download all</button>
+                  <button id="clearAll" style="padding:10px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#9CA3AF;font-size:0.85rem;cursor:pointer;font-family:inherit">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ YOUTUBE (coming soon) ============ -->
+            <div class="tool-tab" id="tab-yt" style="padding:28px 20px;text-align:center">
+              <div style="font-size:2.4rem">▶️</div>
+              <div style="font-weight:600;font-size:1.05rem;color:#fff;margin-top:12px">YouTube downloader — coming soon</div>
+              <p style="font-size:0.82rem;color:#9CA3AF;max-width:420px;margin:12px auto 0;line-height:1.6">
+                A true MP4/MP3 <em>download</em> can’t run purely in the browser on a static host like Vercel —
+                it needs a backend to fetch YouTube’s streams (which the browser blocks via CORS/auth).<br /><br />
+                Happy to add it on a small serverless backend or a third-party download API if you want it.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/tools.js" defer></script>
+  <script>
+    try{var _vb=localStorage.getItem('vaultBg');if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
+  </script>
+<script src="/analytics.js" defer></script>
+<script src="/player.js" defer></script>
+<script src="/bg.js" defer></script>
+<script src="/guestbook.js" defer></script>
+</body>
+</html>
