@@ -188,19 +188,77 @@
               </div>
             </div>
 
-            <!-- ============ YOUTUBE (embedded cur.et) ============ -->
+            <!-- ============ YOUTUBE (native — savenow v2, same backend as cur.et) ============ -->
             <div class="tool-tab" id="tab-yt" style="padding:20px">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap">
                 <div>
                   <div style="font-weight:600;font-size:1rem;color:#fff">YouTube Downloader</div>
-                  <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a link · pick format &amp; quality · mp3 / m4a / wav / flac / 360p–4K</div>
+                  <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a link · pick type &amp; quality</div>
                 </div>
-                <a href="https://cur.et/youtube" target="_blank" rel="noopener" style="font-size:0.75rem;color:#fff;text-decoration:none;padding:7px 12px;border-radius:10px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);white-space:nowrap">Open in new tab ↗</a>
+                <a href="https://cur.et/youtube" target="_blank" rel="noopener" style="font-size:0.75rem;color:#fff;text-decoration:none;padding:7px 12px;border-radius:10px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);white-space:nowrap">cur.et ↗</a>
               </div>
-              <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)">
-                <iframe id="ytFrame" src="about:blank" allowfullscreen style="width:100%;height:600px;border:0;display:block;background:#000"></iframe>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>YouTube URL</label>
+                <input id="ytUrl" class="inp" type="text" placeholder="youtube.com/watch… · youtu.be… · shorts…" />
               </div>
-              <p style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin:10px 2px 0;line-height:1.5">Downloads actually run on <strong>cur.et</strong>, a free third-party YouTube downloader, embedded here. If it’s ever unavailable, use the <em>Open in new tab</em> button.</p>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>Type</label>
+                <div style="display:flex;gap:6px">
+                  <button class="scheme active" id="ytTypeAudio">Audio</button>
+                  <button class="scheme" id="ytTypeVideo">Video</button>
+                </div>
+              </div>
+
+              <div id="ytAudioFields">
+                <div class="field" style="margin-bottom:14px">
+                  <label>Format</label>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="scheme active" data-ytfmt="mp3">MP3</button>
+                    <button class="scheme" data-ytfmt="m4a">M4A</button>
+                    <button class="scheme" data-ytfmt="wav">WAV</button>
+                    <button class="scheme" data-ytfmt="flac">FLAC</button>
+                    <button class="scheme" data-ytfmt="ogg">OGG</button>
+                    <button class="scheme" data-ytfmt="opus">OPUS</button>
+                    <button class="scheme" data-ytfmt="aac">AAC</button>
+                  </div>
+                </div>
+                <div class="field" style="margin-bottom:14px">
+                  <label>Bitrate: <span id="ytKbpsVal" style="color:#fff;font-weight:600">128</span> kbps</label>
+                  <input id="ytKbps" class="range" type="range" min="64" max="320" step="16" value="128" style="width:100%" />
+                </div>
+              </div>
+
+              <div id="ytVideoFields" style="display:none">
+                <div class="field" style="margin-bottom:14px">
+                  <label>Quality</label>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="scheme active" data-ytres="360">360p</button>
+                    <button class="scheme" data-ytres="480">480p</button>
+                    <button class="scheme" data-ytres="720">720p</button>
+                    <button class="scheme" data-ytres="1080">1080p</button>
+                    <button class="scheme" data-ytres="1440">1440p</button>
+                    <button class="scheme" data-ytres="4k">4K</button>
+                  </div>
+                </div>
+              </div>
+
+              <button id="ytConvert" style="width:100%;padding:12px;border-radius:12px;border:none;background:#5573f4;color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:inherit">Convert</button>
+
+              <div id="ytStatus" style="display:none;margin-top:16px">
+                <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07)">
+                  <img id="ytThumb" style="width:56px;height:56px;border-radius:10px;object-fit:cover;display:none" alt="" />
+                  <div style="flex:1;min-width:0">
+                    <div id="ytTitle" style="font-size:0.85rem;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+                    <div style="height:6px;border-radius:6px;background:rgba(255,255,255,0.1);overflow:hidden;margin-top:8px"><div id="ytBar" style="height:100%;width:0%;background:#5573f4;transition:width .4s"></div></div>
+                    <div id="ytState" style="font-size:0.72rem;color:#9CA3AF;margin-top:6px"></div>
+                  </div>
+                  <a id="ytDl" target="_blank" rel="noopener" style="padding:9px 16px;border-radius:11px;background:#5573f4;color:#fff;font-size:0.8rem;font-weight:600;text-decoration:none;display:none">Download</a>
+                </div>
+              </div>
+
+              <p style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin:10px 2px 0;line-height:1.5">Powered by the free <strong>savenow v2</strong> YouTube API (the same backend cur.et uses). It's a third-party service — may occasionally be slow or rate-limited.</p>
             </div>
           </div>
         </div>

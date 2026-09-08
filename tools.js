@@ -294,11 +294,145 @@
     });
   }
 
-  /* youtube tab: embed cur.et's downloader once, on first activation */
-  function loadYTFrame() {
-    var fr = $('ytFrame');
-    if (!fr || fr.getAttribute('src') !== 'about:blank') return;
-    fr.src = 'https://cur.et/youtube';
+  /* ---------- youtube downloader (savenow v2 — same backend as cur.et) ---------- */
+  var YT_API = 'https://p.savenow.to/api/v2/download';
+  var YT_KEY = 'dfcb6d76f2f6a9894gjkege8a4ab232222';
+  var yt = { mode: 'audio', fmt: 'mp3', res: '360', kbps: 128, busy: false };
+  var ytTimer = null;
+
+  function ytId(url) {
+    var m = String(url).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function ytSetState(msg, percent) {
+    $('ytState').textContent = msg;
+    if (percent != null) $('ytBar').style.width = percent + '%';
+  }
+
+  function ytSetInfo(d) {
+    var title = d.title || (d.info && d.info.title) || 'YouTube download';
+    $('ytTitle').textContent = title;
+    var img = d.thumbnail_url || (d.info && d.info.image);
+    if (img) {
+      var t = $('ytThumb');
+      t.src = img;
+      t.style.display = 'block';
+    }
+  }
+
+  function ytReady(dl, d) {
+    $('ytBar').style.width = '100%';
+    ytSetInfo(d);
+    ytSetState(d && d.text === 'Finished' ? 'Finished — download ready' : 'Done — download ready');
+    var a = $('ytDl');
+    a.href = dl;
+    a.style.display = 'inline-block';
+    yt.busy = false;
+    setYtBusy(false);
+  }
+
+  function ytPoll(progressUrl, attempts) {
+    attempts = attempts || 0;
+    clearTimeout(ytTimer);
+    if (attempts > 90) {
+      ytSetState('Timed out after ~3 min — try again');
+      yt.busy = false;
+      setYtBusy(false);
+      return;
+    }
+    fetch(progressUrl, { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      var dl = d && (d.download_url || d.url || d.downloadUrl || d.file_url || d.file || d.link);
+      if (dl) { ytReady(dl, d); return; }
+      var p = d && typeof d.progress === 'number' ? Math.min(Math.round(d.progress / 10), 95) : Math.min(2 + attempts * 2, 95);
+      ytSetState(d && d.text || 'Processing…', p);
+      ytTimer = setTimeout(function () { ytPoll(progressUrl, attempts + 1); }, 2000);
+    }).catch(function () {
+      ytTimer = setTimeout(function () { ytPoll(progressUrl, attempts + 1); }, 2000);
+    });
+  }
+
+  function ytFail(msg) {
+    ytSetState(msg);
+    $('ytBar').style.width = '0%';
+    yt.busy = false;
+    setYtBusy(false);
+  }
+
+  async function ytConvert() {
+    if (yt.busy) return;
+    var url = $('ytUrl').value.trim();
+    $('ytStatus').style.display = 'block';
+    $('ytDl').style.display = 'none';
+    $('ytThumb').style.display = 'none';
+    $('ytBar').style.width = '0%';
+    if (!ytId(url)) {
+      ytSetState('Paste a valid YouTube link (watch, shorts or youtu.be)');
+      return;
+    }
+    yt.busy = true;
+    setYtBusy(true);
+    var fmt = yt.mode === 'audio' ? yt.fmt : yt.res;
+    var api = YT_API + '?url=' + encodeURIComponent(url) + '&format=' + fmt + '&apikey=' + YT_KEY;
+    if (yt.mode === 'audio') api += '&quality=' + yt.kbps;
+    try {
+      var resp = await fetch(api, { cache: 'no-store' });
+      var d = await resp.json();
+      if (!d || !d.success) { ytFail((d && (d.message || d.error)) || 'Download failed'); return; }
+      ytSetInfo(d);
+      var dl = d.download_url || d.url || d.downloadUrl || d.file_url || d.file || d.link;
+      if (dl) { ytReady(dl, d); return; }
+      if (d.progress_url) {
+        ytSetState(d.text || 'Preparing streaming download…', 4);
+        ytPoll(d.progress_url, 0);
+      } else {
+        ytFail((d && d.text) || 'No download url returned');
+      }
+    } catch (e) {
+      ytFail('Network error — try again');
+    }
+  }
+
+  function setYtBusy(b) {
+    var btn = $('ytConvert');
+    btn.disabled = b;
+    $('ytUrl').disabled = b;
+    btn.style.opacity = b ? '0.6' : '1';
+    btn.style.cursor = b ? 'default' : 'pointer';
+  }
+
+  function wireYt() {
+    $('ytConvert').addEventListener('click', ytConvert);
+    $('ytUrl').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ytConvert(); });
+    $('ytKbps').addEventListener('input', function () {
+      yt.kbps = parseInt(this.value, 10);
+      $('ytKbpsVal').textContent = yt.kbps;
+    });
+
+    function setYtMode(m) {
+      yt.mode = m;
+      $('ytTypeAudio').classList.toggle('active', m === 'audio');
+      $('ytTypeVideo').classList.toggle('active', m === 'video');
+      $('ytAudioFields').style.display = m === 'audio' ? 'block' : 'none';
+      $('ytVideoFields').style.display = m === 'video' ? 'block' : 'none';
+    }
+    $('ytTypeAudio').addEventListener('click', function () { setYtMode('audio'); });
+    $('ytTypeVideo').addEventListener('click', function () { setYtMode('video'); });
+
+    document.querySelectorAll('[data-ytfmt]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('[data-ytfmt]').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        yt.fmt = b.getAttribute('data-ytfmt');
+      });
+    });
+    document.querySelectorAll('[data-ytres]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        document.querySelectorAll('[data-ytres]').forEach(function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        yt.res = b.getAttribute('data-ytres');
+      });
+    });
   }
 
   /* ---------- events ---------- */
@@ -326,10 +460,7 @@
         document.querySelectorAll('.tool-tab').forEach(function (x) { x.classList.remove('active'); });
         b.classList.add('active');
         var t = $('tab-' + b.getAttribute('data-tab'));
-        if (t) {
-          t.classList.add('active');
-          if (t.id === 'tab-yt') loadYTFrame();
-        }
+        if (t) t.classList.add('active');
       });
     });
 
@@ -371,6 +502,8 @@
       $('resultList').innerHTML = '';
       $('results').style.display = 'none';
     });
+
+    wireYt();
   }
 
   wire();
