@@ -10,7 +10,8 @@
   var TRACKS = [
     { src: '/audio/song-1.mp3', title: 'untitled', artist: 'song 1' },
     { src: '/audio/song-2.mp3', title: 'untitled', artist: 'song 2' },
-    { src: '/audio/mystery-of-love.mp3', title: 'Mystery of Love', artist: 'Sufjan Stevens' }
+    { src: '/audio/mystery-of-love.mp3', title: 'Mystery of Love', artist: 'Sufjan Stevens' },
+    { src: '/audio/you-are-the-sun.mp3', title: 'You Are the Sun in My Life' }
   ];
 
   var core = window.__hz;

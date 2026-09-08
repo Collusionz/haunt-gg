@@ -112,15 +112,14 @@
         <div class="w-full max-w-3xl anim-reveal anim-delay-1">
           <div class="widget-card" style="border-radius:16px;overflow:hidden">
             <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08)">
-              <button class="tab-btn active" data-tab="img" style="display:flex;align-items:center;justify-content:center;gap:8px">🖼️ <span>Image Compressor</span></button>
-              <button class="tab-btn" data-tab="yt">▶️ <span>YouTube Downloader</span></button>
-              <button class="tab-btn" data-tab="dc"># <span>Discord</span></button>
+              <button class="tab-btn active" data-tab="img"><span>Image Compressor</span></button>
+              <button class="tab-btn" data-tab="yt"><span>YouTube Downloader</span></button>
+              <button class="tab-btn" data-tab="dc"># <span>TIMESTAMP GENERATOR</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
             <div class="tool-tab active" id="tab-img" style="padding:20px">
               <div class="dropzone" id="dropzone" style="padding:36px 20px;text-align:center;cursor:pointer">
-                <div style="font-size:2.2rem;margin-bottom:10px">🖼️</div>
                 <div style="font-weight:600;font-size:1.05rem;color:#fff">Drag &amp; drop images here</div>
                 <div style="font-size:0.8rem;color:#9CA3AF;margin-top:6px">PNG · JPG · WebP · GIF · SVG · BMP — or</div>
                 <button id="pickBtn" style="margin-top:14px;padding:9px 20px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.85rem;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s">Choose files</button>
@@ -189,14 +188,13 @@
               </div>
             </div>
 
-            <!-- ============ YOUTUBE (native — savenow v2, same backend as cur.et) ============ -->
+            <!-- ============ YOUTUBE ============ -->
             <div class="tool-tab" id="tab-yt" style="padding:20px">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap">
                 <div>
                   <div style="font-weight:600;font-size:1rem;color:#fff">YouTube Downloader</div>
                   <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a link · pick type &amp; quality</div>
                 </div>
-                <a href="https://cur.et/youtube" target="_blank" rel="noopener" style="font-size:0.75rem;color:#fff;text-decoration:none;padding:7px 12px;border-radius:10px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);white-space:nowrap">cur.et ↗</a>
               </div>
 
               <div class="field" style="margin-bottom:14px">
