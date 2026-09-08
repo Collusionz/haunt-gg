@@ -445,7 +445,7 @@
     { flag: 'd', name: 'Short Date', opts: { day: '2-digit', month: '2-digit', year: 'numeric' } },
     { flag: 'D', name: 'Long Date', opts: { day: 'numeric', month: 'long', year: 'numeric' } },
     { flag: 'f', name: 'Short Date/Time', opts: { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' } },
-    { flag: 'F', name: 'Long Date/Time', opts: { day: 'long', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' } },
+    { flag: 'F', name: 'Long Date/Time', opts: { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' } },
     { flag: 'R', name: 'Relative Time', rel: true }
   ];
 
