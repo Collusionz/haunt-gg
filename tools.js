@@ -294,6 +294,13 @@
     });
   }
 
+  /* youtube tab: embed cur.et's downloader once, on first activation */
+  function loadYTFrame() {
+    var fr = $('ytFrame');
+    if (!fr || fr.getAttribute('src') !== 'about:blank') return;
+    fr.src = 'https://cur.et/youtube';
+  }
+
   /* ---------- events ---------- */
   function wire() {
     var dz = $('dropzone');
@@ -311,7 +318,7 @@
       if (ev.dataTransfer && ev.dataTransfer.files) addFiles(ev.dataTransfer.files);
     });
 
-    // tabs (only activator required on this page; yt stays disabled)
+    // tabs
     var tabBtns = document.querySelectorAll('.tab-btn:not([disabled])');
     tabBtns.forEach(function (b) {
       b.addEventListener('click', function () {
@@ -319,7 +326,10 @@
         document.querySelectorAll('.tool-tab').forEach(function (x) { x.classList.remove('active'); });
         b.classList.add('active');
         var t = $('tab-' + b.getAttribute('data-tab'));
-        if (t) t.classList.add('active');
+        if (t) {
+          t.classList.add('active');
+          if (t.id === 'tab-yt') loadYTFrame();
+        }
       });
     });
 

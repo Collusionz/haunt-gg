@@ -8,6 +8,7 @@
     { "source": "/sync.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
     { "source": "/analytics.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
     { "source": "/fx.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
-    { "source": "/fx2.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] }
+    { "source": "/fx2.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
+    { "source": "/tools.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] }
   ]
 }

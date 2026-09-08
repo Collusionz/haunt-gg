@@ -113,7 +113,7 @@
           <div class="widget-card" style="border-radius:16px;overflow:hidden">
             <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08)">
               <button class="tab-btn active" data-tab="img" style="display:flex;align-items:center;justify-content:center;gap:8px">🖼️ <span>Image Compressor</span></button>
-              <button class="tab-btn" data-tab="yt" disabled title="Not available on static hosting">▶️ <span>YouTube Downloader</span></button>
+              <button class="tab-btn" data-tab="yt">▶️ <span>YouTube Downloader</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -188,15 +188,19 @@
               </div>
             </div>
 
-            <!-- ============ YOUTUBE (coming soon) ============ -->
-            <div class="tool-tab" id="tab-yt" style="padding:28px 20px;text-align:center">
-              <div style="font-size:2.4rem">▶️</div>
-              <div style="font-weight:600;font-size:1.05rem;color:#fff;margin-top:12px">YouTube downloader — coming soon</div>
-              <p style="font-size:0.82rem;color:#9CA3AF;max-width:420px;margin:12px auto 0;line-height:1.6">
-                A true MP4/MP3 <em>download</em> can’t run purely in the browser on a static host like Vercel —
-                it needs a backend to fetch YouTube’s streams (which the browser blocks via CORS/auth).<br /><br />
-                Happy to add it on a small serverless backend or a third-party download API if you want it.
-              </p>
+            <!-- ============ YOUTUBE (embedded cur.et) ============ -->
+            <div class="tool-tab" id="tab-yt" style="padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+                <div>
+                  <div style="font-weight:600;font-size:1rem;color:#fff">YouTube Downloader</div>
+                  <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a link · pick format &amp; quality · mp3 / m4a / wav / flac / 360p–4K</div>
+                </div>
+                <a href="https://cur.et/youtube" target="_blank" rel="noopener" style="font-size:0.75rem;color:#fff;text-decoration:none;padding:7px 12px;border-radius:10px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);white-space:nowrap">Open in new tab ↗</a>
+              </div>
+              <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)">
+                <iframe id="ytFrame" src="about:blank" allowfullscreen style="width:100%;height:600px;border:0;display:block;background:#000"></iframe>
+              </div>
+              <p style="font-size:0.7rem;color:rgba(255,255,255,0.4);margin:10px 2px 0;line-height:1.5">Downloads actually run on <strong>cur.et</strong>, a free third-party YouTube downloader, embedded here. If it’s ever unavailable, use the <em>Open in new tab</em> button.</p>
             </div>
           </div>
         </div>
