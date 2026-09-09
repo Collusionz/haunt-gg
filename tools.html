@@ -48,7 +48,7 @@
     .inp { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:#fff; padding:10px 12px; font-size:0.9rem; outline:none; transition:border-color .2s, box-shadow .2s; font-family:inherit; }
     .inp:focus { border-color:rgba(85,115,244,0.7); box-shadow:0 0 0 3px rgba(85,115,244,0.18); }
     .inp::placeholder { color:rgba(255,255,255,0.28); }
-    .tab-btn { flex:1; padding:12px 8px; font-size:0.85rem; font-weight:500; color:#9CA3AF; background:transparent; border:none; cursor:pointer; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
+    .tab-btn { flex:1; min-width:150px; padding:12px 8px; font-size:0.85rem; font-weight:500; color:#9CA3AF; background:transparent; border:none; cursor:pointer; border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
     .tab-btn.active { color:#fff; border-bottom-color:#5573f4; }
     .tool-tab { display:none; }
     .tool-tab.active { display:block; animation:fadeInUp .4s ease forwards; }
@@ -59,6 +59,14 @@
     .range::-moz-range-thumb { width:18px; height:18px; border:none; border-radius:50%; background:#5573f4; cursor:pointer; }
     .scheme { border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:6px 10px; font-size:0.8rem; cursor:pointer; transition:border-color .2s, background .2s; }
     .scheme.active { border-color:#5573f4; background:rgba(85,115,244,0.14); color:#fff; }
+    #mmOut a { color:#5573f4; text-decoration:none; }
+    #mmOut .mm-code { font-family:monospace; font-size:0.85em; background:rgba(80,100,255,0.12); border-radius:4px; padding:1px 5px; color:#a5b4fc; }
+    #mmOut .mm-codeblock { font-family:monospace; font-size:0.82rem; background:#14162a; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px 12px; overflow:auto; color:#dbe2ff; white-space:pre; }
+    #mmOut .mm-spoil { background:#232536; border-radius:4px; padding:0 5px; color:transparent; cursor:help; }
+    #mmOut .mm-spoil:hover { color:#fff; }
+    #mmOut .mm-quote { display:block; border-left:3px solid #4b5563; padding-left:10px; color:#b8bfd1; margin:2px 0; }
+    #mmOut .mm-quote2 { border-color:#8b5cf6; }
+    .inp[readonly] { color:rgba(255,255,255,0.75); }
   </style>
 <script src="/nav.js"></script>
   <script src="/fx.js" defer></script>
@@ -111,10 +119,15 @@
       <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:16px">
         <div class="w-full max-w-3xl anim-reveal anim-delay-1">
           <div class="widget-card" style="border-radius:16px;overflow:hidden">
-            <div style="display:flex;border-bottom:1px solid rgba(255,255,255,0.08)">
+            <div style="display:flex;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.08)">
               <button class="tab-btn active" data-tab="img"><span>Image Compressor</span></button>
               <button class="tab-btn" data-tab="yt"><span>YouTube Downloader</span></button>
               <button class="tab-btn" data-tab="dc"><span>Timestamp Generator</span></button>
+              <button class="tab-btn" data-tab="mm"><span>Markdown</span></button>
+              <button class="tab-btn" data-tab="ws"><span>Webhook</span></button>
+              <button class="tab-btn" data-tab="eb"><span>Embed Builder</span></button>
+              <button class="tab-btn" data-tab="ann"><span>Announcement</span></button>
+              <button class="tab-btn" data-tab="gr"><span>Role Gradients</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -286,6 +299,211 @@
                 <div id="dcRows"></div>
               </div>
             </div>
+
+            <!-- ============ MARKDOWN PREVIEW ============ -->
+            <div class="tool-tab" id="tab-mm" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px;margin-bottom:14px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                  <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase">Markdown</div>
+                  <button class="scheme" id="mmCopy" style="border-radius:9px;font-size:0.72rem">Copy raw</button>
+                </div>
+                <textarea id="mmInput" class="inp" rows="8" style="width:100%;resize:vertical" placeholder="**bold** · *italic* · _underline_ · ~~strike~~ · `code` · ||spoiler|| · &gt; quote · ```block``` · [text](url)"></textarea>
+              </div>
+              <div class="widget-card" style="border-radius:14px;padding:16px;overflow:hidden">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:10px">Preview</div>
+                <div id="mmOut" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:14px;font-size:0.95rem;line-height:1.55;white-space:pre-wrap;word-break:break-word"></div>
+              </div>
+            </div>
+
+            <!-- ============ WEBHOOK SENDER ============ -->
+            <div class="tool-tab" id="tab-ws" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Send a webhook</div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Webhook URL <span style="text-transform:none;opacity:0.6">(channel → Integrations → Webhooks)</span></label>
+                  <input id="wsUrl" class="inp" type="text" style="width:100%" placeholder="https://discord.com/api/webhooks/..." />
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Bot name (optional)</label>
+                    <input id="wsName" class="inp" type="text" placeholder="Auto" />
+                  </div>
+                  <div class="field">
+                    <label>Bot avatar URL (optional)</label>
+                    <input id="wsAvatar" class="inp" type="text" placeholder="https://..." />
+                  </div>
+                </div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Message</label>
+                  <textarea id="wsContent" class="inp" rows="4" style="width:100%;resize:vertical" placeholder="Say something… or leave empty if an embed is attached"></textarea>
+                </div>
+                <div class="field" style="margin-bottom:14px">
+                  <label>Embed JSON (optional — build one in the Embed Builder tab)</label>
+                  <textarea id="wsEmbed" class="inp" rows="3" style="width:100%;resize:vertical;font-family:monospace;font-size:0.78rem" placeholder='[{"title":"Hello","description":"from your site"}]'></textarea>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <button id="wsSend" class="scheme" style="border-radius:10px;font-size:0.85rem;padding:10px 24px">Send</button>
+                  <span id="wsStatus" style="font-size:0.8rem;color:#9CA3AF">Ready</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ EMBED BUILDER ============ -->
+            <div class="tool-tab" id="tab-eb" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                  <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase">Embed Builder</div>
+                  <button class="scheme" id="ebSample" style="border-radius:9px;font-size:0.72rem">Load example</button>
+                </div>
+
+                <div class="field" style="margin-bottom:12px">
+                  <label>Message content (above the embed)</label>
+                  <input id="ebContent" class="inp" type="text" style="width:100%" placeholder="Optional text before the embed — supports markdown" />
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:4px 0 10px">Author</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                  <div class="field"><label>Author name</label><input id="ebAuthor" class="inp" type="text" style="width:100%" placeholder="Your name / bot" /></div>
+                  <div class="field"><label>Author icon URL</label><input id="ebAuthorIcon" class="inp" type="text" style="width:100%" placeholder="https://..." /></div>
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:4px 0 10px">Title</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                  <div class="field"><label>Title</label><input id="ebTitle" class="inp" type="text" style="width:100%" placeholder="Embed title" /></div>
+                  <div class="field"><label>Title URL</label><input id="ebTitleUrl" class="inp" type="text" style="width:100%" placeholder="https://..." /></div>
+                </div>
+
+                <div class="field" style="margin-bottom:14px">
+                  <label>Description</label>
+                  <textarea id="ebDesc" class="inp" rows="4" style="width:100%;resize:vertical;line-height:1.55" placeholder="Supports Discord markdown — lines, bold, breaks"></textarea>
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:4px 0 10px">Look</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+                  <div class="field">
+                    <label>Color</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="ebColor" type="color" value="#5573f4" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="ebHex" class="inp" type="text" value="#5573f4" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                  <div class="field"><label>Thumbnail URL</label><input id="ebThumb" class="inp" type="text" style="width:100%" placeholder="https://..." /></div>
+                  <div class="field"><label>Image URL</label><input id="ebImg" class="inp" type="text" style="width:100%" placeholder="https://..." /></div>
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:4px 0 10px">Footer</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                  <div class="field"><label>Footer text</label><input id="ebFoot" class="inp" type="text" style="width:100%" /></div>
+                  <div class="field"><label>Footer icon URL</label><input id="ebFootIcon" class="inp" type="text" style="width:100%" placeholder="https://..." /></div>
+                </div>
+
+                <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:6px">
+                  <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer"><input id="ebTsOn" type="checkbox" style="accent-color:#5573f4" /> Timestamp</label>
+                  <input id="ebTs" class="inp" type="datetime-local" step="1" style="display:none" />
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:14px 0 10px">Fields <span style="text-transform:none;opacity:0.6">(up to 25)</span></div>
+                <div id="ebFields"></div>
+                <button class="scheme" id="ebAddField" style="border-radius:9px;font-size:0.72rem">+ Add field</button>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:20px 0 10px">Buttons <span style="text-transform:none;opacity:0.6">(max 5 per row)</span></div>
+                <div id="ebBtns"></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+                  <button class="scheme" id="ebAddBtn" style="border-radius:9px;font-size:0.72rem">+ Add button</button>
+                  <button class="scheme" id="ebNewRow" style="border-radius:9px;font-size:0.72rem">+ New row</button>
+                </div>
+
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:20px 0 10px">Preview JSON</div>
+                <pre id="ebJson" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px;font-family:monospace;font-size:0.72rem;line-height:1.5;color:#c7d2fe;overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-word;margin:0 0 12px"></pre>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+                  <button class="scheme" id="ebCopy" style="border-radius:9px;font-size:0.72rem">Copy JSON</button>
+                  <input id="ebHook" class="inp" type="text" style="min-width:0;flex:1" placeholder="Webhook URL to send to (optional)" />
+                  <button class="scheme" id="ebSend" style="border-radius:9px;font-size:0.72rem">Send</button>
+                  <span id="ebStatus" style="font-size:0.8rem;color:#9CA3AF"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ ANNOUNCEMENT GENERATOR ============ -->
+            <div class="tool-tab" id="tab-ann" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Announcement Generator</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Type</label>
+                    <select id="annType" class="inp" style="background:#1a1c2c">
+                      <option value="game">Game Night</option>
+                      <option value="give">Giveaway</option>
+                      <option value="update">Server Update</option>
+                      <option value="event">Event / Livestream</option>
+                      <option value="welcome">Welcome</option>
+                      <option value="other">Announcement</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Tone</label>
+                    <select id="annTone" class="inp" style="background:#1a1c2c">
+                      <option value="friendly">Friendly</option>
+                      <option value="hype">Hype</option>
+                      <option value="formal">Formal</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>When</label>
+                    <input id="annDate" class="inp" type="datetime-local" step="1" style="width:100%" />
+                  </div>
+                </div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Title</label>
+                  <input id="annTitle" class="inp" type="text" style="width:100%" placeholder="e.g. Summer Game Night" />
+                </div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Details (optional)</label>
+                  <textarea id="annDesc" class="inp" rows="3" style="width:100%;resize:vertical" placeholder="Prizes, how to join, maps, playlist…"></textarea>
+                </div>
+                <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer;margin-bottom:14px"><input id="annPing" type="checkbox" style="accent-color:#5573f4" /> Include <span style="font-family:monospace">@everyone</span></label>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <button class="scheme" id="annCopy" style="border-radius:9px;font-size:0.72rem">Copy</button>
+                  <span style="font-size:0.8rem;color:#9CA3AF">Generated automatically as you type — paste into your channel.</span>
+                </div>
+                <textarea id="annOut" class="inp" rows="12" style="width:100%;resize:vertical;font-family:monospace;font-size:0.8rem;line-height:1.6" readonly></textarea>
+              </div>
+            </div>
+
+            <!-- ============ ROLE GRADIENTS ============ -->
+            <div class="tool-tab" id="tab-gr" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Role Gradient Colors</div>
+                <div style="display:grid;grid-template-columns:auto 1fr auto 1fr;gap:12px;align-items:end;margin-bottom:14px">
+                  <div class="field" style="min-width:0">
+                    <label>Start</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="grA" type="color" value="#5573f4" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="grAHex" class="inp" type="text" value="#5573f4" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                  <div style="align-self:center;text-align:center;color:#9CA3AF;font-size:1.2rem">→</div>
+                  <div class="field" style="min-width:0">
+                    <label>End</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="grB" type="color" value="#ff5f9e" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="grBHex" class="inp" type="text" value="#ff5f9e" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                  <div class="field" style="min-width:120px">
+                    <label>Steps</label>
+                    <input id="grSteps" class="inp" type="number" value="6" min="3" max="12" style="width:100%" />
+                  </div>
+                </div>
+                <div id="grBar" style="height:22px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);margin-bottom:14px"></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px" id="grChips"></div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+                  <button class="scheme" id="grCopyAll" style="border-radius:9px;font-size:0.72rem">Copy all hex</button>
+                  <span style="font-size:0.8rem;color:#9CA3AF">Click a chip to copy its hex — pick the middle shade for a Discord role color.</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

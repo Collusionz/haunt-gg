@@ -529,6 +529,438 @@
     dcRender();
   }
 
+  /* ============================================================
+     EXTRA DISCORD TOOLS: markdown preview · webhook sender ·
+     embed builder · announcement generator · role gradients
+     ============================================================ */
+
+  function copyPlain(text, done) {
+    var ok = false;
+    function fin() { if (done) done(ok); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(String(text)).then(function () { ok = true; fin(); }, fin);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = String(text);
+      document.body.appendChild(ta);
+      ta.select();
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      fin();
+    }
+  }
+
+  /* ---------------- MARKDOWN PREVIEW ---------------- */
+  function mdRender(text) {
+    text = String(text || '');
+    var esc = escapeHtml(text);
+    var blocks = [], inl = [];
+    esc = esc.replace(/```([\s\S]*?)```/g, function (_, c) { blocks.push(c); return '\u0000' + blocks.length + '\u0000'; });
+    esc = esc.replace(/`([^`\n]+)`/g, function (_, c) { inl.push(c); return '\u0001' + inl.length + '\u0001'; });
+    esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, function (_, t, u) {
+      return '<a href="' + u + '" target="_blank" rel="noopener">' + t + '</a>';
+    });
+    esc = esc.replace(/(^|[^\w\\])(https?:\/\/[^\s<]+)/g, function (_, p, u) {
+      return p + '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>';
+    });
+    esc = esc.replace(/\|\|([\s\S]*?)\|\|/g, '<span class="mm-spoil">$1</span>');
+    esc = esc.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    esc = esc.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    esc = esc.replace(/__([^_\n]+)__/g, '<u>$1</u>');
+    esc = esc.replace(/~~([^~\n]+)~~/g, '<s>$1</s>');
+    esc = esc.split('\n').map(function (l) {
+      var m = l.match(/^(&gt; &gt; &gt;|&gt; &gt;|&gt;)( ?)(.*)$/);
+      if (m) return '<span class="mm-quote' + (m[1].indexOf('&gt; &gt;') === 0 ? ' mm-quote2' : '') + '">' + m[3] + '</span>';
+      return l;
+    }).join('\n');
+    esc = esc.replace(/\u0001(\d+)\u0001/g, function (_, i) {
+      return '<code class="mm-code">' + inl[Number(i) - 1] + '</code>';
+    });
+    esc = esc.replace(/\u0000(\d+)\u0000/g, function (_, i) {
+      return '<pre class="mm-codeblock">' + blocks[Number(i) - 1] + '</pre>';
+    });
+    return esc;
+  }
+
+  function wireMm() {
+    var inp = $('mmInput');
+    if (!inp) return;
+    inp.value = ['**bold** *italic* _underline_ ~~strike~~ `inline code`',
+      '||spoiler text (hover)||',
+      '> quoted line',
+      '```js',
+      'code block',
+      '```',
+      '[linked text](https://example.com) and a bare link https://example.com'
+    ].join('\n');
+    function show() {
+      var out = $('mmOut');
+      if (out) out.innerHTML = mdRender(inp.value) || '<span style="opacity:0.5">preview appears here…</span>';
+    }
+    inp.addEventListener('input', show);
+    var copyBtn = $('mmCopy');
+    if (copyBtn) copyBtn.addEventListener('click', function () { dcCopy(inp.value, this); });
+    show();
+  }
+
+  /* ---------------- WEBHOOK SENDER ---------------- */
+  function wsSendTo(url, payload, statusEl, btn) {
+    url = String(url || '').trim();
+    if (!/^https:\/\/(canary\.|ptb\.)?discord(app)?\.com\/api\/webhooks\/[\w-]+\/[\w-]+/i.test(url)) {
+      if (statusEl) { statusEl.textContent = 'Enter a valid Discord webhook URL'; statusEl.style.color = '#f87171'; }
+      return false;
+    }
+    if (btn) btn.disabled = true;
+    if (statusEl) { statusEl.textContent = 'Sending…'; statusEl.style.color = '#9CA3AF'; }
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (r.ok) {
+        if (statusEl) { statusEl.textContent = 'Sent (HTTP ' + r.status + ')'; statusEl.style.color = '#4ade80'; }
+      } else {
+        return r.text().then(function (t) {
+          var msg = (t || '').slice(0, 240) || r.statusText;
+          if (statusEl) { statusEl.textContent = 'Failed ' + r.status + ': ' + msg; statusEl.style.color = '#f87171'; }
+        });
+      }
+    }).catch(function (err) {
+      if (statusEl) { statusEl.textContent = 'Network error: ' + (err && err.message ? err.message : err); statusEl.style.color = '#f87171'; }
+    }).finally(function () { if (btn) btn.disabled = false; });
+    return true;
+  }
+
+  function wireWs() {
+    var urlEl = $('wsUrl'), st = $('wsStatus');
+    if (!urlEl) return;
+    if (st) { st.textContent = 'Ready'; st.style.color = '#9CA3AF'; }
+    var sendBtn = $('wsSend');
+    if (sendBtn) sendBtn.addEventListener('click', function () {
+      var payload = {};
+      var content = ($('wsContent').value || '').trim();
+      if (content) payload.content = content;
+      var nm = ($('wsName').value || '').trim();
+      if (nm) payload.username = nm.slice(0, 80);
+      var av = ($('wsAvatar').value || '').trim();
+      if (av) payload.avatar_url = av;
+      var ej = ($('wsEmbed').value || '').trim();
+      if (ej) {
+        try { payload.embeds = JSON.parse(ej); } catch (e) {
+          if (st) { st.textContent = 'Embed JSON invalid: ' + e.message; st.style.color = '#f87171'; }
+          return;
+        }
+      }
+      wsSendTo(urlEl.value, payload, st, sendBtn);
+    });
+  }
+
+  /* ---------------- EMBED BUILDER ---------------- */
+  function ebHex2int() {
+    var h = ($('ebHex').value || '').trim().replace(/^#/, '');
+    if (/^[0-9a-fA-F]{3}$/.test(h)) h = h.split('').map(function (c) { return c + c; }).join('');
+    return /^[0-9a-fA-F]{6}$/.test(h) ? parseInt(h, 16) : null;
+  }
+  function ebFieldsArr() {
+    var arr = [];
+    document.querySelectorAll('#ebFields .eb-frow').forEach(function (r) {
+      var name = (r.querySelector('.eb-fname').value || '').trim();
+      var val = (r.querySelector('.eb-fval').value || '').trim();
+      if (!name && !val) return;
+      arr.push({ name: name || ' ', value: val || ' ', inline: !!r.querySelector('.eb-finline').checked });
+    });
+    return arr;
+  }
+  function ebRows() {
+    var rows = [], cur = [];
+    document.querySelectorAll('#ebBtns > *').forEach(function (el) {
+      if (el.classList && el.classList.contains('eb-bdiv')) {
+        if (cur.length) { rows.push({ type: 1, components: cur }); cur = []; }
+        return;
+      }
+      var lbl = (el.querySelector('.eb-blabel').value || '').trim().slice(0, 80);
+      if (!lbl) return;
+      var sel = el.querySelector('.eb-bstyle');
+      var val = (el.querySelector('.eb-bval').value || '').trim();
+      if (sel.value === 'link') {
+        if (!val) return;
+        cur.push({ type: 2, style: 5, label: lbl, url: val });
+      } else {
+        cur.push({ type: 2, style: parseInt(sel.value, 10) || 1, label: lbl, custom_id: (val || 'btn_' + Math.random().toString(36).slice(2, 8)).slice(0, 100) });
+      }
+      if (cur.length >= 5) { rows.push({ type: 1, components: cur }); cur = []; }
+    });
+    if (cur.length) rows.push({ type: 1, components: cur });
+    return rows;
+  }
+  function ebBuild() {
+    var e = {};
+    var author = ($('ebAuthor').value || '').trim();
+    var authorIcon = ($('ebAuthorIcon').value || '').trim();
+    if (author) {
+      e.author = {};
+      e.author.name = author;
+      if (authorIcon) e.author.icon_url = authorIcon;
+    }
+    var t = ($('ebTitle').value || '').trim(), tu = ($('ebTitleUrl').value || '').trim();
+    if (t) {
+      e.title = t;
+      if (tu) e.url = tu;
+    }
+    var d = ($('ebDesc').value || '').trim();
+    if (d) e.description = d;
+    var col = ebHex2int();
+    if (col != null) e.color = col;
+    var th = ($('ebThumb').value || '').trim();
+    if (th) e.thumbnail = { url: th };
+    var im = ($('ebImg').value || '').trim();
+    if (im) e.image = { url: im };
+    var ft = ($('ebFoot').value || '').trim(), fi = ($('ebFootIcon').value || '').trim();
+    if (ft || fi) {
+      e.footer = {};
+      if (ft) e.footer.text = ft;
+      if (fi) e.footer.icon_url = fi;
+    }
+    if ($('ebTsOn').checked && $('ebTs').value) {
+      var dd = new Date($('ebTs').value);
+      if (!isNaN(dd.getTime())) e.timestamp = dd.toISOString();
+    }
+    var fields = ebFieldsArr();
+    if (fields.length) e.fields = fields;
+    var payload = {};
+    var content = ($('ebContent').value || '').trim();
+    if (content) payload.content = content;
+    if (Object.keys(e).length) payload.embeds = [e];
+    var rows = ebRows();
+    if (rows.length) payload.components = rows;
+    return payload;
+  }
+  function ebSync() {
+    var el = $('ebJson');
+    if (el) el.textContent = JSON.stringify(ebBuild(), null, 2);
+    var st = $('ebStatus');
+    if (st) st.textContent = '';
+  }
+  function ebAddField(name, value, inline) {
+    var box = $('ebFields'), row = document.createElement('div');
+    row.className = 'eb-frow';
+    row.style.cssText = 'display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap';
+    row.innerHTML =
+      '<input class="inp eb-fname" placeholder="Field name" style="min-width:0;width:200px" />' +
+      '<input class="inp eb-fval" placeholder="Field value — supports markdown" style="min-width:0;flex:1" />' +
+      '<label style="display:flex;gap:6px;align-items:center;font-size:0.75rem;color:#9CA3AF;cursor:pointer"><input class="eb-finline" type="checkbox" style="accent-color:#5573f4" /> inline</label>' +
+      '<button class="scheme eb-del-f" style="border-radius:8px;font-size:0.72rem;padding:6px 10px">×</button>';
+    if (name != null) row.querySelector('.eb-fname').value = name;
+    if (value != null) row.querySelector('.eb-fval').value = value;
+    if (inline) row.querySelector('.eb-finline').checked = true;
+    box.appendChild(row);
+    ebSync();
+  }
+  function ebAddButton(label, style, val) {
+    var box = $('ebBtns'), row = document.createElement('div');
+    row.className = 'eb-brow';
+    row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap';
+    row.innerHTML =
+      '<input class="inp eb-blabel" placeholder="Button label" style="min-width:0;flex:1" />' +
+      '<select class="inp eb-bstyle" style="width:112px;background:#1a1c2c">' +
+      '<option value="1">Blurple</option><option value="2">Grey</option><option value="3">Green</option><option value="4">Red</option><option value="link">Link</option>' +
+      '</select>' +
+      '<input class="inp eb-bval" placeholder="URL (link) or custom id (button)" style="min-width:0;flex:1" />' +
+      '<button class="scheme eb-del-b" style="border-radius:8px;font-size:0.72rem;padding:6px 10px">×</button>';
+    if (label != null) row.querySelector('.eb-blabel').value = label;
+    if (style != null) row.querySelector('.eb-bstyle').value = style;
+    if (val != null) row.querySelector('.eb-bval').value = val;
+    box.appendChild(row);
+    ebSync();
+  }
+  function ebNewRowMark() {
+    var box = $('ebBtns'), d = document.createElement('div');
+    d.className = 'eb-bdiv';
+    d.style.cssText = 'display:flex;align-items:center;gap:8px;margin:8px 0;color:#9CA3AF;font-size:0.72rem;letter-spacing:0.05em';
+    d.innerHTML = '<span style="flex:1;border-top:1px dashed rgba(255,255,255,0.15)"></span>new row<span style="flex:1;border-top:1px dashed rgba(255,255,255,0.15)"></span>' +
+      '<button class="scheme eb-del-f" style="border-radius:8px;font-size:0.72rem;padding:4px 9px">×</button>';
+    box.appendChild(d);
+    ebSync();
+  }
+  function ebLoadSample() {
+    $('ebContent').value = 'Some content goes above the embed.';
+    $('ebAuthor').value = 'cz-navy';
+    $('ebAuthorIcon').value = '';
+    $('ebTitle').value = 'Server Update 2.0';
+    $('ebTitleUrl').value = '';
+    $('ebDesc').value = 'What changed:\n\n• faster page loads\n• a cleaner tools page\n• fixed guestbook likes\n\nFull changelog below.';
+    $('ebColor').value = '#5573f4';
+    $('ebHex').value = '#5573F4';
+    $('ebThumb').value = '';
+    $('ebImg').value = '';
+    $('ebFoot').value = 'posted by the team';
+    $('ebFootIcon').value = '';
+    $('ebTsOn').checked = true;
+    $('ebTs').style.display = '';
+    $('ebTs').value = dcToLocalInput(new Date(Date.now() + 3600000));
+    $('ebFields').innerHTML = '';
+    ebAddField('Rolled out', 'Save the date', false);
+    ebAddField('More to come', 'Soon', false);
+    $('ebBtns').innerHTML = '';
+    ebAddButton('Changelog', 'link', 'https://example.com');
+    ebAddButton('Claim reward', '3', 'claim_upd_2');
+    ebNewRowMark();
+    ebAddButton('Join', 'link', 'https://discord.gg/');
+  }
+  function wireEb() {
+    if (!$('ebContent')) return;
+    ebAddField('', '', false);
+    ebAddButton('', '1', '');
+    var root = $('tab-eb');
+    function colorSync(src) {
+      var hexEl = $('ebHex');
+      if (sourceIs(src, 'ebColor') && hexEl) hexEl.value = src.value.toUpperCase();
+      else if (sourceIs(src, 'ebHex')) { var h = ebHex2int(); if (h != null) $('ebColor').value = '#' + (src.value.replace(/^#/, '').toLowerCase()); }
+    }
+    function sourceIs(el, id) { return el && el.id === id; }
+    root.addEventListener('input', function (ev) {
+      var t = ev.target;
+      if (sourceIs(t, 'ebHex') || sourceIs(t, 'ebColor')) { colorSync(t); return; }
+      ebSync();
+    });
+    root.addEventListener('change', function (ev) {
+      var t = ev.target;
+      if (sourceIs(t, 'ebHex') || sourceIs(t, 'ebColor')) { colorSync(t); return; }
+      if (sourceIs(t, 'ebTsOn')) $('ebTs').style.display = t.checked ? '' : 'none';
+      ebSync();
+    });
+    root.addEventListener('click', function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest('.eb-del-f, .eb-del-b') : null;
+      if (!b) { ebSync(); return; }
+      var row = b.parentNode;
+      if (row && row.parentNode) row.parentNode.removeChild(row);
+      ebSync();
+    });
+    var addF = $('ebAddField');
+    if (addF) addF.addEventListener('click', function () { ebAddField('', '', false); });
+    var addB = $('ebAddBtn');
+    if (addB) addB.addEventListener('click', function () { ebAddButton('', '1', ''); });
+    var newR = $('ebNewRow');
+    if (newR) newR.addEventListener('click', ebNewRowMark);
+    var sample = $('ebSample');
+    if (sample) sample.addEventListener('click', ebLoadSample);
+    var copyBtn = $('ebCopy');
+    if (copyBtn) copyBtn.addEventListener('click', function () { dcCopy($('ebJson').textContent || '', this); });
+    var sendBtn = $('ebSend');
+    if (sendBtn) sendBtn.addEventListener('click', function () {
+      wsSendTo($('ebHook').value, ebBuild(), $('ebStatus'), this);
+    });
+    ebSync();
+  }
+
+  /* ---------------- ANNOUNCEMENT GENERATOR ---------------- */
+  function annGen() {
+    var AN = { game: 'Game Night', give: 'Giveaway', update: 'Server Update', event: 'Event / Livestream', welcome: 'Server Welcome', other: 'Announcement' };
+    var type = AN[$('annType').value] || 'Announcement';
+    var tone = $('annTone').value || 'friendly';
+    var title = ($('annTitle').value || '').trim();
+    var desc = ($('annDesc').value || '').trim();
+    var dv = $('annDate').value;
+    var unix = null;
+    if (dv) {
+      var dd = new Date(dv);
+      if (!isNaN(dd.getTime())) unix = Math.floor(dd.getTime() / 1000);
+    }
+    var L = [];
+    if ($('annPing').checked) L.push('@everyone');
+    L.push('**' + (title || type) + '**');
+    L.push('');
+    var opens = { friendly: 'Hey everyone,', hype: 'Get ready.', formal: 'Attention, everyone.' };
+    L.push(opens[tone] || opens.friendly);
+    L.push('');
+    L.push('We\u2019re running a **' + type + '**' + (unix ? ' — <t:' + unix + ':F> (<t:' + unix + ':R>)' : ' — details to be announced.') + '.');
+    if (desc) { L.push(''); L.push(desc); }
+    if (unix) { L.push(''); L.push('**When:** <t:' + unix + ':F>'); L.push('**Relative:** <t:' + unix + ':R>'); }
+    L.push('');
+    var closes = { friendly: 'Hope to see you there — the team.', hype: 'Let\u2019s go — don\u2019t miss it!', formal: 'We look forward to your participation.' };
+    L.push(closes[tone] || closes.friendly);
+    return L.join('\n');
+  }
+  function wireAnn() {
+    var out = $('annOut');
+    if (!out) return;
+    function refresh() { out.value = annGen(); }
+    $('tab-ann').addEventListener('input', refresh);
+    $('tab-ann').addEventListener('change', refresh);
+    var copyBtn = $('annCopy');
+    if (copyBtn) copyBtn.addEventListener('click', function () { dcCopy(out.value, this); });
+    refresh();
+  }
+
+  /* ---------------- ROLE GRADIENTS ---------------- */
+  function grHex(s) {
+    s = String(s || '').trim().replace(/^#/, '');
+    if (/^[0-9a-fA-F]{3}$/.test(s)) s = s.split('').map(function (c) { return c + c; }).join('');
+    return /^[0-9a-fA-F]{6}$/.test(s) ? s.toLowerCase() : null;
+  }
+  function grRgb(h) {
+    return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+  }
+  function grHexOf(rgb) {
+    return '#' + rgb.map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join('');
+  }
+  function grLerp(a, b, t) { return a + (b - a) * t; }
+  function grRender() {
+    var A = grHex($('grA').value) || grHex($('grAHex').value) || '5573f4';
+    var B = grHex($('grB').value) || grHex($('grBHex').value) || 'ff5f9e';
+    var steps = Math.max(3, Math.min(12, parseInt($('grSteps').value, 10) || 6));
+    var bar = $('grBar');
+    if (bar) bar.style.background = 'linear-gradient(90deg, #' + A + ', #' + B + ')';
+    var ra = grRgb(A), rb = grRgb(B);
+    var box = $('grChips'); if (!box) return;
+    box.innerHTML = '';
+    for (var i = 0; i < steps; i++) {
+      var t = steps === 1 ? 0 : i / (steps - 1);
+      var hex = grHexOf([grLerp(ra[0], rb[0], t), grLerp(ra[1], rb[1], t), grLerp(ra[2], rb[2], t)]);
+      var chip = document.createElement('button');
+      chip.className = 'gr-chip';
+      chip.style.cssText = 'display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#fff;border-radius:10px;padding:6px 10px;cursor:pointer;font-family:monospace;font-size:0.8rem;transition:border-color .15s';
+      chip.setAttribute('data-hex', hex);
+      chip.innerHTML = '<span style="width:22px;height:22px;border-radius:6px;background:' + hex + ';border:1px solid rgba(255,255,255,0.25);flex-shrink:0"></span><span>' + hex + '</span>';
+      chip.addEventListener('click', function (hx, chipEl) {
+        return function () {
+          copyPlain(hx, function () {
+            chipEl.style.borderColor = '#4ade80';
+            setTimeout(function () { chipEl.style.borderColor = 'rgba(255,255,255,0.1)'; }, 500);
+          });
+        };
+      }(hex, chip));
+      box.appendChild(chip);
+    }
+  }
+  function wireGr() {
+    if (!$('grA')) return;
+    function colorSync(cInput, hexInput) {
+      cInput.addEventListener('input', function () { hexInput.value = cInput.value.toUpperCase(); grRender(); });
+      cInput.addEventListener('change', grRender);
+      hexInput.addEventListener('input', function () {
+        var h = grHex(hexInput.value);
+        if (h) cInput.value = '#' + h;
+        grRender();
+      });
+      hexInput.addEventListener('change', function () {
+        var h = grHex(hexInput.value);
+        hexInput.value = h ? '#' + h.toUpperCase() : hexInput.value;
+        if (h) cInput.value = '#' + h;
+      });
+    }
+    colorSync($('grA'), $('grAHex'));
+    colorSync($('grB'), $('grBHex'));
+    $('grSteps').addEventListener('input', grRender);
+    var allBtn = $('grCopyAll');
+    if (allBtn) allBtn.addEventListener('click', function () {
+      var me = this;
+      var hexes = Array.prototype.map.call(document.querySelectorAll('#grChips .gr-chip'), function (c) { return c.getAttribute('data-hex'); });
+      copyPlain(hexes.join('\n'), function () { dcCopy(hexes.length + ' hex values', me); });
+    });
+    grRender();
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -598,6 +1030,11 @@
 
     wireYt();
     wireDiscord();
+    wireMm();
+    wireWs();
+    wireEb();
+    wireAnn();
+    wireGr();
   }
 
   wire();
