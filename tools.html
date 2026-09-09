@@ -128,6 +128,8 @@
               <button class="tab-btn" data-tab="eb"><span>Embed Builder</span></button>
               
               <button class="tab-btn" data-tab="gr"><span>Role Gradients</span></button>
+              <button class="tab-btn" data-tab="bn"><span>Banner / Icon</span></button>
+              <button class="tab-btn" data-tab="em"><span>Emoji Maker</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -452,6 +454,142 @@
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px" id="grChips"></div>
                 <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
                   <span style="font-size:0.8rem;color:#9CA3AF">Click a chip to copy its hex.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ BANNER / ICON GENERATOR ============ -->
+            <div class="tool-tab" id="tab-bn" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Banner / Icon Generator</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Format</label>
+                    <select id="bnKind" class="inp" style="background:#1a1c2c">
+                      <option value="avatar">Discord Avatar · 1024×1024</option>
+                      <option value="round">Round Avatar · 1024</option>
+                      <option value="pfbanner">Profile Banner · 1024×256</option>
+                      <option value="srbanner">Server Banner · 960×540</option>
+                      <option value="og">Link Preview · 1200×630</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Background style</label>
+                    <select id="bnStyle" class="inp" style="background:#1a1c2c">
+                      <option value="none">Flat gradient</option>
+                      <option value="stripes">Diagonal stripes</option>
+                      <option value="dots">Dots</option>
+                      <option value="grid">Grid</option>
+                      <option value="rings">Rings</option>
+                      <option value="rays">Rays</option>
+                      <option value="blobs">Blobs</option>
+                      <option value="sparkles">Sparkles</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Angle</label>
+                    <select id="bnAngle" class="inp" style="background:#1a1c2c">
+                      <option value="0">Horizontal</option>
+                      <option value="90">Vertical</option>
+                      <option value="45">Diagonal</option>
+                      <option value="135">Anti-diagonal</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Color A</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="bnA" type="color" value="#5573f4" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="bnAHex" class="inp" type="text" value="#5573F4" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Color B</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="bnB" type="color" value="#ff5f9e" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="bnBHex" class="inp" type="text" value="#FF5F9E" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field"><label>Main text</label><input id="bnTitle" class="inp" type="text" style="width:100%" placeholder="SERVER NAME" /></div>
+                  <div class="field"><label>Sub text</label><input id="bnSub" class="inp" type="text" style="width:100%" placeholder="tagline here" /></div>
+                  <div class="field"><label>Icon / emoji (optional)</label><input id="bnIcon" class="inp" type="text" style="width:100%" placeholder="☄️ or none" /></div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:12px">
+                  <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer"><input id="bnTextGrad" type="checkbox" style="accent-color:#5573f4" /> Gradient text</label>
+                  <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer"><input id="bnTextGlow" type="checkbox" style="accent-color:#5573f4" checked /> Glow</label>
+                  <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer"><input id="bnTextRing" type="checkbox" style="accent-color:#5573f4" checked /> Icon ring</label>
+                  <div class="field" style="min-width:150px"><label>Text color</label><input id="bnTextColor" type="color" value="#ffffff" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" /></div>
+                </div>
+                <div id="bnPrev" style="background:rgba(0,0,0,0.35);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:center"></div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <button class="scheme" id="bnDl" style="border-radius:9px;font-size:0.72rem">Download PNG</button>
+                  <span style="font-size:0.8rem;color:#9CA3AF">Renders at full resolution — perfect for Creavite-style server branding.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============ EMOJI MAKER ============ -->
+            <div class="tool-tab" id="tab-em" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Role Emoji Maker</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Emoji / character</label>
+                    <input id="emChar" class="inp" type="text" style="width:100%" maxlength="8" placeholder="🔥 or a word" />
+                  </div>
+                  <div class="field">
+                    <label>Shape</label>
+                    <select id="emShape" class="inp" style="background:#1a1c2c">
+                      <option value="rounded">Rounded square (Discord)</option>
+                      <option value="squircle">Squircle</option>
+                      <option value="circle">Circle</option>
+                      <option value="square">Square</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label>Output size</label>
+                    <select id="emSize" class="inp" style="background:#1a1c2c">
+                      <option value="128">128px</option>
+                      <option value="256">256px</option>
+                      <option value="512">512px</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+                  <div class="field">
+                    <label>Background A</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="emA" type="color" value="#5573f4" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="emAHex" class="inp" type="text" value="#5573F4" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>Background B</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="emB" type="color" value="#ff5f9e" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="emBHex" class="inp" type="text" value="#FF5F9E" style="flex:1;font-family:monospace;text-transform:uppercase" maxlength="7" />
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:12px">
+                  <div class="field" style="min-width:120px">
+                    <label>Border color</label>
+                    <div style="display:flex;gap:8px;align-items:center">
+                      <input id="emBorder" type="color" value="#ffffff" style="width:44px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;padding:2px;cursor:pointer" />
+                      <input id="emBorderOn" type="checkbox" style="accent-color:#5573f4" checked title="show border" />
+                    </div>
+                  </div>
+                  <div class="field" style="min-width:100px"><label>Border width %</label><input id="emBorderW" class="inp" type="number" value="6" min="0" max="30" style="width:100%" /></div>
+                  <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer"><input id="emShine" type="checkbox" style="accent-color:#5573f4" checked /> Shine overlay</label>
+                </div>
+                <div id="emPrev" style="background:rgba(0,0,0,0.35);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:center;gap:14px"></div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <button class="scheme" id="emCopy" style="border-radius:9px;font-size:0.72rem">Copy emoji</button>
+                  <button class="scheme" id="emDl" style="border-radius:9px;font-size:0.72rem">Download PNG</button>
+                  <span style="font-size:0.8rem;color:#9CA3AF">Upload straight to Discord under Roles → icon / emoji.</span>
                 </div>
               </div>
             </div>

@@ -985,6 +985,293 @@
     grRender();
   }
 
+  /* ---------------- BANNER / ICON GENERATOR ---------------- */
+  var BN_KINDS = {
+    avatar: [1024, 1024, 'rounded', 0.035],
+    round: [1024, 1024, 'round', 0.035],
+    pfbanner: [1024, 256, 'none', 0],
+    srbanner: [960, 540, 'rounded', 0],
+    og: [1200, 630, 'rounded', 0]
+  };
+  function bnGrad(ctx, x0, y0, x1, y1, a, b) {
+    var g = ctx.createLinearGradient(x0, y0, x1, y1);
+    g.addColorStop(0, a); g.addColorStop(1, b);
+    ctx.fillStyle = g;
+  }
+  function bnPattern(ctx, w, h, style, a, b) {
+    ctx.save();
+    if (style === 'stripes') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = Math.max(6, w * 0.02);
+      for (var x = -h; x < w + h; x += Math.max(20, w * 0.09)) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + h, h); ctx.stroke();
+      }
+    } else if (style === 'dots') {
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      var d = Math.max(10, w * 0.025);
+      for (var dx = d; dx < w; dx += d * 3) for (var dy = d; dy < h; dy += d * 3) {
+        ctx.beginPath(); ctx.arc(dx, dy, d * 0.34, 0, 7); ctx.fill();
+      }
+    } else if (style === 'grid') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = 1;
+      var gs = Math.max(16, w * 0.05);
+      for (var gx = 0; gx <= w; gx += gs) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke(); }
+      for (var gy = 0; gy <= h; gy += gs) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke(); }
+    } else if (style === 'rings') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.10)'; ctx.lineWidth = Math.max(4, w * 0.008);
+      var cx = w / 2, cy = h / 2, m = Math.max(w, h);
+      for (var r = m * 0.22; r < m * 0.75; r += m * 0.11) { ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.stroke(); }
+    } else if (style === 'rays') {
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = Math.max(3, w * 0.006);
+      var rcx = w / 2, rcy = h / 2, rm = Math.max(w, h);
+      for (var i = 0; i < 24; i++) {
+        var ang = (i / 24) * Math.PI * 2;
+        ctx.beginPath(); ctx.moveTo(rcx, rcy);
+        ctx.lineTo(rcx + Math.cos(ang) * rm, rcy + Math.sin(ang) * rm); ctx.stroke();
+      }
+    } else if (style === 'blobs') {
+      var bl = [[0.2, 0.25, 0.3], [0.85, 0.75, 0.35], [0.75, 0.15, 0.22], [0.15, 0.8, 0.28]];
+      for (var bi = 0; bi < bl.length; bi++) {
+        var bg = ctx.createRadialGradient(bl[bi][0] * w, bl[bi][1] * h, 0, bl[bi][0] * w, bl[bi][1] * h, bl[bi][2] * Math.max(w, h));
+        bg.addColorStop(0, 'rgba(255,255,255,0.18)'); bg.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = bg;
+        ctx.beginPath(); ctx.arc(bl[bi][0] * w, bl[bi][1] * h, bl[bi][2] * Math.max(w, h), 0, 7); ctx.fill();
+      }
+    } else if (style === 'sparkles') {
+      ctx.fillStyle = 'rgba(255,255,255,0.30)';
+      var sp = [[0.12, 0.2, 0.014], [0.9, 0.15, 0.012], [0.82, 0.88, 0.016], [0.2, 0.85, 0.011], [0.5, 0.08, 0.009], [0.62, 0.92, 0.013], [0.95, 0.5, 0.01]];
+      for (var si = 0; si < sp.length; si++) {
+        var sx = sp[si][0] * w, sy = sp[si][1] * h, sz = sp[si][2] * Math.max(w, h) * 3;
+        ctx.beginPath();
+        ctx.moveTo(sx - sz, sy); ctx.quadraticCurveTo(sx - sz * 0.25, sy, sx, sy - sz); ctx.quadraticCurveTo(sx, sy, sx + sz, sy);
+        ctx.quadraticCurveTo(sx, sy, sx, sy + sz); ctx.quadraticCurveTo(sx, sy, sx - sz, sy);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+  function bnHexOf(v) {
+    var m = String(v || '').trim().replace(/^#/, '');
+    if (/^[0-9a-fA-F]{3}$/.test(m)) m = m.split('').map(function (c) { return c + c; }).join('');
+    return /^[0-9a-fA-F]{6}$/.test(m) ? '#' + m : '#ffffff';
+  }
+  function bnRender() {
+    var k = BN_KINDS[$('bnKind').value] || BN_KINDS.avatar;
+    var w = k[0], h = k[1], shape = k[2], ringW = k[3];
+    var ca = document.createElement('canvas');
+    ca.width = w; ca.height = h;
+    var ctx = ca.getContext('2d');
+    var A = bnHexOf($('bnA').value), B = bnHexOf($('bnB').value);
+    var ang = (parseInt($('bnAngle').value, 10) || 0) * Math.PI / 180;
+    var cx = w / 2, cy = h / 2, diag = Math.sqrt(w * w + h * h) / 2;
+    ctx.save();
+    if (shape === 'round') {
+      ctx.beginPath(); ctx.arc(cx, cy, Math.min(w, h) / 2, 0, 7); ctx.clip();
+    } else if (shape === 'rounded') {
+      rr(ctx, 0, 0, w, h, Math.min(w, h) * 0.06); ctx.clip();
+    }
+    bnGrad(ctx, cx - Math.cos(ang) * diag, cy - Math.sin(ang) * diag, cx + Math.cos(ang) * diag, cy + Math.sin(ang) * diag, A, B);
+    ctx.fillRect(0, 0, w, h);
+    bnPattern(ctx, w, h, $('bnStyle').value || 'none', A, B);
+    ctx.restore();
+    if (shape === 'round' && ringW) {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, cy, Math.min(w, h) / 2 - ringW * w * 0.5, 0, 7);
+      var rd = ctx.createLinearGradient(0, 0, w, h); rd.addColorStop(0, '#ffffff'); rd.addColorStop(1, 'rgba(255,255,255,0.55)');
+      ctx.strokeStyle = rd; ctx.lineWidth = ringW * w; ctx.stroke();
+      ctx.restore();
+    }
+    var icon = ($('bnIcon').value || '').trim();
+    var title = ($('bnTitle').value || '').trim();
+    var sub = ($('bnSub').value || '').trim();
+    var centerY = cy;
+    var topY = cy;
+    if (title || sub) topY = h * 0.22;
+    if (icon) {
+      ctx.save();
+      ctx.font = Math.round(w * 0.30) + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      if ($('bnTextGlow').checked) { ctx.shadowColor = 'rgba(0,0,0,0.4)'; ctx.shadowBlur = w * 0.02; }
+      ctx.fillText(icon, cx, topY);
+      ctx.restore();
+      centerY = topY + w * 0.34;
+    } else if (title) centerY = h * 0.5 + (sub ? -h * 0.06 : 0);
+    var gradText = $('bnTextGrad').checked;
+    var fillStyle = gradText ? null : bnHexOf($('bnTextColor').value);
+    if (title) {
+      ctx.save();
+      var fs = k[0] * 0.16;
+      ctx.font = '800 ' + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      while (ctx.measureText(title).width > w * 0.84 && fs > 6) { fs -= 2; ctx.font = '800 ' + fs + 'px system-ui, -apple-system, Segoe UI, sans-serif'; }
+      if ($('bnTextGlow').checked) { ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = w * 0.015; }
+      if (gradText) bnGrad(ctx, 0, 0, w * 0.5, h, '#ffffff', 'rgba(255,255,255,0.6)');
+      else ctx.fillStyle = fillStyle;
+      ctx.fillText(title, cx, centerY, w * 0.84);
+      ctx.restore();
+    }
+    if (sub) {
+      ctx.save();
+      var sf = Math.max(12, k[0] * 0.055);
+      ctx.font = '600 ' + sf + 'px system-ui, -apple-system, Segoe UI, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.letterSpacing = '2px';
+      if ($('bnTextGlow').checked) { ctx.shadowColor = 'rgba(0,0,0,0.45)'; ctx.shadowBlur = w * 0.01; }
+      if (gradText) bnGrad(ctx, 0, 0, w * 0.5, h, '#ffffff', 'rgba(255,255,255,0.7)');
+      else ctx.fillStyle = fillStyle;
+      ctx.fillText(sub.toUpperCase(), cx, title || icon ? h * 0.5 + h * 0.10 : centerY, w * 0.84);
+      ctx.restore();
+    }
+    function rr(c, x, y, ww, hh, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + ww, y, x + ww, y + hh, r); c.arcTo(x + ww, y + hh, x, y + hh, r); c.arcTo(x, y + hh, x, y, r); c.arcTo(x, y, x + ww, y, r); c.closePath(); }
+    var prev = $('bnPrev');
+    if (prev) {
+      prev.innerHTML = '';
+      ca.style.cssText = 'max-width:100%;max-height:300px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.4);display:block;';
+      prev.appendChild(ca);
+    }
+    return ca;
+  }
+  function bnDl() {
+    var ca = bnRender();
+    ca.toBlob(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'cz-banner-' + Date.now() + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    }, 'image/png');
+  }
+  function wireBn() {
+    if (!$('bnA')) return;
+    var root = $('tab-bn');
+    function sync(el, hex) {
+      el.addEventListener('input', function () { hex.value = el.value.toUpperCase(); bnRender(); });
+      el.addEventListener('change', bnRender);
+      hex.addEventListener('input', function () {
+        var v = bnHexOf(hex.value);
+        if (v) el.value = v;
+        bnRender();
+      });
+    }
+    sync($('bnA'), $('bnAHex'));
+    sync($('bnB'), $('bnBHex'));
+    root.addEventListener('input', function (ev) { var t = ev.target; if ($('bnA') === t || $('bnB') === t || $('bnAHex') === t || $('bnBHex') === t) return; bnRender(); });
+    root.addEventListener('change', function (ev) { var t = ev.target; if ($('bnA') === t || $('bnB') === t || $('bnAHex') === t || $('bnBHex') === t) return; bnRender(); });
+    $('bnTextColor').addEventListener('input', bnRender);
+    var dl = $('bnDl');
+    if (dl) dl.addEventListener('click', bnDl);
+    bnRender();
+  }
+
+  /* ---------------- EMOJI MAKER ---------------- */
+  function emRender() {
+    var size = parseInt($('emSize').value, 10) || 128;
+    var shape = $('emShape').value || 'rounded';
+    var ca = document.createElement('canvas');
+    ca.width = size; ca.height = size;
+    var ctx = ca.getContext('2d');
+    var A = bnHexOf($('emA').value), B = bnHexOf($('emB').value);
+    var pad = 0;
+    var borderOn = $('emBorderOn').checked;
+    var bw = parseInt($('emBorderW').value, 10);
+    if (isNaN(bw)) bw = 0;
+    bw = Math.max(0, Math.min(30, bw));
+    pad = borderOn ? bw / 100 * size : 0;
+    var r = shape === 'square' ? 0 : shape === 'circle' ? size / 2 : size * 0.22;
+    ctx.save();
+    ctx.beginPath();
+    if (shape === 'circle') ctx.arc(size / 2, size / 2, size / 2, 0, 7);
+    else rr2(ctx, pad / 2, pad / 2, size - pad, size - pad, Math.max(0, r - pad));
+    ctx.clip();
+    var g = ctx.createLinearGradient(0, 0, size, size);
+    g.addColorStop(0, A); g.addColorStop(1, B);
+    ctx.fillStyle = g;
+    ctx.fillRect(pad / 2, pad / 2, size - pad, size - pad);
+    ctx.restore();
+    if (borderOn && bw > 0) {
+      ctx.save();
+      if (shape === 'circle') { ctx.beginPath(); ctx.arc(size / 2, size / 2, size / 2 - bw / 100 * size * 0.5, 0, 7); ctx.strokeStyle = bnHexOf($('emBorder').value); ctx.lineWidth = bw / 100 * size; ctx.stroke(); }
+      else { rr2(ctx, pad / 2, pad / 2, size - pad, size - pad, Math.max(0, r - pad)); ctx.strokeStyle = bnHexOf($('emBorder').value); ctx.lineWidth = bw / 100 * size; ctx.stroke(); }
+      ctx.restore();
+    }
+    var ch = ($('emChar').value || '').trim() || '🔥';
+    ctx.save();
+    ctx.font = Math.round(size * 0.7) + 'px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(ch, size / 2, size / 2 + size * 0.02, size * 0.85);
+    ctx.restore();
+    if ($('emShine').checked) {
+      ctx.save();
+      rr2(ctx, 0, 0, size, size, shape === 'circle' ? size / 2 : r);
+      ctx.clip();
+      var sh = ctx.createLinearGradient(0, -size * 0.15, size * 0.55, size * 0.25);
+      sh.addColorStop(0, 'rgba(255,255,255,0.55)'); sh.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = sh;
+      ctx.beginPath(); ctx.ellipse(size * 0.24, size * 0.18, size * 0.5, size * 0.26, -0.5, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+    function rr2(c, x, y, ww, hh, rad) { c.beginPath(); c.moveTo(x + rad, y); c.arcTo(x + ww, y, x + ww, y + hh, rad); c.arcTo(x + ww, y + hh, x, y + hh, rad); c.arcTo(x, y + hh, x, y, rad); c.arcTo(x, y, x + ww, y, rad); c.closePath(); }
+    var prev = $('emPrev');
+    if (prev) {
+      var tmp = document.createElement('canvas');
+      tmp.width = size * 2; tmp.height = size * 2;
+      var t = tmp.getContext('2d');
+      t.save();
+      if (shape === 'circle') { t.beginPath(); t.arc(size, size, size * 0.5, 0, 7); t.clip(); }
+      else { rr2(t, size * 0.5, size * 0.5, size, size, shape === 'square' ? 0 : size * 0.22); t.clip(); }
+      var gg = t.createLinearGradient(0, 0, size * 2, size * 2); gg.addColorStop(0, A); gg.addColorStop(1, B);
+      t.fillStyle = gg; t.fillRect(0, 0, size * 2, size * 2);
+      if ($('emShine').checked) {
+        var sh2 = t.createLinearGradient(0, 0, size, size * 0.5);
+        sh2.addColorStop(0, 'rgba(255,255,255,0.55)'); sh2.addColorStop(1, 'rgba(255,255,255,0)');
+        t.fillStyle = sh2; t.beginPath(); t.ellipse(size * 0.24, size * 0.18, size, size * 0.52, -0.5, 0, 7); t.fill();
+      }
+      t.restore();
+      tmp.style.cssText = 'width:112px;height:112px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.4);';
+      prev.innerHTML = '';
+      prev.appendChild(tmp);
+      ca.style.cssText = 'width:112px;height:112px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.4);';
+      prev.appendChild(ca);
+    }
+    return ca;
+  }
+  function emDl() {
+    var ca = emRender();
+    ca.toBlob(function (blob) {
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'cz-emoji-' + Date.now() + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    }, 'image/png');
+  }
+  function wireEm() {
+    if (!$('emA')) return;
+    var root = $('tab-em');
+    function sync(el, hex) {
+      el.addEventListener('input', function () { hex.value = el.value.toUpperCase(); emRender(); });
+      el.addEventListener('change', emRender);
+      hex.addEventListener('input', function () {
+        var v = bnHexOf(hex.value);
+        if (v) el.value = v;
+        emRender();
+      });
+    }
+    sync($('emA'), $('emAHex'));
+    sync($('emB'), $('emBHex'));
+    root.addEventListener('input', function (ev) { var t = ev.target; if ($('emA') === t || $('emB') === t || $('emAHex') === t || $('emBHex') === t) return; emRender(); });
+    root.addEventListener('change', function (ev) { var t = ev.target; if ($('emA') === t || $('emB') === t || $('emAHex') === t || $('emBHex') === t) return; emRender(); });
+    $('emBorder').addEventListener('input', emRender);
+    var dl = $('emDl');
+    if (dl) dl.addEventListener('click', emDl);
+    var cp = $('emCopy');
+    if (cp) cp.addEventListener('click', function () {
+      var me = this;
+      copyPlain($('emChar').value || '', function () { dcCopy('emoji copied', me); });
+    });
+    emRender();
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -1058,6 +1345,8 @@
     wireWs();
     wireEb();
     wireGr();
+    wireBn();
+    wireEm();
   }
 
   wire();
