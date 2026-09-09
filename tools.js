@@ -451,6 +451,12 @@
 
   function dcPad(n) { return String(n).padStart(2, '0'); }
 
+  function dcFmtTs(d) {
+    var mn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return wd[d.getDay()] + ', ' + d.getDate() + ' ' + mn[d.getMonth()] + ' ' + d.getFullYear() + ' ' + dcPad(d.getHours()) + ':' + dcPad(d.getMinutes());
+  }
+
   function dcToLocalInput(d) {
     return d.getFullYear() + '-' + dcPad(d.getMonth() + 1) + '-' + dcPad(d.getDate())
       + 'T' + dcPad(d.getHours()) + ':' + dcPad(d.getMinutes()) + ':' + dcPad(d.getSeconds());
@@ -738,8 +744,72 @@
   function ebSync() {
     var el = $('ebJson');
     if (el) el.textContent = JSON.stringify(ebBuild(), null, 2);
+    ebPreview();
     var st = $('ebStatus');
     if (st) st.textContent = '';
+  }
+  function ebFmt(s) {
+    s = escapeHtml(String(s || ''));
+    s = s.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+    s = s.replace(/__([^_]+)__/g, '<u>$1</u>');
+    s = s.replace(/~~([^~]+)~~/g, '<s>$1</s>');
+    s = s.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.07);border-radius:3px;padding:1px 4px;font-family:monospace;font-size:0.85em">$1</code>');
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#00a8fc;text-decoration:underline" target="_blank" rel="noopener">$1</a>');
+    s = s.replace(/\n/g, '<br/>');
+    return s;
+  }
+  function ebInt2Hex(n) {
+    if (n == null) return '#5573f4';
+    return '#' + ('000000' + (n >>> 0).toString(16)).slice(-6);
+  }
+  function ebPreview() {
+    var box = $('ebPreview');
+    if (!box) return;
+    var p = ebBuild();
+    var H = [];
+    if (p.content) H.push('<div style="color:#dbdee1;font-size:0.9rem;line-height:1.5;white-space:pre-wrap;word-break:break-word;max-width:520px">' + ebFmt(p.content) + '</div>');
+    var e = p.embeds && p.embeds[0];
+    if (!e) { box.innerHTML = H.join('') || '<span style="color:#9CA3AF;font-size:0.85rem">Nothing to preview.</span>'; return; }
+    var col = ebInt2Hex(e.color);
+    H.push('<div style="background:#2b2d31;border-radius:6px;border-left:4px solid ' + col + ';padding:12px 16px;max-width:520px;display:flex;gap:14px">');
+    H.push('<div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:6px">');
+    if (e.author) {
+      H.push('<div style="display:flex;align-items:center;gap:8px;font-size:0.85rem;color:#dbdee1">');
+      if (e.author.icon_url) H.push('<img src="' + escapeHtml(e.author.icon_url) + '" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover" />');
+      H.push('<span>' + ebFmt(e.author.name) + '</span></div>');
+    }
+    if (e.title) {
+      var tHref = e.url ? 'style="color:#00a8fc;text-decoration:none" href="' + escapeHtml(e.url) + '" target="_blank" rel="noopener"' : '';
+      H.push('<div style="font-size:1rem;font-weight:600;color:#f2f3f5;line-height:1.3;word-break:break-word">' + (e.url ? '<a ' + tHref + '>' : '') + ebFmt(e.title) + (e.url ? '</a>' : '') + '</div>');
+    }
+    if (e.description) H.push('<div style="color:#dbdee1;font-size:0.9rem;line-height:1.5;white-space:normal;word-break:break-word">' + ebFmt(e.description) + '</div>');
+    if (e.fields && e.fields.length) {
+      H.push('<div style="display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:4px">');
+      for (var i = 0; i < e.fields.length; i++) {
+        var f = e.fields[i];
+        H.push('<div style="' + (f.inline ? 'flex:1 1 30%;min-width:120px;' : 'flex:1 1 100%;') + '"><div style="font-size:0.85rem;font-weight:600;color:' + col + ';margin-bottom:2px">' + ebFmt(f.name) + '</div><div style="font-size:0.9rem;color:#dbdee1;line-height:1.45;word-break:break-word">' + ebFmt(f.value) + '</div></div>');
+      }
+      H.push('</div>');
+    }
+    if (e.image && e.image.url) H.push('<img src="' + escapeHtml(e.image.url) + '" alt="" style="max-width:100%;max-height:180px;border-radius:6px;object-fit:cover;margin-top:6px" />');
+    if (e.footer || e.timestamp) {
+      H.push('<div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;color:#9CA3AF;margin-top:6px">');
+      if (e.footer && e.footer.icon_url) H.push('<img src="' + escapeHtml(e.footer.icon_url) + '" alt="" style="width:20px;height:20px;border-radius:50%;object-fit:cover" />');
+      if (e.footer && e.footer.text) H.push('<span>' + ebFmt(e.footer.text) + '</span>');
+      var ne = [];
+      if (e.timestamp) {
+        var dt = new Date(e.timestamp);
+        if (!isNaN(dt.getTime())) ne.push(dcFmtTs(dt));
+      }
+      if (ne.length) H.push('<span style="opacity:0.8">· ' + ne.join(' ') + '</span>');
+      H.push('</div>');
+    }
+    H.push('</div>');
+    if (e.thumbnail && e.thumbnail.url) H.push('<img src="' + escapeHtml(e.thumbnail.url) + '" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover;flex-shrink:0" />');
+    H.push('</div>');
+    box.innerHTML = H.join('');
   }
   function ebAddField(name, value, inline) {
     var box = $('ebFields'), row = document.createElement('div');
@@ -851,71 +921,6 @@
       wsSendTo($('ebHook').value, ebBuild(), $('ebStatus'), this);
     });
     ebSync();
-  }
-
-  /* ---------------- ANNOUNCEMENT GENERATOR ---------------- */
-  function annGen() {
-    var AN = { game: 'Game Night', give: 'Giveaway', update: 'Server Update', event: 'Event / Livestream', staff: 'Staff Applications', welcome: 'Server Welcome', other: 'Announcement' };
-    var type = AN[$('annType').value] || 'Announcement';
-    var tone = $('annTone').value || 'friendly';
-    var emoji = ($('annEmoji').value || '').trim();
-    var title = ($('annTitle').value || '').trim();
-    if (!title) title = type;
-    var body = ($('annDesc').value || '').trim();
-    var steps = ($('annSteps').value || '').trim();
-    steps = steps ? steps.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean) : [];
-    var linkLabel = ($('annLinkLabel').value || '').trim();
-    var linkUrl = ($('annLinkUrl').value || '').trim();
-    var mentions = ($('annMentions').value || '').trim();
-    var footer = ($('annFooter').value || '').trim();
-    var dv = $('annDate').value;
-    var unix = null;
-    if (dv) {
-      var dd = new Date(dv);
-      if (!isNaN(dd.getTime())) unix = Math.floor(dd.getTime() / 1000);
-    }
-    var L = [];
-    L.push('# ' + (emoji ? emoji + ' ' : '') + title);
-    L.push('');
-    var opens = { friendly: 'Hey everyone,', hype: 'Get ready.', formal: 'Attention, everyone.' };
-    L.push('> ' + (opens[tone] || opens.friendly));
-    L.push('');
-    if (body) {
-      body.split(/\r?\n/).forEach(function (p) {
-        p = p.trim();
-        if (p) L.push('> ' + p);
-      });
-      L.push('');
-    }
-    if (unix) {
-      L.push('**When:** <t:' + unix + ':F> (<t:' + unix + ':R>)');
-      L.push('');
-    }
-    if (linkUrl && /^https?:\/\//i.test(linkUrl)) {
-      L.push('**[' + (linkLabel || 'Join here') + '](' + linkUrl + ')**');
-      L.push('');
-    }
-    if (steps.length) {
-      steps.forEach(function (s) { L.push('> \u2023 ' + s); });
-      L.push('');
-    }
-    if (footer) {
-      L.push('-# ' + footer);
-      L.push('');
-    }
-    if (mentions) L.push(mentions);
-    if ($('annPing').checked) L.push('@everyone');
-    return L.join('\n');
-  }
-  function wireAnn() {
-    var out = $('annOut');
-    if (!out) return;
-    function refresh() { out.value = annGen(); }
-    $('tab-ann').addEventListener('input', refresh);
-    $('tab-ann').addEventListener('change', refresh);
-    var copyBtn = $('annCopy');
-    if (copyBtn) copyBtn.addEventListener('click', function () { dcCopy(out.value, this); });
-    refresh();
   }
 
   /* ---------------- ROLE GRADIENTS ---------------- */
@@ -1052,7 +1057,6 @@
     wireMm();
     wireWs();
     wireEb();
-    wireAnn();
     wireGr();
   }
 

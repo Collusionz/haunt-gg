@@ -126,7 +126,7 @@
               <button class="tab-btn" data-tab="mm"><span>Markdown</span></button>
               <button class="tab-btn" data-tab="ws"><span>Webhook</span></button>
               <button class="tab-btn" data-tab="eb"><span>Embed Builder</span></button>
-              <button class="tab-btn" data-tab="ann"><span>Announcement</span></button>
+              
               <button class="tab-btn" data-tab="gr"><span>Role Gradients</span></button>
             </div>
 
@@ -413,6 +413,9 @@
                   <button class="scheme" id="ebNewRow" style="border-radius:9px;font-size:0.72rem">+ New row</button>
                 </div>
 
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:20px 0 10px">Preview</div>
+                <div id="ebPreview" style="background:rgba(0,0,0,0.25);border-radius:6px;padding:12px;max-width:520px;margin-bottom:18px"></div>
+
                 <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin:20px 0 10px">Preview JSON</div>
                 <pre id="ebJson" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px;font-family:monospace;font-size:0.72rem;line-height:1.5;color:#c7d2fe;overflow:auto;max-height:280px;white-space:pre-wrap;word-break:break-word;margin:0 0 12px"></pre>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
@@ -421,79 +424,6 @@
                   <button class="scheme" id="ebSend" style="border-radius:9px;font-size:0.72rem">Send</button>
                   <span id="ebStatus" style="font-size:0.8rem;color:#9CA3AF"></span>
                 </div>
-              </div>
-            </div>
-
-            <!-- ============ ANNOUNCEMENT GENERATOR ============ -->
-            <div class="tool-tab" id="tab-ann" style="padding:20px">
-              <div class="widget-card" style="border-radius:14px;padding:16px">
-                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Announcement Generator</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
-                  <div class="field">
-                    <label>Type</label>
-                    <select id="annType" class="inp" style="background:#1a1c2c">
-                      <option value="game">Game Night</option>
-                      <option value="give">Giveaway</option>
-                      <option value="update">Server Update</option>
-                      <option value="event">Event / Livestream</option>
-                      <option value="staff">Staff Applications</option>
-                      <option value="welcome">Welcome</option>
-                      <option value="other">Announcement</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label>Tone</label>
-                    <select id="annTone" class="inp" style="background:#1a1c2c">
-                      <option value="friendly">Friendly</option>
-                      <option value="hype">Hype</option>
-                      <option value="formal">Formal</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label>When (optional)</label>
-                    <input id="annDate" class="inp" type="datetime-local" step="1" style="width:100%" />
-                  </div>
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Title emoji (optional)</label>
-                  <input id="annEmoji" class="inp" type="text" style="width:100%" placeholder="e.g. 🎉  or  &lt;:rcl_staff:1400313053857185832&gt;" />
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Title</label>
-                  <input id="annTitle" class="inp" type="text" style="width:100%" placeholder="e.g. Summer Game Night" />
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Body (optional — each line becomes a quote)</label>
-                  <textarea id="annDesc" class="inp" rows="5" style="width:100%;resize:vertical" placeholder="We're excited to officially announce our new game night.&#10;The event will feature prizes, giveaways and a fresh map rotation."></textarea>
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Steps / How to apply (optional — one per line)</label>
-                  <textarea id="annSteps" class="inp" rows="3" style="width:100%;resize:vertical" placeholder="Fill out the form: https://forms.gle/example&#10;Submit your application by the 10th of June."></textarea>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-                  <div class="field">
-                    <label>Link label (optional)</label>
-                    <input id="annLinkLabel" class="inp" type="text" style="width:100%" placeholder="JD Server" />
-                  </div>
-                  <div class="field">
-                    <label>Link URL (optional)</label>
-                    <input id="annLinkUrl" class="inp" type="text" style="width:100%" placeholder="https://discord.gg/..." />
-                  </div>
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Role mentions (optional)</label>
-                  <input id="annMentions" class="inp" type="text" style="width:100%" placeholder="&lt;@&amp;1396699007694409909&gt; &lt;@&amp;1405585170119131348&gt;" />
-                </div>
-                <div class="field" style="margin-bottom:12px">
-                  <label>Footer note (optional — small grey line)</label>
-                  <input id="annFooter" class="inp" type="text" style="width:100%" placeholder="Thank you for considering joining our team." />
-                </div>
-                <label style="display:flex;gap:8px;align-items:center;font-size:0.85rem;color:#9CA3AF;cursor:pointer;margin-bottom:14px"><input id="annPing" type="checkbox" style="accent-color:#5573f4" /> Include <span style="font-family:monospace">@everyone</span></label>
-                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-                  <button class="scheme" id="annCopy" style="border-radius:9px;font-size:0.72rem">Copy</button>
-                  <span style="font-size:0.8rem;color:#9CA3AF">Generated automatically as you type — paste into your channel.</span>
-                </div>
-                <textarea id="annOut" class="inp" rows="12" style="width:100%;resize:vertical;font-family:monospace;font-size:0.8rem;line-height:1.6" readonly></textarea>
               </div>
             </div>
 
