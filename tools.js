@@ -556,59 +556,6 @@
     }
   }
 
-  /* ---------------- MARKDOWN PREVIEW ---------------- */
-  function mdRender(text) {
-    text = String(text || '');
-    var esc = escapeHtml(text);
-    var blocks = [], inl = [];
-    esc = esc.replace(/```([\s\S]*?)```/g, function (_, c) { blocks.push(c); return '\u0000' + blocks.length + '\u0000'; });
-    esc = esc.replace(/`([^`\n]+)`/g, function (_, c) { inl.push(c); return '\u0001' + inl.length + '\u0001'; });
-    esc = esc.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, function (_, t, u) {
-      return '<a href="' + u + '" target="_blank" rel="noopener">' + t + '</a>';
-    });
-    esc = esc.replace(/(^|[^\w\\])(https?:\/\/[^\s<]+)/g, function (_, p, u) {
-      return p + '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>';
-    });
-    esc = esc.replace(/\|\|([\s\S]*?)\|\|/g, '<span class="mm-spoil">$1</span>');
-    esc = esc.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    esc = esc.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
-    esc = esc.replace(/__([^_\n]+)__/g, '<u>$1</u>');
-    esc = esc.replace(/~~([^~\n]+)~~/g, '<s>$1</s>');
-    esc = esc.split('\n').map(function (l) {
-      var m = l.match(/^(&gt; &gt; &gt;|&gt; &gt;|&gt;)( ?)(.*)$/);
-      if (m) return '<span class="mm-quote' + (m[1].indexOf('&gt; &gt;') === 0 ? ' mm-quote2' : '') + '">' + m[3] + '</span>';
-      return l;
-    }).join('\n');
-    esc = esc.replace(/\u0001(\d+)\u0001/g, function (_, i) {
-      return '<code class="mm-code">' + inl[Number(i) - 1] + '</code>';
-    });
-    esc = esc.replace(/\u0000(\d+)\u0000/g, function (_, i) {
-      return '<pre class="mm-codeblock">' + blocks[Number(i) - 1] + '</pre>';
-    });
-    return esc;
-  }
-
-  function wireMm() {
-    var inp = $('mmInput');
-    if (!inp) return;
-    inp.value = ['**bold** *italic* _underline_ ~~strike~~ `inline code`',
-      '||spoiler text (hover)||',
-      '> quoted line',
-      '```js',
-      'code block',
-      '```',
-      '[linked text](https://example.com) and a bare link https://example.com'
-    ].join('\n');
-    function show() {
-      var out = $('mmOut');
-      if (out) out.innerHTML = mdRender(inp.value) || '<span style="opacity:0.5">preview appears here…</span>';
-    }
-    inp.addEventListener('input', show);
-    var copyBtn = $('mmCopy');
-    if (copyBtn) copyBtn.addEventListener('click', function () { dcCopy(inp.value, this); });
-    show();
-  }
-
   /* ---------------- WEBHOOK SENDER ---------------- */
   function wsSendTo(url, payload, statusEl, btn) {
     url = String(url || '').trim();
@@ -984,6 +931,109 @@
     colorSync($('grB'), $('grBHex'));
     grRender();
   }
+
+  /* ---------------- DISCORD COLORED TEXT GENERATOR ---------------- */
+  var CT_FG = [
+    ['30', 'Black', '#7b7f8c'],
+    ['31', 'Red', '#f1848c'],
+    ['32', 'Green', '#6fcf9a'],
+    ['33', 'Brown', '#e3b95e'],
+    ['34', 'Light Blue', '#5fa8f2'],
+    ['35', 'Pink', '#e59ae6'],
+    ['36', 'Teal', '#57c7d4'],
+    ['37', 'Light Gray', '#d8dbe5']
+  ];
+  var CT_BG = [
+    ['40', 'Black', '#4e5058'],
+    ['41', 'Red', '#d2464f'],
+    ['42', 'Green', '#2f9d5b'],
+    ['43', 'Brown', '#b8872e'],
+    ['44', 'Light Blue', '#3f7ac0'],
+    ['45', 'Pink', '#9a52a6'],
+    ['46', 'Teal', '#2c8f99'],
+    ['47', 'Light Gray', '#a8abb3']
+  ];
+  function ctSwatch(meta, box) {
+    var b = document.createElement('button');
+    b.style.background = meta[2];
+    b.className = 'ct-swat' + (meta[0] >= 40 ? ' ct-ol' : '');
+    b.title = meta[1];
+    b.setAttribute('data-ct', meta[0]);
+    b.addEventListener('click', function () { ctApply(meta[0]); });
+    box.appendChild(b);
+  }
+  function ctApply(code) {
+    var area = $('ctArea');
+    if (!area) return;
+    var sel = window.getSelection();
+    var text = sel.toString();
+    if (!text || sel.rangeCount === 0) return;
+    var span = document.createElement('span');
+    span.innerText = text;
+    span.className = 'ansi-' + code;
+    var range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(span);
+    range.selectNodeContents(span);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  function ctReset() {
+    var area = $('ctArea');
+    if (!area) return;
+    area.innerHTML = area.innerText.replace(/\n/g, '<br>');
+    area.focus();
+  }
+  function ctNodesToANSI(nodes, states) {
+    var text = '';
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      if (node.nodeType === 3) { text += node.textContent; continue; }
+      if (node.nodeName === 'BR') { text += '\n'; continue; }
+      var m = node.className && String(node.className).match(/ansi\-(\d+)/);
+      var ansiCode = m ? Number(m[1]) : 0;
+      var newState = { st: states[states.length - 1].st, fg: states[states.length - 1].fg, bg: states[states.length - 1].bg };
+      if (ansiCode && ansiCode < 30) newState.st = ansiCode;
+      else if (ansiCode >= 30 && ansiCode < 40) newState.fg = ansiCode;
+      else if (ansiCode >= 40) newState.bg = ansiCode;
+      states.push(newState);
+      text += '\x1b[' + newState.st + ';' + ((ansiCode >= 40 && ansiCode < 50) || ansiCode >= 100 ? newState.bg : newState.fg) + 'm';
+      text += ctNodesToANSI(node.childNodes, states);
+      states.pop();
+      text += '\x1b[0m';
+      var top = states[states.length - 1];
+      if (top.fg !== 2) text += '\x1b[' + top.st + ';' + top.fg + 'm';
+      if (top.bg !== 2) text += '\x1b[' + top.st + ';' + top.bg + 'm';
+    }
+    return text;
+  }
+  function wireCt() {
+    var area = $('ctArea');
+    if (!area) return;
+    var fg = $('ctFg'), bg = $('ctBg');
+    CT_FG.forEach(function (m) { ctSwatch(m, fg); });
+    CT_BG.forEach(function (m) { ctSwatch(m, bg); });
+    Array.prototype.forEach.call(document.querySelectorAll('.ct-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        var code = btn.getAttribute('data-ct');
+        if (code === '0') { ctReset(); return; }
+        ctApply(code);
+      });
+    });
+    area.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.execCommand('insertLineBreak', false, null);
+      }
+    });
+    var cp = $('ctCopy');
+    if (cp) cp.addEventListener('click', function () {
+      var me = this;
+      var toCopy = '```ansi\n' + ctNodesToANSI(area.childNodes, [{ fg: 2, bg: 2, st: 2 }]) + '\n```';
+      copyPlain(toCopy, function () { dcCopy('copied', me); });
+    });
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -1053,7 +1103,7 @@
 
     wireYt();
     wireDiscord();
-    wireMm();
+    wireCt();
     wireWs();
     wireEb();
     wireGr();
