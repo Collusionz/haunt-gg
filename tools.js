@@ -1030,7 +1030,11 @@
     if (cp) cp.addEventListener('click', function () {
       var me = this;
       var toCopy = '```ansi\n' + ctNodesToANSI(area.childNodes, [{ fg: 2, bg: 2, st: 2 }]) + '\n```';
-      copyPlain(toCopy, function () { dcCopy('copied', me); });
+      copyPlain(toCopy, function () {
+        var old = me.textContent;
+        me.textContent = 'Copied';
+        setTimeout(function () { me.textContent = old; }, 1200);
+      });
     });
   }
 
