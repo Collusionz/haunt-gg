@@ -599,8 +599,24 @@
       if (av) payload.avatar_url = av;
       var ej = ($('wsEmbed').value || '').trim();
       if (ej) {
-        try { payload.embeds = JSON.parse(ej); } catch (e) {
+        var parsed;
+        try { parsed = JSON.parse(ej); } catch (e) {
           if (st) { st.textContent = 'Embed JSON invalid: ' + e.message; st.style.color = '#f87171'; }
+          return;
+        }
+        if (Array.isArray(parsed)) {
+          payload.embeds = parsed;
+        } else if (parsed && typeof parsed === 'object') {
+          var base = parsed;
+          if ('embeds' in base && Array.isArray(base.embeds)) {
+            if (!content && base.content) payload.content = base.content;
+            payload.embeds = base.embeds;
+            if (Array.isArray(base.components)) payload.components = base.components;
+          } else {
+            payload.embeds = [base];
+          }
+        } else {
+          if (st) { st.textContent = 'Embed JSON must be an object or array'; st.style.color = '#f87171'; }
           return;
         }
       }
