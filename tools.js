@@ -855,11 +855,19 @@
 
   /* ---------------- ANNOUNCEMENT GENERATOR ---------------- */
   function annGen() {
-    var AN = { game: 'Game Night', give: 'Giveaway', update: 'Server Update', event: 'Event / Livestream', welcome: 'Server Welcome', other: 'Announcement' };
+    var AN = { game: 'Game Night', give: 'Giveaway', update: 'Server Update', event: 'Event / Livestream', staff: 'Staff Applications', welcome: 'Server Welcome', other: 'Announcement' };
     var type = AN[$('annType').value] || 'Announcement';
     var tone = $('annTone').value || 'friendly';
+    var emoji = ($('annEmoji').value || '').trim();
     var title = ($('annTitle').value || '').trim();
-    var desc = ($('annDesc').value || '').trim();
+    if (!title) title = type;
+    var body = ($('annDesc').value || '').trim();
+    var steps = ($('annSteps').value || '').trim();
+    steps = steps ? steps.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean) : [];
+    var linkLabel = ($('annLinkLabel').value || '').trim();
+    var linkUrl = ($('annLinkUrl').value || '').trim();
+    var mentions = ($('annMentions').value || '').trim();
+    var footer = ($('annFooter').value || '').trim();
     var dv = $('annDate').value;
     var unix = null;
     if (dv) {
@@ -867,18 +875,36 @@
       if (!isNaN(dd.getTime())) unix = Math.floor(dd.getTime() / 1000);
     }
     var L = [];
-    if ($('annPing').checked) L.push('@everyone');
-    L.push('**' + (title || type) + '**');
+    L.push('# ' + (emoji ? emoji + ' ' : '') + title);
     L.push('');
     var opens = { friendly: 'Hey everyone,', hype: 'Get ready.', formal: 'Attention, everyone.' };
-    L.push(opens[tone] || opens.friendly);
+    L.push('> ' + (opens[tone] || opens.friendly));
     L.push('');
-    L.push('We\u2019re running a **' + type + '**' + (unix ? ' — <t:' + unix + ':F> (<t:' + unix + ':R>)' : ' — details to be announced.') + '.');
-    if (desc) { L.push(''); L.push(desc); }
-    if (unix) { L.push(''); L.push('**When:** <t:' + unix + ':F>'); L.push('**Relative:** <t:' + unix + ':R>'); }
-    L.push('');
-    var closes = { friendly: 'Hope to see you there — the team.', hype: 'Let\u2019s go — don\u2019t miss it!', formal: 'We look forward to your participation.' };
-    L.push(closes[tone] || closes.friendly);
+    if (body) {
+      body.split(/\r?\n/).forEach(function (p) {
+        p = p.trim();
+        if (p) L.push('> ' + p);
+      });
+      L.push('');
+    }
+    if (unix) {
+      L.push('**When:** <t:' + unix + ':F> (<t:' + unix + ':R>)');
+      L.push('');
+    }
+    if (linkUrl && /^https?:\/\//i.test(linkUrl)) {
+      L.push('**[' + (linkLabel || 'Join here') + '](' + linkUrl + ')**');
+      L.push('');
+    }
+    if (steps.length) {
+      steps.forEach(function (s) { L.push('> \u2023 ' + s); });
+      L.push('');
+    }
+    if (footer) {
+      L.push('-# ' + footer);
+      L.push('');
+    }
+    if (mentions) L.push(mentions);
+    if ($('annPing').checked) L.push('@everyone');
     return L.join('\n');
   }
   function wireAnn() {
@@ -908,7 +934,7 @@
   function grRender() {
     var A = grHex($('grA').value) || grHex($('grAHex').value) || '5573f4';
     var B = grHex($('grB').value) || grHex($('grBHex').value) || 'ff5f9e';
-    var steps = Math.max(3, Math.min(12, parseInt($('grSteps').value, 10) || 6));
+    var steps = 2;
     var bar = $('grBar');
     if (bar) bar.style.background = 'linear-gradient(90deg, #' + A + ', #' + B + ')';
     var ra = grRgb(A), rb = grRgb(B);
@@ -951,13 +977,6 @@
     }
     colorSync($('grA'), $('grAHex'));
     colorSync($('grB'), $('grBHex'));
-    $('grSteps').addEventListener('input', grRender);
-    var allBtn = $('grCopyAll');
-    if (allBtn) allBtn.addEventListener('click', function () {
-      var me = this;
-      var hexes = Array.prototype.map.call(document.querySelectorAll('#grChips .gr-chip'), function (c) { return c.getAttribute('data-hex'); });
-      copyPlain(hexes.join('\n'), function () { dcCopy(hexes.length + ' hex values', me); });
-    });
     grRender();
   }
 
