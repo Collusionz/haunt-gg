@@ -3,7 +3,9 @@
    a real page load (window.__hz is missing); soft navigations reuse the same
    element so audio never restarts. Per-visit hooks are re-registered on every
    run so nav.js's visit cleanup stays correct.
-   Enter overlay appears only on a direct load of the home page. */
+   Enter overlay appears on the first direct (hard) load of any page when the
+   visitor arrives from outside the site — so direct links like /gallery gate
+   behind it too. Soft navigation never re-shows it. */
 (function () {
   'use strict';
 
@@ -20,13 +22,13 @@
   if (first) {
     core = window.__hz = {};
 
-    // Enter overlay belongs only to a direct visit to the home page. Sidebar
-    // navigation back to home must never show it again, so it is decided once
-    // here (first real load) and never rebuilt on soft visits.
-    var isHome = location.pathname === '/' || location.pathname === '/index.html';
+    // Enter overlay shows on the first real (hard) page load of any page when
+    // arriving from outside the site — home or any direct link like /gallery.
+    // Soft navigation must never show it again, so it is decided once here and
+    // never rebuilt on soft visits.
     var fromSite = false;
     try { fromSite = new URL(document.referrer).origin === location.origin; } catch (e) {}
-    core.showEnter = isHome && !fromSite;
+    core.showEnter = !fromSite;
 
     core.entered = false;
     try { core.entered = sessionStorage.getItem('hzUnlocked') === '1'; } catch (e) {}
