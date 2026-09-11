@@ -514,6 +514,86 @@
     }
   }
 
+  /* ---------- plain-english time parser ---------- */
+  var DC_WD = { sun: 0, sunday: 0, sundays: 0, mon: 1, monday: 1, mondays: 1, tue: 2, tues: 2, tuesday: 2, tuesdays: 2, wed: 3, wednesday: 3, wednesdays: 3, thu: 4, thur: 4, thursday: 4, thursdays: 4, fri: 5, friday: 5, fridays: 5, sat: 6, saturday: 6, saturdays: 6 };
+  var DC_MO = { jan: 0, january: 0, feb: 1, february: 1, mar: 2, march: 2, apr: 3, april: 3, may: 4, jun: 5, june: 5, jul: 6, july: 6, aug: 7, august: 7, sep: 8, sept: 8, september: 8, oct: 9, october: 9, nov: 10, november: 10, dec: 11, december: 11 };
+  var DC_MUL = { sec: 1000, secs: 1000, second: 1000, seconds: 1000, min: 60000, mins: 60000, minute: 60000, minutes: 60000, hr: 3600000, hrs: 3600000, hour: 3600000, hours: 3600000, day: 86400000, days: 86400000, week: 604800000, weeks: 604800000, month: 2592000000, months: 2592000000, year: 31536000000, years: 31536000000 };
+
+  function dcExtractTime(s) {
+    s = s.replace(/(\d)\s+(am|pm)\b/g, '$1$2');
+    if (/\bmidnight\b/.test(s)) return { t: { h: 0, m: 0 }, rest: s.replace(/\bmidnight\b/g, ' ') };
+    if (/\bnoon\b/.test(s)) return { t: { h: 12, m: 0 }, rest: s.replace(/\bnoon\b/g, ' ') };
+    var m = s.match(/(?:^|\s)(\d{1,2})(?:(?::|\.)(\d{2}))?(am|pm)?(?=$|\s)/);
+    if (!m || (!m[3] && !m[2])) return { t: null, rest: s };
+    var hr = parseInt(m[1], 10), min = parseInt(m[2] || '0', 10);
+    if (m[3] === 'pm' && hr < 12) hr += 12;
+    if (m[3] === 'am' && hr === 12) hr = 0;
+    if (hr > 23 || min > 59) return { t: null, rest: s };
+    return { t: { h: hr, m: min }, rest: s.replace(m[0], ' ') };
+  }
+
+  function dcParseNatural(input) {
+    var s = String(input || '').trim().toLowerCase().replace(/\s+/g, ' ').replace(/\bat\b/g, ' ');
+    s = s.replace(/\s*(est|edt|cst|cdt|pst|pdt|mst|mdt|utc|gmt)\b/g, '');
+    if (!s) return null;
+    var now = new Date();
+
+    var m = s.match(/^(?:in\s+)?([+-]?\d+(?:\.\d+)?)\s*(seconds?|secs?|minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?)(?:\s+from now)?$/);
+    if (m) return new Date(now.getTime() + parseFloat(m[1]) * DC_MUL[String(m[2]).toLowerCase()]);
+    if (s === 'now') return now;
+
+    var ex = dcExtractTime(s);
+    var t = ex.t;
+    var rest = ex.rest.trim().replace(/\s+/g, ' ');
+
+    var wdm = rest.match(/^((?:next|last|this|coming)\s+)?(sundays|mondays|tuesdays|wednesdays|thursdays|fridays|saturdays|thursday|wednesday|tuesday|monday|sunday|saturday|friday|thu|thur|wed|tue|tues|mon|tue|sun|sat|fri|mon)$/);
+    if (wdm) {
+      var d = new Date(now); d.setHours(0, 0, 0, 0);
+      var off = (DC_WD[wdm[2]] - d.getDay() + 7) % 7;
+      if (wdm[1] === 'next ') off += 7;
+      if (wdm[1] === 'last ') off -= 7;
+      d.setDate(d.getDate() + off);
+      if (t) d.setHours(t.h, t.m, 0, 0);
+      return d;
+    }
+
+    var tom = rest.match(/^(day after tomorrow|tomorrow|tmr|tonight|today)$/);
+    if (tom) {
+      var d2 = new Date(now); d2.setHours(0, 0, 0, 0);
+      if (tom[1] === 'tomorrow' || tom[1] === 'tmr') d2.setDate(d2.getDate() + 1);
+      else if (tom[1] === 'day after tomorrow') d2.setDate(d2.getDate() + 2);
+      if (t) d2.setHours(t.h, t.m, 0, 0);
+      return d2;
+    }
+
+    var wmon = rest.match(/^((?:january|february|march|april|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec))\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?$/);
+    var dmon = wmon ? null : rest.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+((?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec))\.?(?:,?\s+(\d{4}))?$/);
+    var mon = wmon || dmon;
+    if (mon) {
+      var mm, md, my;
+      if (wmon) { mm = DC_MO[wmon[1]] || 0; md = parseInt(wmon[2], 10); my = wmon[3] ? parseInt(wmon[3], 10) : now.getFullYear(); }
+      else { mm = DC_MO[dmon[2]] || 0; md = parseInt(dmon[1], 10); my = dmon[3] ? parseInt(dmon[3], 10) : now.getFullYear(); }
+      var d3 = new Date(my, mm, md, t ? t.h : 0, t ? t.m : 0, 0, 0);
+      if (!isNaN(d3.getTime()) && md >= 1 && md <= 31) return d3;
+    }
+
+    var nm = rest.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/);
+    if (nm) return new Date(+nm[1], +nm[2] - 1, +nm[3], t ? t.h : 0, t ? t.m : 0, 0, 0);
+    var sm = rest.match(/^(\d{1,2})[-/](\d{1,2})(?:[-/](\d{2,4}))?$/);
+    if (sm) {
+      var y = sm[3] ? (+sm[3] < 100 ? 2000 + +sm[3] : +sm[3]) : now.getFullYear();
+      return new Date(y, +sm[1] - 1, +sm[2], t ? t.h : 0, t ? t.m : 0, 0, 0);
+    }
+
+    if (rest === '' && t) {
+      var d5 = new Date(now); d5.setHours(t.h, t.m, 0, 0);
+      return d5;
+    }
+
+    var dd = new Date(input);
+    return isNaN(dd.getTime()) ? null : dd;
+  }
+
   function wireDiscord() {
     var dt = $('dcDt');
     dt.value = dcToLocalInput(new Date());
@@ -532,6 +612,25 @@
       var b = ev.target && ev.target.closest ? ev.target.closest('.dc-copy') : null;
       if (b) dcCopy(b.getAttribute('data-code') || '', b);
     });
+
+    var nat = $('dcNat');
+    if (nat) {
+      function dcUseNat() {
+        var parsed = dcParseNatural(nat.value);
+        var err = $('dcNatErr');
+        if (!parsed || isNaN(parsed.getTime())) {
+          if (err) err.style.display = 'block';
+          return;
+        }
+        if (err) err.style.display = 'none';
+        dt.value = dcToLocalInput(parsed);
+        dcRender();
+      }
+      var useBtn = $('dcUse');
+      if (useBtn) useBtn.addEventListener('click', dcUseNat);
+      nat.addEventListener('keydown', function (e) { if (e.key === 'Enter') dcUseNat(); });
+    }
+
     dcRender();
   }
 
@@ -663,6 +762,212 @@
     });
   }
 
+  /* ---------------- MESSAGE SPLITTER ---------------- */
+  var ms = { parts: [] };
+
+  function msSplitText(text, limit) {
+    var chars = Array.from(text);
+    var out = [], i = 0;
+    while (i < chars.length) {
+      var end = Math.min(i + limit, chars.length);
+      var cut = end;
+      for (var j = end - 1; j > i; j--) {
+        if (end - j > 48) break;
+        var c = chars[j];
+        if (c === '\n' || c === '\r' || c === ' ') { cut = j + 1; break; }
+      }
+      out.push(chars.slice(i, cut).join(''));
+      i = cut;
+    }
+    return out;
+  }
+
+  function msCount() {
+    var ta = $('msText');
+    if (!ta) return;
+    var n = Array.from(ta.value).length;
+    var lim = parseInt(ta.getAttribute('data-limit') || '2000', 10);
+    var msgs = Math.max(1, Math.ceil(n / lim));
+    var c = $('msCount');
+    if (c) c.textContent = n.toLocaleString() + ' chars - ' + msgs + ' message' + (msgs === 1 ? '' : 's');
+  }
+
+  function msRender() {
+    var ta = $('msText'), out = $('msOut');
+    if (!out) return;
+    out.innerHTML = '';
+    if (!ta.value) { ms.parts = []; return; }
+    var limit = parseInt(ta.getAttribute('data-limit') || '2000', 10);
+    ms.parts = msSplitText(ta.value, limit);
+
+    var head = document.createElement('div');
+    head.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap';
+    head.innerHTML = '<div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase">' + ms.parts.length + ' part' + (ms.parts.length === 1 ? '' : 's') + '</div>'
+      + '<button id="msCopyAll" class="scheme" style="border-radius:9px;font-size:0.72rem">Copy all</button>';
+    out.appendChild(head);
+
+    for (var i = 0; i < ms.parts.length; i++) {
+      (function (idx) {
+        var card = document.createElement('div');
+        card.style.cssText = 'border:1px solid rgba(255,255,255,0.08);border-radius:14px;background:rgba(255,255,255,0.03);overflow:hidden;margin-bottom:12px';
+        var bar = document.createElement('div');
+        bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.06)';
+        bar.innerHTML = '<span style="font-size:0.72rem;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.05em">Part ' + (idx + 1) + ' / ' + ms.parts.length + '</span>'
+          + '<span style="font-size:0.72rem;color:#9CA3AF">' + Array.from(ms.parts[idx]).length.toLocaleString() + ' chars</span>';
+        card.appendChild(bar);
+        var body = document.createElement('div');
+        body.style.cssText = 'padding:12px 14px;font-family:Consolas,"Andale Mono","Courier New",monospace;font-size:0.78rem;line-height:1.55;color:#dbe2ff;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto';
+        body.textContent = ms.parts[idx];
+        card.appendChild(body);
+        var foot = document.createElement('div');
+        foot.style.cssText = 'padding:10px 14px;border-top:1px solid rgba(255,255,255,0.06)';
+        var b = document.createElement('button');
+        b.className = 'scheme';
+        b.style.cssText = 'border-radius:9px;font-size:0.72rem';
+        b.textContent = 'Copy part';
+        b.addEventListener('click', function () {
+          if (ms.parts[idx] == null) return;
+          copyPlain(ms.parts[idx], function () {
+            var old = b.textContent;
+            b.textContent = 'Copied';
+            setTimeout(function () { b.textContent = old; }, 1200);
+          });
+        });
+        foot.appendChild(b);
+        card.appendChild(foot);
+        out.appendChild(card);
+      })(i);
+    }
+
+    var ca = $('msCopyAll');
+    if (ca) ca.addEventListener('click', function () {
+      copyPlain(ms.parts.join('\n\n'), function () {
+        var old = ca.textContent;
+        ca.textContent = 'Copied all';
+        setTimeout(function () { ca.textContent = old; }, 1200);
+      });
+    });
+  }
+
+  function wireMs() {
+    var ta = $('msText');
+    if (!ta) return;
+    var sel = $('msLimit');
+    if (sel) sel.addEventListener('change', function () {
+      ta.setAttribute('data-limit', sel.value);
+      var lab = $('msLimitLabel');
+      if (lab) lab.textContent = 'Limit: ' + Number(sel.value).toLocaleString();
+      msCount();
+      msRender();
+    });
+    ta.addEventListener('input', function () { msCount(); msRender(); });
+    var cl = $('msClear');
+    if (cl) cl.addEventListener('click', function () { ta.value = ''; msCount(); msRender(); });
+    msCount();
+    msRender();
+  }
+
+  /* ---------------- DOMINANT COLOR EXTRACTOR ---------------- */
+  var ceLast = null;
+  function ceHex(r, g, b) { return '#' + [r, g, b].map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('').toUpperCase(); }
+  function ceDist(a, b) { var dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b; return dr * dr + dg * dg + db * db; }
+  function ceExtract(img, count, done) {
+    var W = 64, H = 64;
+    var c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    var ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0, W, H);
+    var data = ctx.getImageData(0, 0, W, H).data;
+    var buckets = {}, keys = [], total = 0, i, r, g, b, a, k, e;
+    for (i = 0; i < data.length; i += 4) {
+      r = data[i]; g = data[i + 1]; b = data[i + 2]; a = data[i + 3];
+      if (a < 100) continue;
+      total++;
+      if (r > 250 && g > 250 && b > 250) continue;
+      k = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+      e = buckets[k];
+      if (e) { e.n++; e.r += r; e.g += g; e.b += b; }
+      else { buckets[k] = { n: 1, r: r, g: g, b: b }; keys.push(k); }
+    }
+    if (!total) { done([]); return; }
+    keys.sort(function (a, b) { return buckets[b].n - buckets[a].n; });
+    var cols = keys.slice(0, Math.min(keys.length, Math.max(count * 3, 10))).map(function (kk) {
+      var o = buckets[kk];
+      return { r: Math.round(o.r / o.n), g: Math.round(o.g / o.n), b: Math.round(o.b / o.n), n: o.n };
+    });
+    var chosen = [cols.shift()];
+    while (chosen.length < count && cols.length) {
+      var bi = 0, bd = -1, j, z, mn, d;
+      for (j = 0; j < cols.length; j++) {
+        mn = Infinity;
+        for (z = 0; z < chosen.length; z++) {
+          d = ceDist(cols[j], chosen[z]);
+          if (d < mn) mn = d;
+        }
+        if (mn > bd) { bd = mn; bi = j; }
+      }
+      chosen.push(cols.splice(bi, 1)[0]);
+    }
+    chosen.forEach(function (co) {
+      co.hex = ceHex(co.r, co.g, co.b);
+      co.share = total > 0 ? Math.round((co.n / total) * 1000) / 10 : 0;
+    });
+    done(chosen);
+  }
+  function ceRenderPalette(cols) {
+    var pal = $('cePal');
+    if (!pal) return;
+    pal.innerHTML = '';
+    var empty = $('ceEmpty');
+    if (empty) empty.style.display = cols.length ? 'none' : 'block';
+    cols.forEach(function (co) {
+      var card = document.createElement('button');
+      card.className = 'ce-card';
+      card.setAttribute('data-hex', co.hex);
+      card.innerHTML = '<div style="width:38px;height:38px;border-radius:9px;background:' + co.hex + ';border:1px solid rgba(255,255,255,0.25);flex-shrink:0"></div>'
+        + '<div style="flex:1;min-width:0;text-align:left">'
+        + '<div style="font-family:monospace;font-size:0.8rem;color:#fff;letter-spacing:0.02em">' + co.hex + '</div>'
+        + '<div style="font-size:0.66rem;color:#9CA3AF;margin-top:1px">' + co.share + '%</div></div>';
+      card.addEventListener('click', function () {
+        copyPlain(co.hex, function () {
+          var old = card.style.borderColor;
+          card.style.borderColor = '#4ade80';
+          setTimeout(function () { card.style.borderColor = old; }, 600);
+        });
+      });
+      pal.appendChild(card);
+    });
+  }
+  function ceLoad(file) {
+    if (!file) return;
+    if (file.type.indexOf('image') !== 0 && !/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name)) return;
+    ceLast = file;
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () {
+      var count = Math.max(2, Math.min(12, parseInt($('ceCount').value, 10) || 6));
+      ceExtract(img, count, ceRenderPalette);
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = function () { URL.revokeObjectURL(url); };
+    img.src = url;
+  }
+  function wireCe() {
+    var d = $('ceDrop');
+    if (!d) return;
+    $('cePick').addEventListener('click', function () { $('ceFile').click(); });
+    $('ceFile').addEventListener('change', function () { ceLoad(this.files && this.files[0]); this.value = ''; });
+    ['dragover'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.add('drag'); }); });
+    ['dragleave', 'drop'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.remove('drag'); }); });
+    d.addEventListener('drop', function (ev) {
+      if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0]) ceLoad(ev.dataTransfer.files[0]);
+    });
+    $('ceCount').addEventListener('input', function () {
+      $('ceN').textContent = this.value;
+      if (ceLast) ceLoad(ceLast);
+    });
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -733,6 +1038,8 @@
     wireYt();
     wireDiscord();
     wireCt();
+    wireMs();
+    wireCe();
   }
 
   wire();

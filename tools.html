@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tools | home</title>
-  <meta name="description" content="image compressor & more" />
+  <meta name="description" content="image compressor, discord timestamps & color text & more" />
   <meta name="theme-color" content="#5573f4" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
@@ -124,6 +124,8 @@
               <button class="tab-btn" data-tab="yt"><span>YouTube Downloader</span></button>
               <button class="tab-btn" data-tab="dc"><span>Timestamp Generator</span></button>
               <button class="tab-btn" data-tab="ct"><span>Color Text</span></button>
+              <button class="tab-btn" data-tab="ms"><span>Message Splitter</span></button>
+              <button class="tab-btn" data-tab="ce"><span>Color Extract</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -269,6 +271,15 @@
 
             <!-- ============ DISCORD TIMESTAMPS ============ -->
             <div class="tool-tab" id="tab-dc" style="padding:20px">
+              <div class="field" style="margin-bottom:10px">
+                <label>Plain English <span style="text-transform:none;opacity:.6">(optional — feeds the picker below)</span></label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input id="dcNat" class="inp" type="text" style="flex:1" placeholder="try “friday 9pm” · “tomorrow 8am” · “in 2 hours” · “may 15 2030”" spellcheck="false" autocomplete="off" />
+                  <button class="scheme" id="dcUse" style="border-radius:9px;font-size:0.72rem;padding:10px 18px;flex-shrink:0">Use</button>
+                </div>
+                <div id="dcNatErr" style="font-size:0.72rem;color:#ff4466;display:none;margin-top:6px">Couldn’t read that — try “friday 9pm”, “tomorrow 8am”, “in 2 hours”, “may 15 2030”</div>
+              </div>
+
               <div class="field" style="margin-bottom:14px">
                 <label>Date &amp; time</label>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
@@ -326,10 +337,57 @@
                   <button class="scheme" id="ctCopy" style="border-radius:9px;font-size:0.72rem">Copy text as Discord formatted</button>
                   <span style="font-size:0.78rem;color:#9CA3AF">Works on Discord desktop — paste into a message. Not supported on mobile.</span>
                 </div>
+</div>
+            </div>
+
+            <!-- ============ MESSAGE SPLITTER ============ -->
+            <div class="tool-tab" id="tab-ms" style="padding:20px">
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Discord Message Splitter</div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Message</label>
+                  <textarea id="msText" class="inp" rows="7" style="width:100%;resize:vertical" data-limit="2000" placeholder="Paste a long message — it splits into parts that fit Discord’s limit as you type."></textarea>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px">
+                  <div class="field" style="min-width:0">
+                    <label><span id="msLimitLabel">Limit: 2,000</span></label>
+                    <select id="msLimit" class="inp" style="background:#1a1c2c;padding:8px 10px">
+                      <option value="2000">2,000 · message</option>
+                      <option value="1024">1,024 · embed field</option>
+                      <option value="4096">4,096 · embed description</option>
+                    </select>
+                  </div>
+                  <span id="msCount" style="font-size:0.8rem;color:#9CA3AF"></span>
+                  <button class="scheme" id="msClear" style="border-radius:9px;font-size:0.72rem;margin-left:auto">Clear</button>
+                </div>
+                <div id="msOut" style="margin-top:14px"></div>
               </div>
             </div>
 
+            <!-- ============ DOMINANT COLOR EXTRACTOR ============ -->
+            <div class="tool-tab" id="tab-ce" style="padding:20px">
+              <style>
+                .ce-card { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:8px 10px; cursor:pointer; transition:border-color .15s; width:100%; font-family:inherit; }
+                .ce-card:hover { border-color:rgba(255,255,255,0.22); }
+              </style>
+              <div class="widget-card" style="border-radius:14px;padding:16px">
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Dominant Colors</div>
+                <div class="dropzone" id="ceDrop" style="padding:26px 20px;text-align:center;cursor:pointer">
+                  <div style="font-weight:600;font-size:0.95rem;color:#fff">Drop an image — album art, banner, screenshot</div>
+                  <div style="font-size:0.78rem;color:#9CA3AF;margin-top:5px">or</div>
+                  <button id="cePick" style="margin-top:8px;padding:8px 18px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit">Choose image</button>
+                  <input id="ceFile" type="file" accept="image/*" hidden />
+                </div>
+                <div class="field" style="margin-top:14px">
+                  <label>Colors: <span id="ceN" style="color:#fff;font-weight:600">6</span></label>
+                  <input id="ceCount" class="range" type="range" min="2" max="12" value="6" style="width:100%" />
+                </div>
+                <div id="cePal" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px"></div>
+                <div id="ceEmpty" style="font-size:0.8rem;color:#9CA3AF;margin-top:14px">Pick an image to pull its main colors — great for matching role colors, embed bars &amp; thumbs.</div>
+              </div>
             </div>
+
+          </div>
 
           </div>
         </div>
