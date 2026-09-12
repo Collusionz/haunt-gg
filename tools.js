@@ -867,105 +867,167 @@
     msRender();
   }
 
-  /* ---------------- DOMINANT COLOR EXTRACTOR ---------------- */
-  var ceLast = null;
-  function ceHex(r, g, b) { return '#' + [r, g, b].map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('').toUpperCase(); }
-  function ceDist(a, b) { var dr = a.r - b.r, dg = a.g - b.g, db = a.b - b.b; return dr * dr + dg * dg + db * db; }
-  function ceExtract(img, count, done) {
-    var W = 64, H = 64;
-    var c = document.createElement('canvas');
-    c.width = W; c.height = H;
+  /* ---------------- IMAGE HEX COLOR PICKER ---------------- */
+  var cpData = null;            // cached ImageData of the loaded image
+  var cpHexCur = '#000000';
+  var cpHistoryArr = [];
+  function cpHex(r, g, b) { return '#' + [r, g, b].map(function (v) { return ('0' + v.toString(16)).slice(-2); }).join('').toUpperCase(); }
+  function cpClamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+  function cpShowErr(msg) { var e = $('cpErr'); if (!e) return; e.textContent = msg || ''; e.style.display = msg ? 'block' : 'none'; }
+
+  function cpRenderImg(img) {
+    var MAX = 2600;
+    var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    if (!w || !h) return;
+    var scale = Math.min(1, MAX / Math.max(w, h));
+    var cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+    var c = $('cpCanvas');
+    c.width = cw; c.height = ch;
     var ctx = c.getContext('2d');
-    ctx.drawImage(img, 0, 0, W, H);
-    var data = ctx.getImageData(0, 0, W, H).data;
-    var buckets = {}, keys = [], total = 0, i, r, g, b, a, k, e;
-    for (i = 0; i < data.length; i += 4) {
-      r = data[i]; g = data[i + 1]; b = data[i + 2]; a = data[i + 3];
-      if (a < 100) continue;
-      total++;
-      if (r > 250 && g > 250 && b > 250) continue;
-      k = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
-      e = buckets[k];
-      if (e) { e.n++; e.r += r; e.g += g; e.b += b; }
-      else { buckets[k] = { n: 1, r: r, g: g, b: b }; keys.push(k); }
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, 0, 0, cw, ch);
+    try {
+      cpData = ctx.getImageData(0, 0, cw, ch); // throws when the canvas is tainted
+      cpShowErr('');
+    } catch (err) {
+      cpData = null;
+      cpShowErr('That image can\'t be pixel-read (its host blocks cross-origin access). Save it and use "Choose image" instead.');
     }
-    if (!total) { done([]); return; }
-    keys.sort(function (a, b) { return buckets[b].n - buckets[a].n; });
-    var cols = keys.slice(0, Math.min(keys.length, Math.max(count * 3, 10))).map(function (kk) {
-      var o = buckets[kk];
-      return { r: Math.round(o.r / o.n), g: Math.round(o.g / o.n), b: Math.round(o.b / o.n), n: o.n };
-    });
-    var chosen = [cols.shift()];
-    while (chosen.length < count && cols.length) {
-      var bi = 0, bd = -1, j, z, mn, d;
-      for (j = 0; j < cols.length; j++) {
-        mn = Infinity;
-        for (z = 0; z < chosen.length; z++) {
-          d = ceDist(cols[j], chosen[z]);
-          if (d < mn) mn = d;
-        }
-        if (mn > bd) { bd = mn; bi = j; }
-      }
-      chosen.push(cols.splice(bi, 1)[0]);
-    }
-    chosen.forEach(function (co) {
-      co.hex = ceHex(co.r, co.g, co.b);
-      co.share = total > 0 ? Math.round((co.n / total) * 1000) / 10 : 0;
-    });
-    done(chosen);
+    $('cpEmpty').style.display = 'none';
+    $('cpStage').style.display = 'block';
+    $('cpLoupe').style.display = 'none';
+    var crect = c.getBoundingClientRect();
+    cpPick(crect.left + crect.width * 0.5, crect.top + crect.height * 0.5, false);
   }
-  function ceRenderPalette(cols) {
-    var pal = $('cePal');
-    if (!pal) return;
-    pal.innerHTML = '';
-    var empty = $('ceEmpty');
-    if (empty) empty.style.display = cols.length ? 'none' : 'block';
-    cols.forEach(function (co) {
-      var card = document.createElement('button');
-      card.className = 'ce-card';
-      card.setAttribute('data-hex', co.hex);
-      card.innerHTML = '<div style="width:38px;height:38px;border-radius:9px;background:' + co.hex + ';border:1px solid rgba(255,255,255,0.25);flex-shrink:0"></div>'
-        + '<div style="flex:1;min-width:0;text-align:left">'
-        + '<div style="font-family:monospace;font-size:0.8rem;color:#fff;letter-spacing:0.02em">' + co.hex + '</div>'
-        + '<div style="font-size:0.66rem;color:#9CA3AF;margin-top:1px">' + co.share + '%</div></div>';
-      card.addEventListener('click', function () {
-        copyPlain(co.hex, function () {
-          var old = card.style.borderColor;
-          card.style.borderColor = '#4ade80';
-          setTimeout(function () { card.style.borderColor = old; }, 600);
-        });
-      });
-      pal.appendChild(card);
-    });
-  }
-  function ceLoad(file) {
-    if (!file) return;
-    if (file.type.indexOf('image') !== 0 && !/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name)) return;
-    ceLast = file;
-    var url = URL.createObjectURL(file);
+  function cpLoadFromUrl(url) {
+    url = (url || '').trim();
+    if (!url) return;
+    cpShowErr('');
     var img = new Image();
-    img.onload = function () {
-      var count = Math.max(2, Math.min(12, parseInt($('ceCount').value, 10) || 6));
-      ceExtract(img, count, ceRenderPalette);
-      URL.revokeObjectURL(url);
-    };
-    img.onerror = function () { URL.revokeObjectURL(url); };
+    img.crossOrigin = 'anonymous';
+    img.onload = function () { cpRenderImg(this); };
+    img.onerror = function () { cpShowErr('Couldn\'t load that image link. Check the URL, or upload the file instead.'); };
     img.src = url;
   }
-  function wireCe() {
-    var d = $('ceDrop');
+  function cpLoadFile(file) {
+    if (!file) return;
+    if (file.type.indexOf('image') !== 0 && !/\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name)) return;
+    cpShowErr('');
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function () { cpRenderImg(img); URL.revokeObjectURL(url); };
+    img.onerror = function () { URL.revokeObjectURL(url); cpShowErr('Couldn\'t read that image file.'); };
+    img.src = url;
+  }
+  function cpSampleAt(clientX, clientY) {
+    var c = $('cpCanvas');
+    var rect = c.getBoundingClientRect();
+    if (!rect.width || !rect.height) return null;
+    var sx = cpClamp(Math.floor((clientX - rect.left) / rect.width * c.width), 0, c.width - 1);
+    var sy = cpClamp(Math.floor((clientY - rect.top) / rect.height * c.height), 0, c.height - 1);
+    return { sx: sx, sy: sy, c: c };
+  }
+  function cpPick(clientX, clientY, doCopy) {
+    var p = cpSampleAt(clientX, clientY);
+    if (!p) return;
+    var hex = '#000000', r = 0, g = 0, b = 0;
+    if (cpData) {
+      var i = (p.sy * p.c.width + p.sx) * 4;
+      r = cpData.data[i]; g = cpData.data[i + 1]; b = cpData.data[i + 2];
+      hex = cpHex(r, g, b);
+    }
+    cpHexCur = hex;
+    $('cpSwatch').style.background = hex;
+    $('cpHex').textContent = hex;
+    $('cpRgb').textContent = cpData ? ('rgb(' + r + ', ' + g + ', ' + b + ')') : 'pixel read blocked for this image';
+    cpDrawLoupe(p);
+    if (doCopy && cpData) {
+      copyPlain(hex, function () {
+        var el = $('cpHex');
+        var old = el.style.color;
+        el.style.color = '#4ade80';
+        setTimeout(function () { el.style.color = old || '#fff'; }, 600);
+      });
+      cpAddHistory(hex);
+    }
+  }
+  function cpDrawLoupe(p) {
+    var l = $('cpLoupe');
+    var lctx = l.getContext('2d');
+    var Z = 8, N = Math.floor(l.width / Z);
+    var half = N >> 1;
+    lctx.imageSmoothingEnabled = false;
+    lctx.fillStyle = '#000';
+    lctx.fillRect(0, 0, l.width, l.height);
+    lctx.drawImage(p.c, p.sx - half, p.sy - half, N, N, 0, 0, l.width, l.height);
+    var cell = l.width / N;
+    lctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    lctx.lineWidth = 1;
+    lctx.strokeRect(half * cell + 0.5, half * cell + 0.5, cell, cell);
+    var wrap = $('cpWrap');
+    var wr = wrap.getBoundingClientRect();
+    var lx = cpClamp(clientX0 - wr.left + 18, 0, Math.max(0, wr.width - l.width));
+    var ly = cpClamp(clientY0 - wr.top + 18, 0, Math.max(0, wr.height - l.height));
+    l.style.left = lx + 'px'; l.style.top = ly + 'px';
+    l.style.display = 'block';
+  }
+  var clientX0 = 0, clientY0 = 0;
+  function cpAddHistory(hex) {
+    if (cpHistoryArr[0] === hex) return;
+    cpHistoryArr.unshift(hex);
+    cpHistoryArr = cpHistoryArr.slice(0, 12);
+    var wrap = $('cpHistory');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    cpHistoryArr.forEach(function (hx) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.title = 'Copy ' + hx;
+      b.style.cssText = 'width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,0.25);cursor:pointer;background:' + hx;
+      b.addEventListener('click', function () { copyPlain(hx, function () {}); });
+      wrap.appendChild(b);
+    });
+  }
+  function wireCp() {
+    var d = $('cpDrop');
     if (!d) return;
-    $('cePick').addEventListener('click', function () { $('ceFile').click(); });
-    $('ceFile').addEventListener('change', function () { ceLoad(this.files && this.files[0]); this.value = ''; });
+    $('cpPick').addEventListener('click', function () { $('cpFile').click(); });
+    $('cpFile').addEventListener('change', function () { cpLoadFile(this.files && this.files[0]); this.value = ''; });
+    $('cpLoad').addEventListener('click', function () { cpLoadFromUrl($('cpUrl').value); });
+    $('cpUrl').addEventListener('keydown', function (e) { if (e.key === 'Enter') cpLoadFromUrl(this.value); });
     ['dragover'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.add('drag'); }); });
     ['dragleave', 'drop'].forEach(function (e) { d.addEventListener(e, function (ev) { ev.preventDefault(); d.classList.remove('drag'); }); });
     d.addEventListener('drop', function (ev) {
-      if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0]) ceLoad(ev.dataTransfer.files[0]);
+      if (ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0]) {
+        cpLoadFile(ev.dataTransfer.files[0]);
+      } else if (ev.dataTransfer && ev.dataTransfer.getData) {
+        var u = ev.dataTransfer.getData('text/uri-list') || ev.dataTransfer.getData('text/plain');
+        if (u) cpLoadFromUrl(u);
+      }
     });
-    $('ceCount').addEventListener('input', function () {
-      $('ceN').textContent = this.value;
-      if (ceLast) ceLoad(ceLast);
+    var c = $('cpCanvas');
+    c.addEventListener('pointermove', function (e) {
+      clientX0 = e.clientX; clientY0 = e.clientY;
+      cpPick(e.clientX, e.clientY, false);
     });
+    c.addEventListener('pointerleave', function () { $('cpLoupe').style.display = 'none'; });
+    c.addEventListener('pointerdown', function (e) {
+      clientX0 = e.clientX; clientY0 = e.clientY;
+      cpPick(e.clientX, e.clientY, true);
+    });
+    $('cpHex').addEventListener('click', function () { if (cpData) copyPlain(cpHexCur, function () {}); });
+    if (!window.__cpPasteBound) {
+      window.__cpPasteBound = true;
+      document.addEventListener('paste', function (e) {
+        var tab = $('tab-ce');
+        if (!tab || !tab.classList.contains('active')) return;
+        var items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image') === 0) { cpLoadFile(items[i].getAsFile()); break; }
+        }
+      });
+    }
   }
 
   function wire() {
@@ -1039,7 +1101,7 @@
     wireDiscord();
     wireCt();
     wireMs();
-    wireCe();
+    wireCp();
   }
 
   wire();

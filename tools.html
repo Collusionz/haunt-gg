@@ -125,7 +125,7 @@
               <button class="tab-btn" data-tab="dc"><span>Timestamp Generator</span></button>
               <button class="tab-btn" data-tab="ct"><span>Color Text</span></button>
               <button class="tab-btn" data-tab="ms"><span>Message Splitter</span></button>
-              <button class="tab-btn" data-tab="ce"><span>Color Extract</span></button>
+              <button class="tab-btn" data-tab="ce"><span>Color Picker</span></button>
             </div>
 
             <!-- ============ IMAGE COMPRESSOR ============ -->
@@ -364,26 +364,41 @@
               </div>
             </div>
 
-            <!-- ============ DOMINANT COLOR EXTRACTOR ============ -->
+            <!-- ============ IMAGE HEX COLOR PICKER ============ -->
             <div class="tool-tab" id="tab-ce" style="padding:20px">
-              <style>
-                .ce-card { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:8px 10px; cursor:pointer; transition:border-color .15s; width:100%; font-family:inherit; }
-                .ce-card:hover { border-color:rgba(255,255,255,0.22); }
-              </style>
               <div class="widget-card" style="border-radius:14px;padding:16px">
-                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Dominant Colors</div>
-                <div class="dropzone" id="ceDrop" style="padding:26px 20px;text-align:center;cursor:pointer">
-                  <div style="font-weight:600;font-size:0.95rem;color:#fff">Drop an image — album art, banner, screenshot</div>
+                <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Hex Picker</div>
+                <div class="field" style="margin-bottom:12px">
+                  <label>Image link</label>
+                  <div style="display:flex;gap:8px">
+                    <input id="cpUrl" class="inp" type="text" placeholder="https://… paste any image URL" style="flex:1;min-width:0" />
+                    <button id="cpLoad" style="padding:0 18px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Load</button>
+                  </div>
+                  <div id="cpErr" style="display:none;font-size:0.76rem;color:#ff6b6b;margin-top:2px"></div>
+                </div>
+                <div class="dropzone" id="cpDrop" style="padding:22px 20px;text-align:center;cursor:pointer">
+                  <div style="font-weight:600;font-size:0.92rem;color:#fff">Drop an image — or paste one</div>
                   <div style="font-size:0.78rem;color:#9CA3AF;margin-top:5px">or</div>
-                  <button id="cePick" style="margin-top:8px;padding:8px 18px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit">Choose image</button>
-                  <input id="ceFile" type="file" accept="image/*" hidden />
+                  <button id="cpPick" style="margin-top:8px;padding:8px 18px;border-radius:12px;border:1px solid rgba(85,115,244,0.6);background:rgba(85,115,244,0.16);color:#fff;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit">Choose image</button>
+                  <input id="cpFile" type="file" accept="image/*" hidden />
                 </div>
-                <div class="field" style="margin-top:14px">
-                  <label>Colors: <span id="ceN" style="color:#fff;font-weight:600">6</span></label>
-                  <input id="ceCount" class="range" type="range" min="2" max="12" value="6" style="width:100%" />
+
+                <div id="cpStage" style="display:none;margin-top:16px">
+                  <div id="cpWrap" style="position:relative;display:inline-block;max-width:100%;line-height:0">
+                    <canvas id="cpCanvas" style="max-width:100%;max-height:70vh;border-radius:14px;border:1px solid rgba(255,255,255,0.1);display:block;cursor:crosshair"></canvas>
+                    <canvas id="cpLoupe" width="120" height="120" style="display:none;position:absolute;left:0;top:0;width:120px;height:120px;border-radius:12px;border:2px solid rgba(255,255,255,0.4);box-shadow:0 8px 30px rgba(0,0,0,0.55);pointer-events:none;background:#000;image-rendering:pixelated"></canvas>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+                    <div id="cpSwatch" style="width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,0.25);background:#000;flex-shrink:0"></div>
+                    <div style="flex:1;min-width:0">
+                      <div id="cpHex" style="font-family:monospace;font-size:1.15rem;font-weight:600;color:#fff;cursor:pointer" title="Click to copy">#000000</div>
+                      <div id="cpRgb" style="font-size:0.72rem;color:#9CA3AF">rgb(0, 0, 0)</div>
+                    </div>
+                    <div style="font-size:0.72rem;color:#9CA3AF;max-width:190px;line-height:1.35">Hover the image to sample · click to copy the hex</div>
+                  </div>
+                  <div id="cpHistory" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px"></div>
                 </div>
-                <div id="cePal" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px"></div>
-                <div id="ceEmpty" style="font-size:0.8rem;color:#9CA3AF;margin-top:14px">Pick an image to pull its main colors — great for matching role colors, embed bars &amp; thumbs.</div>
+                <div id="cpEmpty" style="font-size:0.8rem;color:#9CA3AF;margin-top:14px">Load any image and pick exact hex codes from it — grab a color from a screenshot, banner or album art.</div>
               </div>
             </div>
 
