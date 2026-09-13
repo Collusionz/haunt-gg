@@ -1030,6 +1030,104 @@
     }
   }
 
+  /* ---------------- DISCORD AUTOMOD REGEX MAKER ---------------- */
+  var DM_ACC = {
+    a: ['áÁ', 'àÀ', 'âÂ', 'äÄ', 'ãÃ', 'åÅ'],
+    e: ['éÉ', 'èÈ', 'êÊ', 'ëË'],
+    i: ['íÍ', 'ìÌ', 'îÎ', 'ïÏ'],
+    o: ['óÓ', 'òÒ', 'ôÔ', 'öÖ', 'õÕ', 'øØ'],
+    u: ['úÚ', 'ùÙ', 'ûÛ', 'üÜ'],
+    n: ['ñÑ'],
+    y: ['ýÝ', 'ÿ']
+  };
+  var DM_LEET = {
+    a: ['4', '@'], e: ['3'], i: ['1', '!'], o: ['0'],
+    s: ['5', '$'], t: ['7', '+'], l: ['|'], g: ['9'], z: ['2'], b: ['8']
+  };
+  function dmCl(ch, leet, acc) {
+    var set = [ch];
+    if (acc) set = set.concat(DM_ACC[ch] || []);
+    if (leet) set = set.concat(DM_LEET[ch] || []);
+    set.push('\\*');
+    return '[' + set.join('') + ']';
+  }
+  function dmBuild(word, opts) {
+    var w = String(word || '').trim().toLowerCase();
+    if (!w) return '';
+    if (w === 'links' || /^https?:/.test(w)) return '\\bhttps?://.+\\..+';
+    var letters = [];
+    for (var i = 0; i < w.length; i++) if (/[a-z]/.test(w[i])) letters.push(w[i]);
+    if (!letters.length) return '';
+    var out = opts.bnd ? '\\b' : '';
+    for (var j = 0; j < letters.length; j++) {
+      out += dmCl(letters[j], opts.leet, opts.acc) + '+';
+      if (opts.space && j < letters.length - 1) out += '\\s?';
+    }
+    if (opts.plural && letters[letters.length - 1] !== 's') out += '([s5]|\\b)';
+    else if (opts.bnd) out += '\\b';
+    return out;
+  }
+  function dmGen() {
+    var opts = {
+      space: $('dmSpace').checked,
+      leet: $('dmLeet').checked,
+      acc: $('dmAcc').checked,
+      bnd: $('dmBnd').checked,
+      plural: $('dmPlural').checked
+    };
+    var tokens = String($('dmWords').value || '').split(/[\s,/]+/).filter(Boolean);
+    var out = [];
+    for (var i = 0; i < tokens.length; i++) {
+      var r = dmBuild(tokens[i], opts);
+      if (r) out.push(r);
+    }
+    $('dmOut').value = out.join('\n');
+    $('dmTestRes').textContent = '';
+    if (!out.length) $('dmOut').value = '';
+  }
+  function dmTest() {
+    var res = $('dmTestRes');
+    var pat = String($('dmOut').value || '').trim().split('\n')[0];
+    var val = $('dmTestInput').value;
+    if (!pat) { res.textContent = 'generate a regex first.'; res.style.color = '#9CA3AF'; return; }
+    try {
+      var re = new RegExp(pat, 'i');
+      var m = re.exec(val);
+      if (m) { res.textContent = 'MATCH — "' + m[0] + '"'; res.style.color = '#ff6b6b'; }
+      else { res.textContent = 'clean — nothing matched'; res.style.color = '#4ade80'; }
+    } catch (e) {
+      res.textContent = 'invalid regex: ' + e.message; res.style.color = '#ff6b6b';
+    }
+  }
+  function wireDm() {
+    var chips = document.querySelectorAll('[data-dmp]');
+    chips.forEach(function (b) {
+      b.addEventListener('click', function () {
+        $('dmWords').value = b.getAttribute('data-w');
+        $('dmExc').value = b.getAttribute('data-exc') || '';
+        $('dmTestInput').value = '';
+        dmGen();
+      });
+    });
+    $('dmWords').addEventListener('input', dmGen);
+    $('dmSpace').addEventListener('change', dmGen);
+    $('dmLeet').addEventListener('change', dmGen);
+    $('dmAcc').addEventListener('change', dmGen);
+    $('dmBnd').addEventListener('change', dmGen);
+    $('dmPlural').addEventListener('change', dmGen);
+    $('dmGen').addEventListener('click', dmGen);
+    $('dmCopy').addEventListener('click', function () {
+      var v = $('dmOut').value;
+      if (!v) return;
+      copyPlain(v, function () {});
+    });
+    $('dmTestRun').addEventListener('click', dmTest);
+    $('dmTestInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); dmTest(); }
+    });
+    if (chips.length) chips[0].click();
+  }
+
   function wire() {
     var dz = $('dropzone');
     var fi = $('fileInput');
@@ -1102,6 +1200,7 @@
     wireCt();
     wireMs();
     wireCp();
+    wireDm();
   }
 
   wire();
