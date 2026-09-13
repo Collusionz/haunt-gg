@@ -52,6 +52,9 @@
     .tab-btn.active { color:#fff; border-bottom-color:#5573f4; }
     .tool-tab { display:none; }
     .tool-tab.active { display:block; animation:fadeInUp .4s ease forwards; }
+    [data-tip]{ position:relative; }
+    [data-tip]::after{ content:attr(data-tip); position:absolute; left:100%; top:50%; transform:translateY(-50%); margin-left:8px; background:#141824; border:1px solid rgba(255,255,255,0.16); border-radius:10px; padding:8px 12px; font-size:0.72rem; font-weight:400; line-height:1.5; color:#dfe6ff; white-space:normal; width:210px; z-index:60; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .15s ease, transform .15s ease; box-shadow:0 10px 30px rgba(0,0,0,0.6); text-transform:none; letter-spacing:0; }
+    [data-tip]:hover::after{ opacity:1; visibility:visible; }
     .dropzone { border:2px dashed rgba(255,255,255,0.18); border-radius:20px; transition:border-color .2s, background .2s; }
     .dropzone.drag { border-color:#5573f4; background:rgba(85,115,244,0.08); }
     .range { -webkit-appearance:none; appearance:none; height:6px; border-radius:6px; background:rgba(255,255,255,0.12); outline:none; }
@@ -410,18 +413,18 @@
                   <label>Keyword — the word you want to block</label>
                   <textarea id="dmWords" rows="2" class="inp" style="resize:vertical" placeholder="type a word…"></textarea>
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Match the letters even when separated by spaces — so &quot;d i c k&quot; also hits"><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Match number/symbol letter swaps — a=4/@, e=3, i=1/!, o=0, s=5/$, t=7/+, l=|"><input id="dmLeet" type="checkbox" checked style="accent-color:#5573f4" /> leetspeak</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Also match accented variants — é, è, ñ, ö, etc."><input id="dmAcc" type="checkbox" checked style="accent-color:#5573f4" /> accented</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Require a word boundary before the match, so an &quot;ass&quot; rule doesn't hit &quot;class&quot;"><input id="dmBnd" type="checkbox" checked style="accent-color:#5573f4" /> \b boundaries</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Also match the word followed by s — e.g. &quot;fag&quot; also matches &quot;fags&quot;"><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;row-gap:14px">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Match the letters even when separated by spaces — so &quot;d i c k&quot; also hits."><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Match number/symbol letter swaps — a=4/@, e=3, i=1/!, o=0, s=5/$, t=7/+, l=|."><input id="dmLeet" type="checkbox" checked style="accent-color:#5573f4" /> leetspeak</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Also match accented variants — é, è, ñ, ö, etc."><input id="dmAcc" type="checkbox" checked style="accent-color:#5573f4" /> accented</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Require a word boundary at both ends, so an &quot;ass&quot; rule doesn't hit &quot;class&quot; or &quot;passing&quot;."><input id="dmBnd" type="checkbox" checked style="accent-color:#5573f4" /> \b boundaries</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Also match the word followed by s — e.g. &quot;fag&quot; also matching &quot;fags&quot;."><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:12px">
-                  <button id="dmGen" style="flex:1;padding:10px;border-radius:12px;border:none;background:#5573f4;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Generate regex</button>
-                  <button id="dmCopy" style="flex:1;padding:10px;border-radius:12px;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Copy</button>
+                  <button id="dmCopy" style="flex:1;padding:10px;border-radius:12px;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Copy regex</button>
                 </div>
-                <textarea id="dmOut" readonly rows="5" class="inp" style="width:100%;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:0.75rem"></textarea>
+                <div style="font-size:0.72rem;letter-spacing:0.04em;color:#9CA3AF;text-transform:uppercase;margin-bottom:6px">Generated regex — updates as you type</div>
+                <textarea id="dmOut" readonly rows="4" class="inp" style="width:100%;resize:vertical;font-family:ui-monospace,Consolas,monospace;font-size:0.75rem"></textarea>
                 <div class="field" style="margin-top:14px">
                   <label>Test against a message</label>
                   <div style="display:flex;gap:8px">
@@ -435,7 +438,7 @@
                   <textarea id="dmExc" rows="2" class="inp" style="resize:vertical" placeholder="auto-filled from common words — edit freely"></textarea>
                   <div id="dmExcNote" style="font-size:0.72rem;color:#9CA3AF;margin-top:5px">type a keyword to see which common words your rule would wrongly flag.</div>
                 </div>
-                <p style="font-size:0.75rem;color:#9CA3AF;margin-top:12px;line-height:1.45">Discord automod keyword rules match case-insensitively, and the <b style="color:#c9cee6">*</b> inside the classes is the wildcard character — ret*rd would still match "retard". The <b style="color:#c9cee6">Suggested exceptions</b> box auto-lists common words your rule would wrongly flag, so add those (plus anything your community actually says) to the automod allowed-terms list. For link rules, whitelist any media/embed domains your community uses, like giphy.com or tenor.com.</p>
+                <p style="font-size:0.75rem;color:#9CA3AF;margin-top:12px;line-height:1.45">Each letter becomes a class containing that letter plus its common lookalike swaps (leetspeak digits/symbols, accented forms). Consecutive same letters collapse into one class so variants like "niger" vs "nigga" drop the extra letter, and words ending in <b style="color:#c9cee6">a</b>/<b style="color:#c9cee6">er</b> get both endings. The <b style="color:#c9cee6">Suggested exceptions</b> box auto-lists common words your rule would wrongly flag, so add those (plus anything your community actually says) to the automod allowed-terms list. For link rules, whitelist any media/embed domains your community uses, like giphy.com or tenor.com. Uses Discord's Rust-based regex engine — no wildcards, so far fewer false positives.</p>
               </div>
             </div>
 
