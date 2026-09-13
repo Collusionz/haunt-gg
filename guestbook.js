@@ -7,7 +7,12 @@
   if (window.GB) return;
   var BAKED_URL = 'https://dpjxjnqfqcodxvjvwvhr.supabase.co';
   var BAKED_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';
-  var BAD = ['fuck','shit','bitch','cunt','nigger','nigga','faggot','retard','wtf','stfu','dick','pussy','slut','whore','asshole','bastard'];
+  // Leetspeak-tolerant profanity filter. Words are normalised (1->i, 3->e,
+  // 0->o, $->s etc; punctuation becomes a word boundary) before checking, so
+  // "n1gga" style variants still get caught. First line of defence only — the
+  // approval gate in /vault is what actually keeps junk off the board.
+  var WORD_BAD = ['nigger','nigga','niggas','faggot','fag','fags','kike','cunt','cunts','fuck','fucker','fucking','shit','bitch','bitches','slut','whore','pussy','dick','cock','asshole','bastard','retard','retarded','nazi','twat','hoe','tranny','dyke','motherfucker','motherfuck','wtf','stfu','bullshit','dumbass'];
+  var LEET = { '1': 'i', '0': 'o', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '9': 'g', '6': 'g', '2': 'z', '$': 's', '@': 'a', '!': 'i', '|': 'l', '+': 't' };
   var PAGE = 12;
   var sv = function (k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } };
   var ssGet = function (k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
@@ -33,10 +38,39 @@
     return v;
   }
   function ownerPass() { return ssGet('gbOwnerPass') || ''; }
+  function normProf(t) {
+    return String(t || '').toLowerCase().split('').map(function (ch) {
+      if (LEET[ch]) return LEET[ch];
+      if (/[a-z]/.test(ch)) return ch;
+      return ' ';
+    }).join('').split(/\s+/).filter(Boolean);
+  }
   function profanity(t) {
-    var x = ' ' + String(t || '').toLowerCase() + ' ';
-    for (var i = 0; i < BAD.length; i++) { if (x.indexOf(' ' + BAD[i] + ' ') !== -1) return BAD[i]; }
+    var toks = normProf(t);
+    for (var i = 0; i < toks.length; i++) {
+      var w = toks[i];
+      if (WORD_BAD.indexOf(w) !== -1) return w;
+      for (var b = 0; b < WORD_BAD.length; b++) {
+        var B = WORD_BAD[b];
+        if (w.indexOf(B) === 0 && w.length <= B.length + 2) return B;
+      }
+    }
     return null;
+  }
+  // Client-computed browser fingerprint stored with each comment so repeat
+  // trolls on the same browser are visible to the owner in /vault. A deterrent,
+  // not an IP and not a secret.
+  function fingerprint() {
+    try {
+      var c = document.createElement('canvas'); c.width = 90; c.height = 30;
+      var x = c.getContext('2d'); x.textBaseline = 'top'; x.font = '14px Arial';
+      x.fillStyle = '#233'; x.fillRect(0, 0, 90, 30);
+      x.fillStyle = '#fff'; x.fillText('gb' + Math.random().toString(36).slice(2, 6), 2, 2);
+      var raw = [navigator.userAgent, navigator.language || '', screen.width + 'x' + screen.height + '@' + screen.colorDepth, new Date().getTimezoneOffset(), c.toDataURL()].join('|');
+      var h = 0;
+      for (var i = 0; i < raw.length; i++) h = ((h << 5) - h + raw.charCodeAt(i)) | 0;
+      return 'f' + (h >>> 0).toString(16);
+    } catch (e) { return 'f0'; }
   }
   function toast(msg) {
     if (typeof window.showToast === 'function') { window.showToast(msg); return; }
@@ -104,7 +138,7 @@
     if (!client) { if (cb) cb(false); return; }
     var rangeFrom = reset ? 0 : state.loaded;
     client.from('comments')
-      .select('id,name,message,is_anon,created_at,is_verified', { count: 'exact' })
+      .select('id,name,message,is_anon,created_at,is_verified,fingerprint', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(rangeFrom, rangeFrom + PAGE - 1)
       .then(function (res) {
@@ -112,7 +146,7 @@
         var rows = res.data || [];
         if (reset) { state.items = []; }
         state.items = state.items.concat(rows.map(function (r) {
-          return { id: r.id, name: r.name || '', message: r.message || '', is_anon: r.is_anon, created_at: r.created_at, verified: !!r.is_verified };
+          return { id: r.id, name: r.name || '', message: r.message || '', is_anon: r.is_anon, created_at: r.created_at, verified: !!r.is_verified, fp: r.fingerprint || '' };
         }));
         state.total = res.count && res.count !== null ? res.count : state.items.length;
         state.loaded = state.items.length;
@@ -206,12 +240,12 @@
             } else { toast('could not post'); }
             if (cb) cb(false); return;
           }
-          if (cb) cb(true);
+          if (cb) cb(true, true);
         });
       } else {
-        c.from('comments').insert({ name: cfg.name, message: cfg.message, is_anon: !!cfg.is_anon }).then(function (r) {
+        c.from('comments').insert({ name: cfg.name, message: cfg.message, is_anon: !!cfg.is_anon, fingerprint: fingerprint() }).then(function (r) {
           if (r.error) { toast('could not post — try again'); if (cb) cb(false); return; }
-          if (cb) cb(true);
+          if (cb) cb(true, false);
         });
       }
     });
@@ -274,7 +308,7 @@
 
   function countsHtml() {
     if (!client) return '';
-    var n = state.total;
+    var n = state.items.filter(function (i) { return i.verified; }).length;
     var likes = 0; for (var k in state.likesBy) likes += state.likesBy[k];
     return '<div style="display:flex;gap:16px;font-size:0.75rem;opacity:0.55;margin-bottom:12px">' +
       '<span>' + n + ' ' + (n === 1 ? 'message' : 'messages') + '</span>' +
@@ -304,7 +338,12 @@
       list.innerHTML = '<p style="font-size:0.8rem;opacity:0.4;text-align:center;padding:10px 0">no messages yet — be the first!</p>';
       return;
     }
-    list.innerHTML = state.items.map(rowHtml).join('');
+    var visible = state.items.filter(function (i) { return i.verified; });
+    if (!visible.length) {
+      list.innerHTML = '<p style="font-size:0.8rem;opacity:0.4;text-align:center;padding:10px 0">no messages yet — yours will appear after approval.</p>';
+      return;
+    }
+    list.innerHTML = visible.map(rowHtml).join('');
   }
   function renderAll() { for (var i = 0; i < boards.length; i++) renderOne(boards[i]); }
   if (!document.getElementById('gbStyle')) {
@@ -326,7 +365,7 @@
       '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">' +
       '<div style="flex:1"><div style="display:flex;align-items:center;gap:10px"><div style="width:4px;height:28px;border-radius:2px;background:linear-gradient(180deg,#5573f4,#4764ec)"></div>' +
       '<h2 style="font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;color:#fff;margin:0">guestbook ✍️</h2></div>' +
-      '<p style="font-size:0.78rem;opacity:0.45;margin:4px 0 0">leave a message — no account needed</p></div>' +
+      '<p style="font-size:0.78rem;opacity:0.45;margin:4px 0 0">leave a message — new posts show after approval</p></div>' +
       '<button type="button" data-gb-close style="background:transparent;border:0;color:rgba(255,255,255,0.5);font-size:1.3rem;cursor:pointer;line-height:1;padding:4px">×</button></div>' +
       '<div data-gb-counts style="min-height:18px"></div>' +
       '<div data-gb-list></div>' +
@@ -415,12 +454,12 @@
       var anon = anonEl ? anonEl.checked : false;
       var name = anon ? '' : (nameEl ? nameEl.value.trim() : '');
       if (!anon && !name) { toast('add your name or check anonymous'); return; }
-      post({ name: name, message: msg, is_anon: anon }, function (ok) {
+      post({ name: name, message: msg, is_anon: anon }, function (ok, owner) {
         if (!ok) return;
         if (msgEl) msgEl.value = '';
         if (nameEl) nameEl.value = '';
         if (anonEl) anonEl.checked = false;
-        toast('posted');
+        toast(owner ? 'posted' : 'posted — pending approval');
         refresh();
       });
       return;

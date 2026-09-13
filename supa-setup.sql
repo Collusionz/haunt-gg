@@ -320,3 +320,37 @@ revoke all on function log_event(text, text, text, text, text, text, text) from 
 grant execute on function log_event(text, text, text, text, text, text, text) to anon;
 revoke all on function analyze_stats(text, timestamptz) from public;
 grant execute on function analyze_stats(text, timestamptz) to anon;
+
+-- ---------------------------------------------------------------------------
+-- Guestbook approval + comment telemetry.
+-- verify_comment: owner approves a pending guest message (security definer,
+-- bcrypt passcode check). fingerprint: a client-computed browser fingerprint
+-- saved with every comment and shown to the owner in /vault. It is a deterrent
+-- for repeat trolls on the same browser, NOT an IP and not a secret.
+-- Idempotent — safe to re-run, or run just this section.
+-- ---------------------------------------------------------------------------
+
+alter table comments add column if not exists fingerprint text not null default '';
+
+create or replace function verify_comment(cid bigint, passcode text)
+returns void
+language plpgsql
+security definer
+as $$
+declare h text;
+begin
+  select hash into h from owner where id = 1;
+  if h is null or h = '' then
+    raise exception 'owner not configured';
+  end if;
+  if h = crypt(passcode, h) then
+    if exists (select 1 from comments where id = cid) then
+      update comments set is_verified = true where id = cid;
+    end if;
+  else
+    raise exception 'wrong passcode';
+  end if;
+end $$;
+
+revoke all on function verify_comment(bigint, text) from public;
+grant execute on function verify_comment(bigint, text) to anon;
