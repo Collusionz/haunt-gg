@@ -1113,12 +1113,12 @@
     if (leet) set = set.concat(DM_LEET[ch] || []);
     return '[' + set.join('') + ']';
   }
-  function dmTail(aForm, opts) {
+  function dmTail(opts) {
     var sp = opts.space ? '\\s?' : '';
-    var a = dmCl('a', opts.leet, opts.acc) + '+';
-    var e = dmCl('e', opts.leet, opts.acc) + '+';
-    var r = dmCl('r', opts.leet, opts.acc) + '+';
-    return sp + '(?:' + a + '|' + e + sp + r + ')';
+    var a = dmCl('a', opts.leet, opts.acc);
+    var e = dmCl('e', opts.leet, opts.acc);
+    var r = dmCl('r', opts.leet, opts.acc);
+    return sp + '(?:l+' + sp + e + '+' + sp + 't+' + sp + '|(?:' + a + sp + '|' + e + '*' + sp + r + '+))';
   }
   function dmBuild(word, opts) {
     var w = String(word || '').trim().toLowerCase();
@@ -1139,10 +1139,11 @@
     var out = opts.bnd ? '\\b' : '';
     for (var j = 0; j < seq.length; j++) {
       if (j > 0) out += opts.space ? '\\s?' : '';
+      if (seq[j] === 'i' && j > 0) out += dmCl('e', opts.leet, opts.acc) + '*' + (opts.space ? '\\s?' : '');
       var extra = (seq[j] === 'g' && gg) ? ['h'] : null;
       out += dmCl(seq[j], opts.leet, opts.acc, extra) + '+';
     }
-    if (aForm || erForm) out += dmTail(aForm || erForm, opts);
+    if (aForm || erForm) out += dmTail(opts);
     if (opts.plural) out += '([s5]|\\b)';
     else out += '\\b';
     if (opts.bnd) out += '\\b';
