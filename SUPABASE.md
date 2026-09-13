@@ -18,7 +18,8 @@ gated by a passcode (bcrypt-hashed server-side, never shipped to the browser).
 Open **SQL Editor → New query**, paste everything from `supa-setup.sql` (in this repo),
 and run it. The script sets up:
 
-- `comments` — messages, `is_anon`, `is_verified`, timestamps
+- `comments` — messages, `is_anon`, `is_verified`, `fingerprint` (client-side
+  canvas/UA hash stored per comment as a deterrence signal), timestamps
 - `owner` — a single bcrypt-hashed passcode (default `cz2026`)
 - `likes` — one row per `(comment_id, liker)`; guests use a random id, the owner uses `liker = 'owner'`
 - RLS: public read on `comments`/`likes`; insert on `comments` only with `is_verified = false`;
@@ -28,6 +29,7 @@ and run it. The script sets up:
   - `owner_post(name, message, is_anon, passcode) -> bigint` — post as verified owner
   - `owner_toggle_like(cid, passcode) -> boolean` — owner like/unlike
   - `delete_comment(cid, passcode)` — delete any comment
+  - `verify_comment(cid, passcode) -> boolean` — approve a guest comment (sets `is_verified = true`)
   - `change_passcode(old, new)` — rotate the passcode
 
 > Do NOT run `create extension pgcrypto` (it's preinstalled) and do NOT add
@@ -82,8 +84,11 @@ How it behaves:
   kept in `sessionStorage` only while the tab is open.
 - **Guest likes**: liked entries are remembered per-browser via a random id in localStorage —
   no account needed, guests can never fake an owner like.
-- **Profanity** is filtered on the client before posting; it is not a substitute for
-  moderation, which is why the delete flow exists.
+- **Moderation gate**: guest comments are inserted `is_verified = false` and are **not rendered**
+  in the public feed until you approve them in `/vault` (which lists **Pending approval** vs
+  **Published** groups). Owner comments post verified immediately.
+- **Profanity** is filtered on the client before posting (leetspeak-aware, with stem-prefix
+  matching) — it's a first line of defence only, which is why the approval gate + delete flow exist.
 
 ## Security notes
 
