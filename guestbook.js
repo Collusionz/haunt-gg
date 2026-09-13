@@ -340,7 +340,7 @@
     }
     var visible = state.items.filter(function (i) { return i.verified; });
     if (!visible.length) {
-      list.innerHTML = '<p style="font-size:0.8rem;opacity:0.4;text-align:center;padding:10px 0">no messages yet — yours will appear after approval.</p>';
+      list.innerHTML = '<p style="font-size:0.8rem;opacity:0.4;text-align:center;padding:10px 0">no messages yet — be the first!</p>';
       return;
     }
     list.innerHTML = visible.map(rowHtml).join('');
@@ -365,7 +365,7 @@
       '<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px">' +
       '<div style="flex:1"><div style="display:flex;align-items:center;gap:10px"><div style="width:4px;height:28px;border-radius:2px;background:linear-gradient(180deg,#5573f4,#4764ec)"></div>' +
       '<h2 style="font-size:1.3rem;font-weight:700;letter-spacing:-0.02em;color:#fff;margin:0">guestbook ✍️</h2></div>' +
-      '<p style="font-size:0.78rem;opacity:0.45;margin:4px 0 0">leave a message — new posts show after approval</p></div>' +
+      '<p style="font-size:0.78rem;opacity:0.45;margin:4px 0 0">leave a message for the owner</p></div>' +
       '<button type="button" data-gb-close style="background:transparent;border:0;color:rgba(255,255,255,0.5);font-size:1.3rem;cursor:pointer;line-height:1;padding:4px">×</button></div>' +
       '<div data-gb-counts style="min-height:18px"></div>' +
       '<div data-gb-list></div>' +
@@ -459,7 +459,7 @@
         if (msgEl) msgEl.value = '';
         if (nameEl) nameEl.value = '';
         if (anonEl) anonEl.checked = false;
-        toast(owner ? 'posted' : 'posted — pending approval');
+        toast('posted');
         refresh();
       });
       return;
