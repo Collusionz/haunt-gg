@@ -406,23 +406,16 @@
             <div class="tool-tab" id="tab-dm" style="padding:20px">
               <div class="widget-card" style="border-radius:14px;padding:16px">
                 <div style="font-size:0.75rem;letter-spacing:0.05em;color:#9CA3AF;text-transform:uppercase;margin-bottom:12px">Discord Automod Regex Maker</div>
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
-                  <button data-dmp style="padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#c9cee6;font-size:0.75rem;cursor:pointer;font-family:inherit" data-w="retard" data-exc="restart">retard</button>
-                  <button data-dmp style="padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#c9cee6;font-size:0.75rem;cursor:pointer;font-family:inherit" data-w="porn" data-exc="porcelain, porcupine">porn</button>
-                  <button data-dmp style="padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#c9cee6;font-size:0.75rem;cursor:pointer;font-family:inherit" data-w="fag/faggot" data-exc="">fag / faggot</button>
-                  <button data-dmp style="padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#c9cee6;font-size:0.75rem;cursor:pointer;font-family:inherit" data-w="nigga/nigger" data-exc="niger, nega*">n word</button>
-                  <button data-dmp style="padding:5px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#c9cee6;font-size:0.75rem;cursor:pointer;font-family:inherit" data-w="links" data-exc="*tenor.com*, *klipy.com*, *giphy.com*, *.gif*, *discord.com*, *discord.gg*">links</button>
-                </div>
                 <div class="field" style="margin-bottom:12px">
-                  <label>Keywords (one per line, or comma separated)</label>
-                  <textarea id="dmWords" rows="2" class="inp" style="resize:vertical" placeholder="retard&#10;porn&#10;fag/faggot"></textarea>
+                  <label>Keyword — the word you want to block</label>
+                  <textarea id="dmWords" rows="2" class="inp" style="resize:vertical" placeholder="type a word…"></textarea>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer"><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer"><input id="dmLeet" type="checkbox" checked style="accent-color:#5573f4" /> leetspeak</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer"><input id="dmAcc" type="checkbox" checked style="accent-color:#5573f4" /> accented</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer"><input id="dmBnd" type="checkbox" checked style="accent-color:#5573f4" /> \b boundaries</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer"><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Match the letters even when separated by spaces — so &quot;d i c k&quot; also hits"><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Match number/symbol letter swaps — a=4/@, e=3, i=1/!, o=0, s=5/$, t=7/+, l=|"><input id="dmLeet" type="checkbox" checked style="accent-color:#5573f4" /> leetspeak</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Also match accented variants — é, è, ñ, ö, etc."><input id="dmAcc" type="checkbox" checked style="accent-color:#5573f4" /> accented</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Require a word boundary before the match, so an &quot;ass&quot; rule doesn't hit &quot;class&quot;"><input id="dmBnd" type="checkbox" checked style="accent-color:#5573f4" /> \b boundaries</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" title="Also match the word followed by s — e.g. &quot;fag&quot; also matches &quot;fags&quot;"><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:12px">
                   <button id="dmGen" style="flex:1;padding:10px;border-radius:12px;border:none;background:#5573f4;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Generate regex</button>
@@ -439,9 +432,10 @@
                 </div>
                 <div class="field" style="margin-top:12px">
                   <label>Suggested exceptions (for your automod config)</label>
-                  <textarea id="dmExc" rows="2" class="inp" style="resize:vertical" placeholder="restart, niger, nega*"></textarea>
+                  <textarea id="dmExc" rows="2" class="inp" style="resize:vertical" placeholder="auto-filled from common words — edit freely"></textarea>
+                  <div id="dmExcNote" style="font-size:0.72rem;color:#9CA3AF;margin-top:5px">type a keyword to see which common words your rule would wrongly flag.</div>
                 </div>
-                <p style="font-size:0.75rem;color:#9CA3AF;margin-top:12px;line-height:1.45">Discord automod keyword rules match case-insensitively, and the <b style="color:#c9cee6">*</b> inside the classes is the wildcard character — ret*rd would still match "retard". Add innocent words that would otherwise get flagged as exceptions (e.g. "restart" for ret*rd rules). For link rules, whitelist any media/embed domains your community uses, like giphy.com or tenor.com.</p>
+                <p style="font-size:0.75rem;color:#9CA3AF;margin-top:12px;line-height:1.45">Discord automod keyword rules match case-insensitively, and the <b style="color:#c9cee6">*</b> inside the classes is the wildcard character — ret*rd would still match "retard". The <b style="color:#c9cee6">Suggested exceptions</b> box auto-lists common words your rule would wrongly flag, so add those (plus anything your community actually says) to the automod allowed-terms list. For link rules, whitelist any media/embed domains your community uses, like giphy.com or tenor.com.</p>
               </div>
             </div>
 
