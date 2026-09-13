@@ -1114,19 +1114,23 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
           c.from('likes').select('comment_id').then(function(lr){
             var likeCount={};
             (lr.data||[]).forEach(function(l){likeCount[l.comment_id]=(likeCount[l.comment_id]||0)+1});
-            var pendingN=(data||[]).filter(function(x){return !x.is_verified}).length;
-            box.innerHTML=data.map(function(x){
+            function rowMarkup(x,showApprove){
               var likes=likeCount[x.id]||0;
-              var pending=x.is_verified?'':'<span style="display:inline-block;vertical-align:middle;background:rgba(246,180,60,0.14);border:1px solid rgba(246,180,60,0.4);color:#f6b43c;border-radius:999px;padding:1px 8px;font-size:0.62rem;margin-left:8px">pending</span>';
-              var apprBtn=x.is_verified?'':'<button class="btn" onclick="approveComment('+x.id+')" style="padding:8px 12px;font-size:0.75rem;background:#1fbf6f;border-color:#1fbf6f"'+(ownerLocked?' disabled':'')+'>Approve</button>';
+              var apprBtn=showApprove?'<button class="btn" onclick="approveComment('+x.id+')" style="padding:8px 12px;font-size:0.75rem;background:#1fbf6f;border-color:#1fbf6f"'+(ownerLocked?' disabled':'')+'>Approve</button>':'';
               return '<div class="item-row"><div style="flex:1;min-width:0">'+
-                '<div style="font-size:0.85rem;font-weight:600;color:#fff">'+esc(x.is_anon?'anonymous':(x.name||'someone'))+pending+
+                '<div style="font-size:0.85rem;font-weight:600;color:#fff">'+esc(x.is_anon?'anonymous':(x.name||'someone'))+
                 '<span style="font-weight:400;opacity:0.4;font-size:0.7rem;margin-left:8px">'+new Date(x.created_at).toLocaleString()+'</span></div>'+
                 '<div style="font-size:0.8rem;opacity:0.75;word-wrap:break-word">'+esc(x.message)+'</div>'+
                 '<div style="font-size:0.7rem;opacity:0.5;margin-top:4px">♡ '+likes+(likes===1?' like':' likes')+(x.fingerprint?' · fp '+esc(x.fingerprint):'')+'</div></div>'+
                 '<div class="row-actions">'+apprBtn+'<button class="btn btn-danger" onclick="delComment('+x.id+')" style="padding:8px 12px;font-size:0.75rem"'+(ownerLocked?' disabled':'')+'>Delete</button></div></div>';
-            }).join('');
-            setCmNote(ownerLocked?'unlock the vault to moderate.':(pendingN?pendingN+' guest '+(pendingN===1?'message':'messages')+' waiting for approval.':''));
+            }
+            var pendingRows=data.filter(function(x){return !x.is_verified});
+            var pubRows=data.filter(function(x){return x.is_verified});
+            var html='';
+            if(pendingRows.length) html+='<div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin:0 0 8px">Pending approval</div>'+pendingRows.map(function(x){return rowMarkup(x,true)}).join('');
+            if(pubRows.length) html+='<div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin:14px 0 8px">Published</div>'+pubRows.map(function(x){return rowMarkup(x,false)}).join('');
+            box.innerHTML=html;
+            setCmNote(ownerLocked?'unlock the vault to moderate.':(pendingRows.length?pendingRows.length+' guest '+(pendingRows.length===1?'message':'messages')+' waiting for approval.':''));
           });
         });
       });
@@ -1298,7 +1302,7 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
     /* ---------------- LOCKFLOW + INIT ---------------- */
 document.getElementById('unlockBtn').addEventListener('click',function(){
       var v=document.getElementById('passInput').value;
-      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();document.getElementById('lockErr').textContent=''}
+      if(v===getPass()){sessionStorage.setItem('vaultAuth','1');sessionStorage.setItem('gbOwnerPass',v);show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();refreshCmList();document.getElementById('lockErr').textContent=''}
       else{document.getElementById('lockErr').textContent='wrong passcode'}
     });
     document.getElementById('passInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('unlockBtn').click()});
@@ -1315,7 +1319,7 @@ function loadAllLists(){
 
     if(isAuthed()){
       if(!sessionStorage.getItem('gbOwnerPass'))sessionStorage.setItem('gbOwnerPass',getPass());
-      show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer()
+      show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();refreshCmList()
     }else{show(true,false)}
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
