@@ -414,11 +414,11 @@
                   <textarea id="dmWords" rows="2" class="inp" style="resize:vertical" placeholder="type a word…"></textarea>
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;row-gap:14px">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Match the letters even when separated by spaces — so &quot;d i c k&quot; also hits."><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Match the letters even when separated by spaces — so an &quot;apple&quot; rule also hits &quot;a p p l e&quot;."><input id="dmSpace" type="checkbox" checked style="accent-color:#5573f4" /> spaced (\s?)</label>
                   <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Match number/symbol letter swaps — a=4/@, e=3, i=1/!, o=0, s=5/$, t=7/+, l=|."><input id="dmLeet" type="checkbox" checked style="accent-color:#5573f4" /> leetspeak</label>
                   <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Also match accented variants — é, è, ñ, ö, etc."><input id="dmAcc" type="checkbox" checked style="accent-color:#5573f4" /> accented</label>
                   <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Require a word boundary at both ends, so an &quot;ass&quot; rule doesn't hit &quot;class&quot; or &quot;passing&quot;."><input id="dmBnd" type="checkbox" checked style="accent-color:#5573f4" /> \b boundaries</label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Also match the word followed by s — e.g. &quot;fag&quot; also matching &quot;fags&quot;."><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:0.78rem;color:#c9cee6;cursor:pointer" data-tip="Also match the word followed by s — e.g. &quot;apple&quot; also matching &quot;apples&quot;."><input id="dmPlural" type="checkbox" checked style="accent-color:#5573f4" /> plural s</label>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:12px">
                   <button id="dmCopy" style="flex:1;padding:10px;border-radius:12px;border:none;background:rgba(255,255,255,0.08);color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit">Copy regex</button>
@@ -438,7 +438,6 @@
                   <textarea id="dmExc" rows="2" class="inp" style="resize:vertical" placeholder="auto-filled from common words — edit freely"></textarea>
                   <div id="dmExcNote" style="font-size:0.72rem;color:#9CA3AF;margin-top:5px">type a keyword to see which common words your rule would wrongly flag.</div>
                 </div>
-                <p style="font-size:0.75rem;color:#9CA3AF;margin-top:12px;line-height:1.45">Each letter becomes a class containing that letter plus its common lookalike swaps (leetspeak digits/symbols, accented forms). Consecutive same letters collapse into one class so variants like "niger" vs "nigga" drop the extra letter, and words ending in <b style="color:#c9cee6">a</b>/<b style="color:#c9cee6">er</b> get both endings. The <b style="color:#c9cee6">Suggested exceptions</b> box auto-lists common words your rule would wrongly flag, so add those (plus anything your community actually says) to the automod allowed-terms list. For link rules, whitelist any media/embed domains your community uses, like giphy.com or tenor.com. Uses Discord's Rust-based regex engine — no wildcards, so far fewer false positives.</p>
               </div>
             </div>
 
