@@ -288,31 +288,34 @@
         const s = ago < 1 ? 'just now' : ago < 60 ? ago + ' min' : ago < 1440 ? Math.floor(ago / 60) + 'h' : Math.floor(ago / 1440) + 'd';
         label = 'Last online ' + s + ' ago';
       }
-      return { color, label };
+      return { color, label, gameId: p.gameId || '', placeId: p.rootPlaceId || p.placeId || 0 };
     }
     function renderRoblox(user, thumb, friends, followers, presence) {
       const el = document.getElementById('robloxWidget');
       const av = thumb.data && thumb.data[0] ? thumb.data[0].imageUrl : '';
-      const created = new Date(user.created);
-      const years = Math.floor((Date.now() - created) / 31557600000);
-      const age = years > 0 ? years + (years === 1 ? ' year' : ' years') + ' on Roblox' : 'New to Roblox';
       const fmt = n => n >= 1000000 ? (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n);
+      const profileURL = 'https://www.roblox.com/users/' + (user.id || ROBLOX_ID) + '/profile';
       const st = presenceInfo(presence);
-      const statusHTML = st ? `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:0.78rem">
+      const joinURL = st && st.gameId && st.placeId ? `roblox://experiences/start?placeId=${st.placeId}&gameInstanceId=${st.gameId}` : '';
+      const statusHTML = st ? `<div style="display:flex;align-items:center;gap:8px;margin-top:4px;font-size:0.78rem">
         <span style="width:8px;height:8px;border-radius:50%;background:${st.color};flex-shrink:0"></span>
         <span style="color:${st.color === '#23A55A' ? '#6fdc8c' : '#9CA3AF'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.label}</span>
+        ${joinURL ? `<a href="${joinURL}" style="margin-left:auto;flex-shrink:0;background:rgba(35,165,90,0.15);color:#6fdc8c;padding:3px 12px;border-radius:20px;text-decoration:none;font-weight:600;font-size:0.75rem" title="Join their game">Join</a>` : ''}
       </div>` : '';
       el.innerHTML = `
         <div style="display:flex;align-items:center;gap:16px;width:100%">
-          <img src="${av}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;flex-shrink:0" onerror="this.style.background='#333'" />
+          <a href="${profileURL}" target="_blank" rel="noopener" style="flex-shrink:0;border-radius:14px;overflow:hidden;display:block">
+            <img src="${av}" style="width:74px;height:74px;border-radius:14px;object-fit:cover;display:block" onerror="this.style.background='#333'" />
+          </a>
           <div style="flex:1;min-width:0">
-            <div style="font-size:1rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${user.displayName}</div>
+            <a href="${profileURL}" target="_blank" rel="noopener" style="text-decoration:none">
+              <div style="font-size:1rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff">${user.displayName}</div>
+            </a>
             <div style="font-size:0.8rem;color:#9CA3AF;margin-top:2px">@${user.name}</div>
             ${statusHTML}
             <div style="display:flex;gap:14px;margin-top:6px;font-size:0.78rem;color:#ccd8ec">
               <span><b style="color:#fff">${fmt(friends)}</b> friends</span>
               <span><b style="color:#fff">${fmt(followers)}</b> followers</span>
-              <span style="color:#6B7280">${age}</span>
             </div>
           </div>
         </div>`;
