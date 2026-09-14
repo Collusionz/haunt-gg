@@ -107,10 +107,32 @@
         </div>
       </section>
 
+      <!-- Live Match -->
+      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:16px">
+        <div class="w-full max-w-3xl anim-reveal anim-delay-2">
+          <div class="widget-card" style="padding:18px 22px" id="liveCard">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span id="liveDot" style="width:8px;height:8px;border-radius:50%;background:#6B7280;display:inline-block"></span>
+              <h2 style="font-size:1rem;font-weight:600;color:#f4f7f8;margin:0">In Game</h2>
+              <span style="margin-left:auto;font-size:0.7rem;color:#6B7280">auto-refreshes</span>
+            </div>
+            <div id="liveBody" style="font-size:0.85rem;color:#9CA3AF">checking…</div>
+          </div>
+        </div>
+      </section>
+
       <!-- Match History -->
       <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:48px">
-        <div class="w-full max-w-3xl anim-reveal anim-delay-2">
-          <h2 style="font-size:1.1rem;font-weight:600;color:#f4f7f8;margin:0 0 12px 4px">Match History</h2>
+        <div class="w-full max-w-3xl anim-reveal anim-delay-3">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;margin:0 4px 12px">
+            <h2 style="font-size:1.1rem;font-weight:600;color:#f4f7f8;margin:0">Match History</h2>
+            <span style="font-size:0.75rem;color:#6B7280" id="formSummary"></span>
+          </div>
+          <div id="formCard" class="widget-card" style="padding:16px 20px;margin-bottom:14px;display:none">
+            <div id="formChart"></div>
+            <div id="formStats" style="display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:0.8rem;color:#9CA3AF"></div>
+          </div>
+          <div id="filterBar" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 4px 14px"></div>
           <div id="matchList" style="display:flex;flex-direction:column;gap:8px">
             <div class="skeleton" style="height:72px;border-radius:16px"></div>
             <div class="skeleton" style="height:72px;border-radius:16px"></div>
@@ -224,19 +246,25 @@ const CACHE_KEY = 'val_data';
       `;
     }
 
-    // ========== MATCH HISTORY ==========
-function renderMatches(matches) {
+    function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+    function playerOf(m) {
+      return (m.players||[]).find(p => String(p.name||'').toLowerCase() === VALORANT_NAME.toLowerCase() && String(p.tag||'').toLowerCase() === VALORANT_TAG.toLowerCase());
+    }
+
+    // ========== MATCH HISTORY + FILTERS ==========
+    let _all = [], _open = -1, _hist = [];
+    const _filter = { mode:'all', result:'all', agent:'all', map:'all' };
+
+    function renderMatches(list) {
       const el = document.getElementById('matchList');
-      if (!matches || matches.length === 0) {
-        el.innerHTML = '<div style="text-align:center;padding:32px;color:#6B7280">No matches found</div>';
+      if (!list || list.length === 0) {
+        el.innerHTML = '<div style="text-align:center;padding:32px;color:#6B7280">No matches match those filters</div>';
         return;
       }
-
-      el.innerHTML = matches.map(m => {
+      el.innerHTML = list.map((m, i) => {
         const meta = m.metadata;
-        const player = (m.players||[]).find(p => String(p.name||'').toLowerCase() === VALORANT_NAME.toLowerCase() && String(p.tag||'').toLowerCase() === VALORANT_TAG.toLowerCase());
+        const player = playerOf(m);
         if (!player) return '';
-
         const won = m.teams.find(t => t.team_id === player.team_id)?.won || false;
         const stats = player.stats;
         const agent = player.agent?.name || 'Unknown';
@@ -248,28 +276,201 @@ function renderMatches(matches) {
         const scoreStr = playerTeam && enemyTeam ? `${playerTeam.rounds.won}-${enemyTeam.rounds.won}` : '';
         const date = new Date(meta.started_at);
         const dateStr = date.toLocaleDateString('en-US', { month:'numeric', day:'numeric', year:'numeric' });
+        const open = (_open === i);
 
         return `
-          <div class="widget-card ${won ? 'match-win' : 'match-loss'}" style="padding:12px 16px;border-radius:16px;display:flex;align-items:center;gap:14px;overflow:hidden">
-            <img src="${agentIcon(agentId,96)}" loading="lazy" decoding="async" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.onerror=null;this.src='${agentImgFull(agentId)}'" />
-            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
-              <div style="display:flex;align-items:center;gap:8px">
-                <span style="font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${won ? 'background:rgba(35,165,90,0.15);color:#23A55A' : 'background:rgba(242,63,67,0.15);color:#F23F43'}">${won ? 'WIN' : 'LOSS'}</span>
-                <span style="font-size:0.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${agent}</span>
-                <span style="font-size:0.7rem;color:#6B7280">${mode}</span>
+          <div class="widget-card ${won ? 'match-win' : 'match-loss'}" style="padding:12px 16px;border-radius:16px;overflow:hidden;cursor:pointer" onclick="expandMatch(${i})">
+            <div style="display:flex;align-items:center;gap:14px">
+              <img src="${agentIcon(agentId,96)}" loading="lazy" decoding="async" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0" onerror="this.onerror=null;this.src='${agentImgFull(agentId)}'" />
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${won ? 'background:rgba(35,165,90,0.15);color:#23A55A' : 'background:rgba(242,63,67,0.15);color:#F23F43'}">${won ? 'WIN' : 'LOSS'}</span>
+                  <span style="font-size:0.85rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(agent)}</span>
+                  <span style="font-size:0.7rem;color:#6B7280">${escapeHtml(mode)}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:#9CA3AF">
+                  <span>${stats.kills}/${stats.deaths}/${stats.assists}</span>
+                  <span style="color:#6B7280">·</span>
+                  <span>${scoreStr}</span>
+                  <span style="color:#6B7280">·</span>
+                  <span>${escapeHtml(map)}</span>
+                </div>
               </div>
-              <div style="display:flex;align-items:center;gap:12px;font-size:0.8rem;color:#9CA3AF">
-                <span>${stats.kills}/${stats.deaths}/${stats.assists}</span>
-                <span style="color:#6B7280">·</span>
-                <span>${scoreStr}</span>
-                <span style="color:#6B7280">·</span>
-                <span>${map}</span>
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+                <span style="font-size:0.7rem;color:#6B7280;white-space:nowrap">${dateStr}</span>
+                <span style="font-size:0.7rem;color:${open ? '#fff' : '#6B7280'}">${open ? '▲' : '▼'}</span>
               </div>
             </div>
-            <div style="font-size:0.7rem;color:#6B7280;white-space:nowrap;flex-shrink:0">${dateStr}</div>
+            ${open ? scoreboardHTML(m) : ''}
           </div>
         `;
       }).join('');
+    }
+
+    window.expandMatch = function(i) { _open = (_open === i) ? -1 : i; renderFiltered(); };
+
+    function buildFilters(all) {
+      _all = all || [];
+      _open = -1;
+      const modes = [], agents = [], maps = [];
+      const sm = {}, sa = {}, sp = {};
+      _all.forEach(m => {
+        const q = String(m.metadata?.queue?.id || '');
+        if (q && !sm[q]) { sm[q] = 1; modes.push(q); }
+      });
+      _all.forEach(m => { const p = playerOf(m); const a = p?.agent?.name; if (a && !sa[a]) { sa[a] = 1; agents.push(a); } });
+      _all.forEach(m => { const mp = m.metadata?.map?.name || ''; if (mp && !sp[mp]) { sp[mp] = 1; maps.push(mp); } });
+      const bar = document.getElementById('filterBar');
+      bar.innerHTML = '<select id="fMode"></select><select id="fResult"></select><select id="fAgent"></select><select id="fMap"></select>';
+      document.querySelectorAll('#filterBar select').forEach(s => s.setAttribute('style','background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#ccd8ec;font-size:0.75rem;padding:7px 10px;outline:none'));
+      document.getElementById('fMode').innerHTML = '<option value="all">All modes</option>' + modes.map(m => `<option value="${m}">${escapeHtml(m)}</option>`).join('');
+      document.getElementById('fResult').innerHTML = '<option value="all">Wins + losses</option><option value="win">Wins only</option><option value="loss">Losses only</option>';
+      document.getElementById('fAgent').innerHTML = '<option value="all">All agents</option>' + agents.map(a => `<option value="${a}">${escapeHtml(a)}</option>`).join('');
+      document.getElementById('fMap').innerHTML = '<option value="all">All maps</option>' + maps.map(m => `<option value="${m}">${escapeHtml(m)}</option>`).join('');
+      ['fMode','fResult','fAgent','fMap'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+          _filter[id.slice(1).toLowerCase()] = this.value; renderFiltered();
+        });
+      });
+      renderFiltered();
+    }
+
+    function renderFiltered() {
+      const list = _all.filter(m => {
+        const p = playerOf(m); if (!p) return false;
+        if (_filter.mode !== 'all' && String(m.metadata?.queue?.id || '') !== _filter.mode) return false;
+        const won = m.teams.find(t => t.team_id === p.team_id)?.won || false;
+        if (_filter.result === 'win' && !won) return false;
+        if (_filter.result === 'loss' && won) return false;
+        if (_filter.agent !== 'all' && (p.agent?.name || '') !== _filter.agent) return false;
+        if (_filter.map !== 'all' && (m.metadata?.map?.name || '') !== _filter.map) return false;
+        return true;
+      });
+      renderMatches(list);
+    }
+
+    function scoreboardHTML(m) {
+      const meta = m.metadata;
+      const rounds = m.rounds || [];
+      const me = playerOf(m);
+      const myTeamId = me?.team_id;
+      const duration = meta?.ended_at && meta?.started_at ? Math.max(0, Math.round((new Date(meta.ended_at) - new Date(meta.started_at)) / 60000)) : 0;
+      const dots = rounds.map(r => {
+        const w = (myTeamId && r.winning_team === myTeamId);
+        return `<span style="display:inline-block;width:9px;height:12px;border-radius:2px;margin-right:3px;${w ? 'background:#23A55A' : w === undefined ? 'background:#3a3f4b' : 'background:#F23F43'}"></span>`;
+      }).join('');
+      const rows = m.players.map(p => {
+        const s = p.stats || {};
+        const k = s.kills||0, d = s.deaths||0, a = s.assists||0;
+        const hsP = k ? Math.round((s.headshots||0) / k * 100) : 0;
+        const adr = rounds.length ? Math.round((s.damage_made||0) / rounds.length) : 0;
+        const isMe = String(p.name||'') === String(VALORANT_NAME) && String(p.tag||'') === String(VALORANT_TAG);
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0">
+          <span style="width:14px;height:14px;border-radius:4px;flex-shrink:0;${p.team_id === 'red' ? 'background:#F23F43' : 'background:#4E6EF2'}"></span>
+          <span style="width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isMe ? '#fff' : '#ccd8ec'};font-size:0.78rem;font-weight:${isMe ? '700' : '400'}">${escapeHtml(p.name)}#${escapeHtml(p.tag)}</span>
+          <span style="width:84px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#6B7280;font-size:0.75rem">${escapeHtml(p.agent?.name || '')}</span>
+          <span style="flex:1"></span>
+          <span style="font-size:0.78rem;color:#fff;min-width:64px;text-align:right">${k}/${d}/${a}</span>
+          <span style="font-size:0.72rem;color:#9CA3AF;min-width:40px;text-align:right">${hsP}%</span>
+          <span style="font-size:0.78rem;color:#9CA3AF;min-width:54px;text-align:right">${adr} ADR</span>
+        </div>`;
+      }).join('');
+      return `
+        <div style="border-top:1px solid rgba(255,255,255,0.07);margin-top:10px;padding-top:10px">
+          <div style="display:flex;align-items:center;gap:12px;font-size:0.7rem;color:#6B7280;margin-bottom:6px;flex-wrap:wrap">
+            <span>${escapeHtml(meta.queue?.name || meta.queue?.id || '')}</span>
+            ${rounds.length ? `<span style="display:flex;align-items:center;gap:3px"><span style="color:#9CA3AF">rounds</span>${dots}</span>` : ''}
+            ${duration ? `<span>· ${duration} min</span>` : ''}
+          </div>
+          <div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;display:flex;gap:8px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <span style="width:164px">Player</span><span style="width:84px">Agent</span><span style="flex:1"></span>
+            <span style="min-width:64px;text-align:right">K/D/A</span><span style="min-width:40px;text-align:right">HS</span><span style="min-width:54px;text-align:right">ADR</span>
+          </div>
+          ${rows}
+        </div>`;
+    }
+
+    // ========== LIVE MATCH ==========
+    function setLiveNone() {
+      document.getElementById('liveDot').style.background = '#6B7280';
+      document.getElementById('liveBody').innerHTML = 'not in a game right now';
+    }
+    function renderLive(d) {
+      const data = Array.isArray(d) ? d[0] : d;
+      if (!data || !data.players || !data.players.length) { setLiveNone(); return; }
+      const body = document.getElementById('liveBody');
+      document.getElementById('liveDot').style.background = '#23A55A';
+      const mapn = data.metadata?.map?.name || 'Unknown map';
+      const mode = data.metadata?.mode || '';
+      const roundsPlayed = data.metadata?.rounds_played || (data.rounds ? data.rounds.length : 0);
+      const red = data.players.filter(p => p.team === 'red'), blue = data.players.filter(p => p.team === 'blue');
+      const col = (arr, hot) => `<div style="flex:1;min-width:220px;background:${hot ? 'rgba(242,63,67,0.07)' : 'rgba(78,110,242,0.07)'};border-radius:12px;padding:10px 12px">
+        <div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">${hot ? 'Red team' : 'Blue team'}</div>
+        ${arr.map(p => `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:0.8rem">
+          <span style="font-size:0.78rem;color:#fff;font-weight:600;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.name)}#${escapeHtml(p.tag)}</span>
+          <span style="font-size:0.72rem;color:#9CA3AF;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.character || p.agent?.name || '')}</span>
+        </div>`).join('') || '<div style="font-size:0.7rem;color:#6B7280">spectating</div>'}
+      </div>`;
+      const redW = red[0] && red[0].rounds_won !== undefined ? red[0].rounds_won : null;
+      const blueW = blue[0] && blue[0].rounds_won !== undefined ? blue[0].rounds_won : null;
+      const anyScore = redW !== null || blueW !== null;
+      body.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <span style="font-weight:600;color:#fff">${escapeHtml(mapn)}</span>
+          ${mode ? `<span style="font-size:0.7rem;color:#6B7280">${escapeHtml(mode)}</span>` : ''}
+          ${anyScore ? `<span style="font-size:1.05rem;font-weight:700;color:#fff;margin-left:auto">${redW} : ${blueW}</span>` : (roundsPlayed ? `<span style="margin-left:auto;font-size:0.7rem;color:#6B7280">round ${roundsPlayed}</span>` : '')}
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">${col(red,true)}${col(blue,false)}</div>`;
+    }
+    function checkLive() {
+      let found = false;
+      const tryR = (i) => {
+        if (i >= REGIONS.length) { if (!found) setLiveNone(); return; }
+        tryFetch(`https://api.henrikdev.xyz/valorant/v2/live/${REGIONS[i]}/${VALORANT_NAME}/${VALORANT_TAG}`)
+          .then(d => { if (!found && d && d.data) { found = true; renderLive(d.data); } })
+          .catch(() => { if (!found) tryR(i + 1); });
+      };
+      tryR(0);
+    }
+
+    // ========== RANKED FORM ==========
+    function svgChart(values, w, h) {
+      if (!values || values.length < 2) return '<div style="padding:6px 0;color:#6B7280;font-size:0.8rem">not enough ranked history yet — will appear as you play</div>';
+      const min = Math.min.apply(null, values), max = Math.max.apply(null, values), range = (max - min) || 1;
+      const pts = values.map((v, i) => `${((i / (values.length - 1)) * w).toFixed(1)},${(h - 8 - ((v - min) / range) * (h - 20)).toFixed(1)}`);
+      const last = pts[pts.length - 1].split(',');
+      return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;display:block">
+        <line x1="0" y1="${h-8}" x2="${w}" y2="${h-8}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <polygon points="0,${h-8} ${pts.join(' ')} ${w},${h-8}" fill="rgba(255,70,85,0.14)"/>
+        <polyline points="${pts.join(' ')}" fill="none" stroke="#ff4655" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+        ${pts.map((p, k) => `<circle cx="${p.split(',')[0]}" cy="${p.split(',')[1]}" r="${k === values.length - 1 ? 4 : 2}" fill="${k === values.length - 1 ? '#ff4655' : 'rgba(255,70,85,0.6)'}" ${k === values.length - 1 ? 'stroke="#fff" stroke-width="1.2"' : ''}/>`).join('')}
+        <text x="0" y="12" style="font:400 10px Satoshi,sans-serif;fill:#6B7280">${max}</text>
+        <text x="0" y="${h-12}" style="font:400 10px Satoshi,sans-serif;fill:#6B7280">${min}</text>
+        <text x="${last[0]}" y="${Math.max(14, parseFloat(last[1]) - 8)}" text-anchor="end" style="font:600 11px Satoshi,sans-serif;fill:#fff">${values[values.length - 1]}</text>
+      </svg>`;
+    }
+    function renderRanked(hist, matches) {
+      const card = document.getElementById('formCard');
+      if (!card) return;
+      card.style.display = 'block';
+      const vals = (hist || []).map(h => h.elo).filter(v => typeof v === 'number');
+      document.getElementById('formChart').innerHTML = svgChart(vals, 600, 150);
+      const comp = (matches || []).filter(m => String(m.metadata?.queue?.id || '').toLowerCase().indexOf('competitiv') === 0);
+      const w = comp.filter(m => { const p = playerOf(m); return p && (m.teams.find(t => t.team_id === p.team_id)?.won || false); }).length;
+      const l = comp.length - w;
+      const k = comp.reduce((s, m) => { const p = playerOf(m); return s + ((p && p.stats?.kills) || 0); }, 0);
+      const d = comp.reduce((s, m) => { const p = playerOf(m); return s + ((p && p.stats?.deaths) || 0); }, 0);
+      const a = comp.reduce((s, m) => { const p = playerOf(m); return s + ((p && p.stats?.assists) || 0); }, 0);
+      const sorted = (hist || []).slice().sort((x, y) => (x.date_raw || 0) - (y.date_raw || 0));
+      const lastChg = sorted.length ? sorted[sorted.length - 1].mmr_change_to_last_game : 0;
+      const lastRank = sorted.length ? sorted[sorted.length - 1].currenttierpatched : '';
+      document.getElementById('formStats').innerHTML = `
+        <span><b style="color:#fff">${w}W</b> / <b style="color:#fff">${l}L</b></span>
+        <span>WR <b style="color:#fff">${comp.length ? Math.round(w / comp.length * 100) : 0}%</b></span>
+        <span>K/D <b style="color:#fff">${d ? (k / d).toFixed(2) : '—'}</b></span>
+        <span>K/D/A <b style="color:#fff">${k}/${d}/${a}</b></span>
+        ${lastRank ? `<span>${escapeHtml(lastRank)}</span><span>last <b style="color:${lastChg > 0 ? '#23A55A' : lastChg < 0 ? '#F23F43' : '#fff'}">${lastChg > 0 ? '+' : ''}${lastChg} RR</b></span>` : ''}`;
+      document.getElementById('formSummary').textContent = lastRank ? `last ranked match: ${escapeHtml(lastRank)}` : '';
     }
 
     // ========== INIT ==========
@@ -278,8 +479,10 @@ function renderMatches(matches) {
       const mmrC = cached && cached.mmr && (Date.now() - cached.mmr.ts < PROFILE_TTL) ? cached.mmr : null;
       const accC = cached && cached.account && (Date.now() - cached.account.ts < PROFILE_TTL) ? cached.account : null;
       const matchC = cached && cached.matches && (Date.now() - cached.matches.ts < MATCHES_TTL) ? cached.matches : null;
+      const formC = cached && cached.form && (Date.now() - cached.form.ts < MATCHES_TTL) ? cached.form : null;
       if (mmrC && accC) renderProfile(mmrC.data, accC.data);
-      if (matchC) renderMatches(matchC.data);
+      if (matchC) buildFilters(matchC.data);
+      if (formC) { _hist = formC.data || []; renderRanked(_hist, matchC ? matchC.data : []); }
 
       if (!(mmrC && accC)) {
         Promise.all([
@@ -294,9 +497,23 @@ function renderMatches(matches) {
       }
       if (!matchC) {
         tryRegions(r => `https://api.henrikdev.xyz/valorant/v4/matches/${r}/pc/${VALORANT_NAME}/${VALORANT_TAG}?size=10`)
-          .then(matchData => { setCache('matches', matchData); renderMatches(matchData.data); })
+          .then(matchData => {
+            setCache('matches', matchData);
+            buildFilters(matchData.data);
+            if (_hist.length) renderRanked(_hist, matchData.data);
+          })
           .catch(() => { document.getElementById('matchList').innerHTML = ''; });
       }
+      if (!formC) {
+        tryRegions(r => `https://api.henrikdev.xyz/valorant/v1/mmr-history/${r}/${VALORANT_NAME}/${VALORANT_TAG}`)
+          .then(hd => {
+            _hist = hd.data || []; setCache('form', hd);
+            renderRanked(_hist, _all);
+          })
+          .catch(() => {});
+      }
+      checkLive();
+      setInterval(checkLive, 90000);
     })();
   </script>
 
