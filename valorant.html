@@ -107,23 +107,9 @@
         </div>
       </section>
 
-      <!-- Live Match -->
-      <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:16px">
-        <div class="w-full max-w-3xl anim-reveal anim-delay-2">
-          <div class="widget-card" style="padding:18px 22px" id="liveCard">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-              <span id="liveDot" style="width:8px;height:8px;border-radius:50%;background:#6B7280;display:inline-block"></span>
-              <h2 style="font-size:1rem;font-weight:600;color:#f4f7f8;margin:0">In Game</h2>
-              <span style="margin-left:auto;font-size:0.7rem;color:#6B7280">auto-refreshes</span>
-            </div>
-            <div id="liveBody" style="font-size:0.85rem;color:#9CA3AF">checking…</div>
-          </div>
-        </div>
-      </section>
-
       <!-- Match History -->
       <section class="relative flex w-full flex-col items-center px-4" style="padding-top:8px;padding-bottom:48px">
-        <div class="w-full max-w-3xl anim-reveal anim-delay-3">
+        <div class="w-full max-w-3xl anim-reveal anim-delay-2">
           <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;margin:0 4px 12px">
             <h2 style="font-size:1.1rem;font-weight:600;color:#f4f7f8;margin:0">Match History</h2>
             <span style="font-size:0.75rem;color:#6B7280" id="formSummary"></span>
@@ -391,49 +377,6 @@ const CACHE_KEY = 'val_data';
         </div>`;
     }
 
-    // ========== LIVE MATCH ==========
-    function setLiveNone() {
-      document.getElementById('liveDot').style.background = '#6B7280';
-      document.getElementById('liveBody').innerHTML = 'not in a game right now';
-    }
-    function renderLive(d) {
-      const data = Array.isArray(d) ? d[0] : d;
-      if (!data || !data.players || !data.players.length) { setLiveNone(); return; }
-      const body = document.getElementById('liveBody');
-      document.getElementById('liveDot').style.background = '#23A55A';
-      const mapn = data.metadata?.map?.name || 'Unknown map';
-      const mode = data.metadata?.mode || '';
-      const roundsPlayed = data.metadata?.rounds_played || (data.rounds ? data.rounds.length : 0);
-      const red = data.players.filter(p => p.team === 'red'), blue = data.players.filter(p => p.team === 'blue');
-      const col = (arr, hot) => `<div style="flex:1;min-width:220px;background:${hot ? 'rgba(242,63,67,0.07)' : 'rgba(78,110,242,0.07)'};border-radius:12px;padding:10px 12px">
-        <div style="font-size:0.65rem;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">${hot ? 'Red team' : 'Blue team'}</div>
-        ${arr.map(p => `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:0.8rem">
-          <span style="font-size:0.78rem;color:#fff;font-weight:600;min-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.name)}#${escapeHtml(p.tag)}</span>
-          <span style="font-size:0.72rem;color:#9CA3AF;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.character || p.agent?.name || '')}</span>
-        </div>`).join('') || '<div style="font-size:0.7rem;color:#6B7280">spectating</div>'}
-      </div>`;
-      const redW = red[0] && red[0].rounds_won !== undefined ? red[0].rounds_won : null;
-      const blueW = blue[0] && blue[0].rounds_won !== undefined ? blue[0].rounds_won : null;
-      const anyScore = redW !== null || blueW !== null;
-      body.innerHTML = `
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-          <span style="font-weight:600;color:#fff">${escapeHtml(mapn)}</span>
-          ${mode ? `<span style="font-size:0.7rem;color:#6B7280">${escapeHtml(mode)}</span>` : ''}
-          ${anyScore ? `<span style="font-size:1.05rem;font-weight:700;color:#fff;margin-left:auto">${redW} : ${blueW}</span>` : (roundsPlayed ? `<span style="margin-left:auto;font-size:0.7rem;color:#6B7280">round ${roundsPlayed}</span>` : '')}
-        </div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">${col(red,true)}${col(blue,false)}</div>`;
-    }
-    function checkLive() {
-      let found = false;
-      const tryR = (i) => {
-        if (i >= REGIONS.length) { if (!found) setLiveNone(); return; }
-        tryFetch(`https://api.henrikdev.xyz/valorant/v2/live/${REGIONS[i]}/${VALORANT_NAME}/${VALORANT_TAG}`)
-          .then(d => { if (!found && d && d.data) { found = true; renderLive(d.data); } })
-          .catch(() => { if (!found) tryR(i + 1); });
-      };
-      tryR(0);
-    }
-
     // ========== RANKED FORM ==========
     function svgChart(values, w, h) {
       if (!values || values.length < 2) return '<div style="padding:6px 0;color:#6B7280;font-size:0.8rem">not enough ranked history yet — will appear as you play</div>';
@@ -513,8 +456,6 @@ const CACHE_KEY = 'val_data';
           })
           .catch(() => {});
       }
-      checkLive();
-      setInterval(checkLive, 90000);
     })();
   </script>
 
