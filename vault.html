@@ -170,7 +170,6 @@
 <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
           <button class="btn btn-secondary section-jump" data-target="secAnalytics" style="padding:10px 16px">Analytics</button>
-          <button class="btn btn-secondary section-jump" data-target="secSettings" style="padding:10px 16px">Settings</button>
         </div>
 
         <div id="secGallery" class="card" style="margin-bottom:20px">
@@ -330,34 +329,7 @@
           <div id="anaClicks"></div>
         </div>
 
-        <div id="secSettings" class="card">
-          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">⚙️ Settings</h2>
-          <label class="fld">Background video URL</label>
-          <div class="flex gap-2">
-            <input class="input" id="setBg" placeholder="https://... .mp4" />
-            <button class="btn" id="applyBgBtn" style="flex-shrink:0">Apply</button>
-          </div>
-          <p style="font-size:0.75rem;opacity:0.4;margin-top:8px">applies site-wide (home, pages, and this one). leave empty + apply to restore the default.</p>
-<label class="fld" style="margin-top:18px">Username / alias <span style="opacity:0.4;font-weight:400">(shown in Analytics)</span></label>
-          <div class="flex gap-2" style="max-width:360px">
-            <input class="input" id="setUser" placeholder="your username" />
-            <button class="btn" id="saveUserBtn" style="flex-shrink:0">Save</button>
-          </div>
-          <label class="fld" style="margin-top:18px">Change passcode</label>
-          <div class="flex gap-2" style="max-width:360px">
-            <input class="input" id="newPass" type="password" placeholder="new passcode" />
-            <button class="btn" id="changePassBtn" style="flex-shrink:0">Save</button>
-          </div>
-          <label class="fld" style="margin-top:18px">Supabase connection <span style="opacity:0.4;font-weight:400">(for the home page guestbook)</span></label>
-          <div class="flex flex-col gap-2" style="max-width:420px">
-            <input class="input" id="supUrl" placeholder="project url — https://xxxx.supabase.co" />
-            <input class="input" id="supAnon" placeholder="anon public key" />
-            <button class="btn" id="saveSupBtn" style="align-self:flex-start">Save connection</button>
-          </div>
-<p style="font-size:0.75rem;opacity:0.4;margin-top:8px">read the SQL + setup steps from this repo's SUPABASE.md — the anon key is safe to ship in the browser; the delete functions are password-gated server-side.</p>
         </div>
-
-      </div>
 
     </section>
   </main>
@@ -676,7 +648,7 @@ var STORAGE={
       var list=load(STORAGE.gallery),box=document.getElementById('galleryList');
       if(!list.length){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">no custom items yet</p>';return}
       box.innerHTML=list.map(function(it,i){
-return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')'+((it.img&&it.img.indexOf('data:')===0)?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
+return '<div class="item-row"><div class="item-swatch" style="background:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+')'+((it.img&&!/^data:video/.test(it.img))?';background-size:cover;background-position:center;background-image:linear-gradient(135deg,'+(it.bg1||'#4764ec')+','+(it.bg2||'#ff4466')+'),url(\''+esc(it.img)+'\')':'')+'"></div>'+
         '<div style="flex:1;min-width:0"><div style="font-size:0.9rem;font-weight:600;color:#fff">'+esc(it.title)+'</div>'+
         '<div style="font-size:0.75rem;opacity:0.45">'+(it.date?esc(it.date):'no description')+'</div></div>'+
         '<div class="row-actions"><button class="btn btn-secondary" onclick="editGalleryItem('+i+')" style="padding:8px 12px;font-size:0.75rem">Edit</button>'+
@@ -1057,24 +1029,6 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
         .then(function(){btn.disabled=false;btn.textContent='Import'});
     });
 
-    /* ---------------- SETTINGS ---------------- */
-    document.getElementById('applyBgBtn').addEventListener('click',function(){
-      var v=document.getElementById('setBg').value.trim();
-      if(!v){localStorage.removeItem(STORAGE.bg);showToast('Default background restored (after reload)')}
-      else{localStorage.setItem(STORAGE.bg,v);showToast('Background saved (applies after reload)')}
-      document.getElementById('setBg').value='';
-    });
-document.getElementById('changePassBtn').addEventListener('click',function(){
-      var v=document.getElementById('newPass').value;
-      if(v.length<4){showToast('Passcode must be 4+ chars');return}
-      var old=getPass();
-      localStorage.setItem(STORAGE.pass,v);
-      sessionStorage.setItem('gbOwnerPass',v);
-      syncGuestbookPass(old,v);
-      document.getElementById('newPass').value='';
-      showToast('Passcode changed');
-    });
-
     document.getElementById('resetDataBtn') && document.getElementById('resetDataBtn').removeEventListener('click',function(){});
     (function safeDanger(){var el=document.getElementById('resetPassBtn');if(el)el.parentNode.removeChild(el);var el2=document.getElementById('resetDataBtn');if(el2)el2.parentNode.removeChild(el2);})();
 
@@ -1092,20 +1046,12 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
       s.onerror=function(){sbLoaded=true;cb(null)};
       document.head.appendChild(s);
     }
-    function syncGuestbookPass(oldPass,newPass){
-      getSbClient(function(c){
-        if(!c)return;
-        c.rpc('change_passcode',{old:oldPass,new:newPass}).then(function(res){
-          if(res.error)showToast('Supabase passcode sync failed');
-        });
-      });
-    }
     function setCmNote(t){var n=document.getElementById('cmNote');if(n)n.textContent=t}
     function refreshCmList(){
       var box=document.getElementById('cmList');
       box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">loading…</p>';
       getSbClient(function(c){
-        if(!c){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">supabase not connected — add url + anon key in Settings.</p>';return}
+        if(!c){box.innerHTML='<p style="font-size:0.8rem;opacity:0.4">supabase not connected.</p>';return}
         var ownerLocked=!sessionStorage.getItem('gbOwnerPass');
         c.from('comments').select('id,name,message,is_anon,is_verified,created_at,fingerprint').order('created_at',{ascending:false}).limit(50).then(function(res){
           var data=res.data,error=res.error;
@@ -1165,22 +1111,10 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
         });
       });
     };
-    document.getElementById('saveSupBtn').addEventListener('click',function(){
-      var u=document.getElementById('supUrl').value.trim(),k=document.getElementById('supAnon').value.trim();
-      if(!u||!k){showToast('Both URL and anon key required');return}
-      localStorage.setItem('supabaseUrl',u);localStorage.setItem('supabaseAnon',k);
-      showToast('Connection saved — reloading');
-      setTimeout(function(){location.reload()},600);
-    });
     document.getElementById('openNewGb').addEventListener('click',function(){
       if(window.GB&&GB.open)GB.open();
       else{window.guestbookOpenPending=true;showToast('Guestbook is loading… try again in a second')}
     });
-    (function prefillSupabase(){
-      var u=localStorage.getItem('supabaseUrl')||'https://dpjxjnqfqcodxvjvwvhr.supabase.co',k=localStorage.getItem('supabaseAnon')||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRwanhqbnFmcWNvZHh2anZ3dmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDgxNzksImV4cCI6MjA5MzcyNDE3OX0.G7MVcOcElwNsIC-6I0zqu005X_rvdqmY4BfZRhDm2hk';
-      document.getElementById('supUrl').value=u;
-      document.getElementById('supAnon').value=k;
-    })();
     refreshCmList();
 
     /* ---------------- ANALYTICS ---------------- */
@@ -1188,7 +1122,7 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
     function refreshAnalytics(){
       var st = document.getElementById('anaStatus');
       if(!st) return;
-      if(!window.Syn || !Syn.queryStats){ st.textContent = 'supabase not connected — add url + anon key in Settings.'; return }
+      if(!window.Syn || !Syn.queryStats){ st.textContent = 'supabase not connected.'; return }
       st.textContent = 'loading…';
       var since = new Date(Date.now() - anaRangeH * 3600000).toISOString();
       Syn.queryStats(getPass(), since, function(data){
@@ -1291,13 +1225,6 @@ document.getElementById('changePassBtn').addEventListener('click',function(){
         refreshAnalytics();
       });
     });
-    document.getElementById('saveUserBtn').addEventListener('click', function(){
-      var v = document.getElementById('setUser').value.trim();
-      if(!v){ localStorage.removeItem('vaultUsername'); showToast('Username cleared') }
-      else { localStorage.setItem('vaultUsername', v); showToast('Username saved') }
-      document.getElementById('setUser').value = '';
-    });
-    (function(){ var u = localStorage.getItem('vaultUsername'); if(u) document.getElementById('setUser').value = u })();
 
     /* ---------------- LOCKFLOW + INIT ---------------- */
 document.getElementById('unlockBtn').addEventListener('click',function(){
