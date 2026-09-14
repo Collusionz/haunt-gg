@@ -185,10 +185,6 @@
             <button class="btn btn-secondary" id="gUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
           </div>
           <input type="file" id="gFile" accept="image/*,video/mp4" style="display:none" />
-          <div class="flex gap-2" style="align-items:center;margin-top:6px">
-            <label style="font-size:0.7rem;opacity:0.4;white-space:nowrap">ImgBB API key</label>
-            <input class="input" id="imgbbKey" placeholder="paste free key from imgbb.com/api" style="font-size:0.75rem;max-width:260px" />
-          </div>
 <div class="upload-preview" id="gPreview"></div>
           <div class="flex gap-2">
             <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
@@ -594,8 +590,9 @@ var STORAGE={
     document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCrop()});
 
     /* ---------------- GALLERY ---------------- */
+    var IMGBB_KEY='f731deed0a341f0b5c16002f0efef6c2';
     var pendingGalleryImg='',pendingProjectImg='';
-    function getImgbbKey(){return document.getElementById('imgbbKey').value.trim()||''}
+    function getImgbbKey(){return IMGBB_KEY}
     function uploadToImgbb(key,b64,cb){
       fetch('https://api.imgbb.com/1/upload?key='+encodeURIComponent(key),{method:'POST',body:(function(){var d=new FormData();d.append('image',b64);return d})()})
       .then(function(r){return r.json()}).then(function(j){cb(j.data&&j.data.url?j.data.url:null)}).catch(function(){cb(null)});
@@ -604,7 +601,6 @@ var STORAGE={
       fetch('https://api.imgbb.com/1/upload?key='+encodeURIComponent(key),{method:'POST',body:(function(){var d=new FormData();d.append('image',url);return d})()})
       .then(function(r){return r.json()}).then(function(j){cb(j.data&&j.data.url?j.data.url:null)}).catch(function(){cb(null)});
     }
-    (function(){var el=document.getElementById('imgbbKey');if(el)el.value=localStorage.getItem('imgbbKey')||'';if(el)el.addEventListener('change',function(){localStorage.setItem('imgbbKey',el.value.trim());showToast('API key saved')})})();
     document.getElementById('gUploadBtn').addEventListener('click',function(){
       fileInput(function(f){
         var type=(f.type||'').toLowerCase();
