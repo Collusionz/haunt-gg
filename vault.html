@@ -185,6 +185,10 @@
             <button class="btn btn-secondary" id="gUploadBtn" style="flex-shrink:0;padding:12px 16px">Upload</button>
           </div>
           <input type="file" id="gFile" accept="image/*,video/mp4" style="display:none" />
+          <div class="flex gap-2" style="align-items:center;margin-top:6px">
+            <label style="font-size:0.7rem;opacity:0.4;white-space:nowrap">ImgBB API key</label>
+            <input class="input" id="imgbbKey" placeholder="paste free key from imgbb.com/api" style="font-size:0.75rem;max-width:260px" />
+          </div>
 <div class="upload-preview" id="gPreview"></div>
           <div class="flex gap-2">
             <button class="btn" id="addGalleryBtn" style="margin-top:18px">＋ Add to Gallery</button>
@@ -591,6 +595,16 @@ var STORAGE={
 
     /* ---------------- GALLERY ---------------- */
     var pendingGalleryImg='',pendingProjectImg='';
+    function getImgbbKey(){return document.getElementById('imgbbKey').value.trim()||''}
+    function uploadToImgbb(key,b64,cb){
+      fetch('https://api.imgbb.com/1/upload?key='+encodeURIComponent(key),{method:'POST',body:(function(){var d=new FormData();d.append('image',b64);return d})()})
+      .then(function(r){return r.json()}).then(function(j){cb(j.data&&j.data.url?j.data.url:null)}).catch(function(){cb(null)});
+    }
+    function imgbbFromUrl(key,url,cb){
+      fetch('https://api.imgbb.com/1/upload?key='+encodeURIComponent(key),{method:'POST',body:(function(){var d=new FormData();d.append('image',url);return d})()})
+      .then(function(r){return r.json()}).then(function(j){cb(j.data&&j.data.url?j.data.url:null)}).catch(function(){cb(null)});
+    }
+    (function(){var el=document.getElementById('imgbbKey');if(el)el.value=localStorage.getItem('imgbbKey')||'';if(el)el.addEventListener('change',function(){localStorage.setItem('imgbbKey',el.value.trim());showToast('API key saved')})})();
     document.getElementById('gUploadBtn').addEventListener('click',function(){
       fileInput(function(f){
         var type=(f.type||'').toLowerCase();
@@ -616,29 +630,40 @@ var STORAGE={
         if(type==='image/gif'){
           var rd=new FileReader();
           rd.onload=function(){
-            pendingGalleryImg=rd.result;
-            var pv=document.getElementById('gPreview');
-            pv.innerHTML='';
-            if(type.indexOf('video/')===0){
-              var v=document.createElement('video');
-              v.src=rd.result;v.muted=true;v.loop=true;v.playsInline=true;
-              v.setAttribute('style','width:100%;max-height:140px;object-fit:cover');
-              pv.appendChild(v);v.play().catch(function(){});
+            var key=getImgbbKey();
+            if(key){
+              showToast('Uploading to ImgBB…');
+              uploadToImgbb(key,rd.result.split(',')[1],function(url){
+                if(!url){showToast('ImgBB failed — saved locally');pendingGalleryImg=rd.result}
+                else{pendingGalleryImg=url;showToast('Uploaded to ImgBB')}
+                var pv=document.getElementById('gPreview');pv.innerHTML='';var im=document.createElement('img');im.src=rd.result;pv.appendChild(im);pv.style.display='block';
+                var box=document.getElementById('gImg');box.value='';box.placeholder='image ready (uploaded)';
+              });
             }else{
-              var im=document.createElement('img');im.src=rd.result;pv.appendChild(im);
+              pendingGalleryImg=rd.result;
+              var pv=document.getElementById('gPreview');pv.innerHTML='';var im=document.createElement('img');im.src=rd.result;pv.appendChild(im);pv.style.display='block';
+              var box=document.getElementById('gImg');box.value='';box.placeholder='media ready (uploaded)';
             }
-            pv.style.display='block';
-            var box=document.getElementById('gImg');box.value='';box.placeholder='media ready (uploaded)';
           };
           rd.readAsDataURL(f);
           return;
         }
         openCrop(f,function(data){
           if(!data){showToast('Failed to read image');return}
-          pendingGalleryImg=data;
-          var pv=document.getElementById('gPreview');
-          pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
-          var box=document.getElementById('gImg');box.value='';box.placeholder='image ready (cropped)';
+          var key=getImgbbKey();
+          if(key){
+            showToast('Uploading to ImgBB…');
+            uploadToImgbb(key,data.split(',')[1],function(url){
+              if(!url){showToast('ImgBB failed — saved locally');pendingGalleryImg=data}
+              else{pendingGalleryImg=url;showToast('Uploaded to ImgBB')}
+              var pv=document.getElementById('gPreview');pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
+              var box=document.getElementById('gImg');box.value='';box.placeholder='image ready (uploaded)';
+            });
+          }else{
+            pendingGalleryImg=data;
+            var pv=document.getElementById('gPreview');pv.innerHTML='';var im=document.createElement('img');im.src=data;pv.appendChild(im);pv.style.display='block';
+            var box=document.getElementById('gImg');box.value='';box.placeholder='image ready (cropped)';
+          }
         });
       },'image/*,video/*');
     });
@@ -692,6 +717,20 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
       if(!title){showToast('Title required');return}
       var urlVal=document.getElementById('gImg').value.trim();
       var img=pendingGalleryImg||urlVal;
+      var key=getImgbbKey();
+      if(key && !pendingGalleryImg && urlVal && /^https?:\/\//i.test(urlVal) && !/\.(mp4|webm|mov)$/i.test(urlVal)){
+        showToast('Uploading URL to ImgBB…');
+        imgbbFromUrl(key,urlVal,function(perma){
+          if(perma)img=perma;
+          else showToast('ImgBB failed — using original URL (may expire)');
+          saveGalleryItem(img);
+        });
+      }else{
+        saveGalleryItem(img);
+      }
+    });
+    function saveGalleryItem(img){
+      var title=document.getElementById('gTitle').value.trim();
       var list=load(STORAGE.gallery);
       if(editingGallery>=0&&list[editingGallery]){
         list[editingGallery].title=title;
@@ -705,7 +744,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
         try{save(STORAGE.gallery,list)}catch(e){showToast('Media too large for storage');return}
         cancelGalleryEdit();renderGalleryList();showToast('Added to gallery');
       }
-    });
+    }
 
     /* ---------------- PHRASES ---------------- */
     function renderPhraseList(){
