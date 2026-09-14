@@ -354,19 +354,20 @@ const CACHE_KEY = 'val_data';
       const rounds = m.rounds || [];
       const me = playerOf(m);
       const myTeamId = me?.team_id;
-      const duration = meta?.ended_at && meta?.started_at ? Math.max(0, Math.round((new Date(meta.ended_at) - new Date(meta.started_at)) / 60000)) : 0;
+      const duration = meta?.game_length_in_ms ? Math.max(0, Math.round(meta.game_length_in_ms / 60000)) : 0;
       const dots = rounds.map(r => {
-        const w = (myTeamId && r.winning_team === myTeamId);
+        const w = r.winning_team ? (r.winning_team === myTeamId) : undefined;
         return `<span style="display:inline-block;width:9px;height:12px;border-radius:2px;margin-right:3px;${w ? 'background:#23A55A' : w === undefined ? 'background:#3a3f4b' : 'background:#F23F43'}"></span>`;
       }).join('');
       const rows = m.players.map(p => {
         const s = p.stats || {};
         const k = s.kills||0, d = s.deaths||0, a = s.assists||0;
-        const hsP = k ? Math.round((s.headshots||0) / k * 100) : 0;
-        const adr = rounds.length ? Math.round((s.damage_made||0) / rounds.length) : 0;
+        const shotsBox = (s.headshots||0) + (s.bodyshots||0) + (s.legshots||0);
+        const hsP = shotsBox ? Math.round((s.headshots||0) / shotsBox * 100) : 0;
+        const adr = rounds.length ? Math.round((s.damage?.dealt || 0) / rounds.length) : 0;
         const isMe = String(p.name||'') === String(VALORANT_NAME) && String(p.tag||'') === String(VALORANT_TAG);
         return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0">
-          <span style="width:14px;height:14px;border-radius:4px;flex-shrink:0;${p.team_id === 'red' ? 'background:#F23F43' : 'background:#4E6EF2'}"></span>
+          <span style="width:14px;height:14px;border-radius:4px;flex-shrink:0;${String(p.team_id).toLowerCase() === 'red' ? 'background:#F23F43' : 'background:#4E6EF2'}"></span>
           <span style="width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isMe ? '#fff' : '#ccd8ec'};font-size:0.78rem;font-weight:${isMe ? '700' : '400'}">${escapeHtml(p.name)}#${escapeHtml(p.tag)}</span>
           <span style="width:84px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#6B7280;font-size:0.75rem">${escapeHtml(p.agent?.name || '')}</span>
           <span style="flex:1"></span>
