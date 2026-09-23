@@ -1040,8 +1040,7 @@ return '<div class="item-row"><div class="item-swatch" style="background:linear-
         var u=(j&&j.data)?j.data:null;
         if(!u||(!u.global_name&&!u.username)||!u.id)throw new Error('notfound');
         var name=u.global_name||u.username;
-        var av=(u.avatarURL&&u.avatarURL.indexOf('cdn.discordapp.com')!==-1)?u.avatarURL:'';
-        if(!av&&u.avatar&&u.id)av='https://cdn.discordapp.com/avatars/'+u.id+'/'+u.avatar+(String(u.avatar).indexOf('a_')===0?'.gif':'.png')+'?size=256';
+        var av = '/api/discord-avatar?id=' + u.id;
         document.getElementById('fName').value=name;
         if(av){document.getElementById('fImg').value=av;document.getElementById('fImg').placeholder='ready (imported)'}
         showToast('Imported '+(name||'user')+(av?'':' — no avatar set'));
