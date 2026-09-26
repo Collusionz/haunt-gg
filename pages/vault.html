@@ -7,7 +7,7 @@
   <meta name="description" content="personal website" />
   <meta name="theme-color" content="#5573f4" />
   <meta name="robots" content="noindex,nofollow" />
-  <script src="/sync.js"></script>
+  <script src="/scripts/sync.js"></script>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
   <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
@@ -87,10 +87,10 @@
     .paste-badge.on{display:inline-block}
     .kbd{display:inline-block;padding:1px 5px;border-radius:5px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.07);color:#dfe6ff;font-size:0.68rem;font-family:ui-monospace,Consolas,monospace}
   </style>
-<script src="/nav.js"></script>
-  <script src="/fx.js" defer></script>
+<script src="/scripts/nav.js"></script>
+  <script src="/scripts/fx.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
-  <script src="/fx2.js" defer></script>
+  <script src="/scripts/fx2.js" defer></script>
   </head>
 <body>
 <nav class="side-nav">
@@ -1535,9 +1535,9 @@ function loadAllLists(){
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}
   </script>
-<script src="/analytics.js" defer></script>
-<script src="/player.js" defer></script>
-<script src="/bg.js" defer></script>
-<script src="/guestbook.js" defer></script>
+<script src="/scripts/analytics.js" defer></script>
+<script src="/scripts/player.js" defer></script>
+<script src="/scripts/bg.js" defer></script>
+<script src="/scripts/guestbook.js" defer></script>
 </body>
 </html>
