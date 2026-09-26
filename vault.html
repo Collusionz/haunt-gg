@@ -427,9 +427,9 @@ var STORAGE={
     }
     function thumbHtml(src){
       if(!src)return '';
-      return src.indexOf('data:')===0
-        ? '<img src="'+src+'" style="width:100%;height:100%;object-fit:cover" />'
-        : '<div style="width:100%;height:100%;background-size:cover;background-position:center;background-image:url(\''+esc(src)+'\')"></div>';
+      // Skip embedding full data URLs in list for speed; keep in storage/previews
+      if(src.indexOf('data:')===0)return '';
+      return '<div style="width:100%;height:100%;background-size:cover;background-position:center;background-image:url(\''+esc(src)+'\')"></div>';
     }
 
     var crop=null,cropRaf=0,cropZoomAnim=null;
