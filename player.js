@@ -204,3 +204,17 @@
     core.startAuto();
   }
 })();
+
+// Volume control UI (persistent across soft nav)
+(function () {
+  if (document.getElementById('hzVolUI')) return;
+  var ui = document.createElement('div');
+  ui.id = 'hzVolUI';
+  ui.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:60;background:rgba(6,8,14,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;color:#fff;font-family:"Satoshi",sans-serif;font-size:0.75rem;user-select:none';
+  var audio = window.__hz && window.__hz.audio;
+  if (!audio) return;
+  ui.innerHTML = '<span style="opacity:0.6">&#9835;</span><input type="range" min="0" max="1" step="0.05" value="' + (audio.volume || 0.5) + '" style="width:80px;accent-color:#5573f4;cursor:pointer;vertical-align:middle" aria-label="volume">';
+  var inp = ui.querySelector('input');
+  inp.addEventListener('input', function () { audio.volume = parseFloat(this.value); try { localStorage.setItem('hzVol', audio.volume); } catch (e) {} });
+  document.body.appendChild(ui);
+})();
