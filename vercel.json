@@ -1,9 +1,5 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/", "destination": "/pages/index.html" },
-    { "source": "/(gallery|vault|links|music|projects|tools|widgets|valorant|acquaintances|404)", "destination": "/pages/$1.html" }
-  ],
   "headers": [
     { "source": "/bg.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
     { "source": "/nav.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0" }] },
