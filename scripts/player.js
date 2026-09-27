@@ -55,9 +55,9 @@
     audio.loop = false;
     try {
       var v = parseFloat(localStorage.getItem('hzVol'));
-      if (isFinite(v) && v >= 0 && v <= 1) audio.volume = v;
-      else audio.volume = 0.7;
-    } catch (e) { audio.volume = 0.7; }
+      if (isFinite(v) && v >= 0 && v <= 1) audio.volume = v * 0.95;
+      else audio.volume = 0.5 * 0.95;
+    } catch (e) { audio.volume = 0.5 * 0.95; }
     core.audio = audio;
 
     core.markUnlocked = function () {
