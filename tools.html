@@ -125,6 +125,7 @@
             <div style="display:flex;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.08)">
               <button class="tab-btn active" data-tab="img"><span>Image Compressor</span></button>
               <button class="tab-btn" data-tab="yt"><span>YouTube Downloader</span></button>
+              <button class="tab-btn" data-tab="sp"><span>Spotify Downloader</span></button>
 
               <button class="tab-btn" data-tab="dc"><span>Timestamp Generator</span></button>
               <button class="tab-btn" data-tab="ct"><span>Color Text</span></button>
@@ -272,44 +273,6 @@
                   <a id="ytDl" target="_blank" rel="noopener" style="padding:9px 16px;border-radius:11px;background:#5573f4;color:#fff;font-size:0.8rem;font-weight:600;text-decoration:none;display:none">Download</a>
                 </div>
               </div>
-              <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:14px">
-                <div style="font-size:0.75rem;font-weight:600;color:#fff;margin-bottom:8px">Spotify Preview → YouTube Search + Download</div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-                  <input id="spUrl" class="inp" type="text" placeholder="https://open.spotify.com/track/..." style="flex:1;min-width:0;font-size:0.8rem" />
-                  <button onclick="showSpotify()" style="padding:0 14px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Preview</button>
-                  <button onclick="ytSearchFromSpotify()" style="padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.8rem">YT Search</button>
-                </div>
-                <div id="spPreview" style="width:100%;min-height:120px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)"></div>
-                <div style="display:flex;gap:8px;margin-top:8px">
-                  <input id="ytKeyword" class="inp" type="text" placeholder="search keyword (e.g. stay)" style="flex:1;min-width:0;font-size:0.8rem" />
-                  <button onclick="searchAndDownload(document.getElementById('ytKeyword').value.trim()||'stay')" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.8rem">YT Search + Download</button>
-                </div>
-              </div>
-              <script>
-                function showSpotify(){
-                  var u=document.getElementById('spUrl').value.trim();
-                  var m=u.match(/spotify\.com\/(track|playlist)\/([A-Za-z0-9]+)/);
-                  if(!m){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Enter a Spotify track or playlist URL</div>';return}
-                  var embed='https://open.spotify.com/embed/'+m[1]+'/'+m[2];
-                  document.getElementById('spPreview').innerHTML='<iframe style="border-radius:12px;width:100%;height:120px;border:none;background:transparent;" src="'+embed+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
-                }
-                function ytSearchFromSpotify(){
-                  var url=document.getElementById('spUrl').value.trim();
-                  var q=encodeURIComponent(url);
-                  window.open('https://www.youtube.com/results?search_query='+q,'_blank');
-                }
-                function searchAndDownload(query){
-                  fetch('https://invidious.snopyta.org/api/v1/search?q='+encodeURIComponent(query)+'&page=1')
-                  .then(function(r){return r.json()})
-                  .then(function(j){
-                    var vid=j[0]&&j[0].videoId;
-                    if(!vid){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">No result found for: '+escapeHtml(query)+'</div>';return}
-                    window.open('/api/yt.js?url='+encodeURIComponent('https://www.youtube.com/watch?v='+vid)+'&format=mp3','_blank');
-                  })
-                  .catch(function(){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#ff5561;font-size:0.85rem">Search failed</div>';});
-                }
-                function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-              </script>
             </div>
 
             <!-- ============ DISCORD TIMESTAMPS ============ -->
@@ -525,6 +488,8 @@
           }
           function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
         </script>
+
+
       </section>
 
     </main>
