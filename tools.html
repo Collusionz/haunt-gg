@@ -277,11 +277,9 @@
 
             <!-- ============ SPOTIFY DOWNLOADER ============ -->
             <div class="tool-tab" id="tab-sp" style="padding:20px">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-                <div>
-                  <div style="font-weight:600;font-size:1rem;color:#fff">Spotify Downloader</div>
-                  <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a Spotify link &middot; preview or download via YouTube</div>
-                </div>
+              <div style="margin-bottom:14px">
+                <div style="font-weight:600;font-size:1rem;color:#fff">Spotify Downloader</div>
+                <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a Spotify link &middot; auto-downloads the top YouTube result as MP3</div>
               </div>
 
               <div class="field" style="margin-bottom:14px">
@@ -289,20 +287,10 @@
                 <input id="spUrl" class="inp" type="text" placeholder="https://open.spotify.com/track/..." />
               </div>
 
-              <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-                <button id="spPreviewBtn" style="padding:10px 18px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem">Preview</button>
-                <button id="spYtSearchBtn" style="padding:10px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.85rem">YouTube Search</button>
-                <button id="spDlTopBtn" style="padding:10px 18px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem">Download Top YouTube</button>
-              </div>
+              <button id="spDlBtn" style="width:100%;padding:12px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit">Download</button>
 
-              <div id="spPreview" style="width:100%;min-height:80px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin-bottom:14px"></div>
-
-              <div class="field">
-                <label>Or search by keyword</label>
-                <div style="display:flex;gap:8px">
-                  <input id="ytKeyword" class="inp" type="text" placeholder="search keyword (e.g. stay)" style="flex:1;min-width:0" />
-                  <button id="spKwDlBtn" style="padding:0 18px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.85rem">YT Search + Download</button>
-                </div>
+              <div id="spStatus" style="display:none;margin-top:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)">
+                <div id="spStatusMsg" style="font-size:0.85rem;color:#9CA3AF"></div>
               </div>
             </div>
 
