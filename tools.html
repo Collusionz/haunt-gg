@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -275,6 +275,37 @@
               </div>
             </div>
 
+            <!-- ============ SPOTIFY DOWNLOADER ============ -->
+            <div class="tool-tab" id="tab-sp" style="padding:20px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+                <div>
+                  <div style="font-weight:600;font-size:1rem;color:#fff">Spotify Downloader</div>
+                  <div style="font-size:0.75rem;color:#9CA3AF;margin-top:3px">paste a Spotify link &middot; preview or download via YouTube</div>
+                </div>
+              </div>
+
+              <div class="field" style="margin-bottom:14px">
+                <label>Spotify URL</label>
+                <input id="spUrl" class="inp" type="text" placeholder="https://open.spotify.com/track/..." />
+              </div>
+
+              <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+                <button id="spPreviewBtn" style="padding:10px 18px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem">Preview</button>
+                <button id="spYtSearchBtn" style="padding:10px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.85rem">YouTube Search</button>
+                <button id="spDlTopBtn" style="padding:10px 18px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.85rem">Download Top YouTube</button>
+              </div>
+
+              <div id="spPreview" style="width:100%;min-height:80px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin-bottom:14px"></div>
+
+              <div class="field">
+                <label>Or search by keyword</label>
+                <div style="display:flex;gap:8px">
+                  <input id="ytKeyword" class="inp" type="text" placeholder="search keyword (e.g. stay)" style="flex:1;min-width:0" />
+                  <button id="spKwDlBtn" style="padding:0 18px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.85rem">YT Search + Download</button>
+                </div>
+              </div>
+            </div>
+
             <!-- ============ DISCORD TIMESTAMPS ============ -->
             <div class="tool-tab" id="tab-dc" style="padding:20px">
               <div class="field" style="margin-bottom:10px">
@@ -447,49 +478,6 @@
 
           </div>
         </div>
-
-        <!-- ============ SPOTIFY DOWNLOADER ============ -->
-        <div class="tool-tab" id="tab-sp" style="padding:20px">
-          <h2 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:10px">Spotify Downloader</h2>
-          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
-            <input id="spUrl" class="inp" type="text" placeholder="https://open.spotify.com/track/..." style="flex:1;min-width:0;font-size:0.8rem" />
-            <button onclick="showSpotify()" style="padding:0 14px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Preview</button>
-            <button onclick="ytSearchFromSpotify()" style="padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.8rem">YouTube Search</button>
-            <button onclick="searchAndDownload(document.getElementById('spUrl').value.trim())" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Download Top YouTube</button>
-          </div>
-          <div id="spPreview" style="width:100%;min-height:152px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)"></div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <input id="ytKeyword" class="inp" type="text" placeholder="search keyword (e.g. stay)" style="flex:1;min-width:0;font-size:0.8rem" />
-            <button onclick="searchAndDownload(document.getElementById('ytKeyword').value.trim())" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.8rem">YT Search + Download</button>
-          </div>
-        </div>
-        <script>
-          function showSpotify(){
-            var u=document.getElementById('spUrl').value.trim();
-            var m=u.match(/spotify\.com\/(track|playlist)\/([A-Za-z0-9]+)/);
-            if(!m){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Enter a Spotify track or playlist URL</div>';return}
-            var embed='https://open.spotify.com/embed/'+m[1]+'/'+m[2];
-            document.getElementById('spPreview').innerHTML='<iframe style="border-radius:12px;width:100%;height:120px;border:none;background:transparent;" src="'+embed+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
-          }
-          function ytSearchFromSpotify(){
-            var url=document.getElementById('spUrl').value.trim();
-            var kw=document.getElementById('ytKeyword').value.trim();
-            var q=encodeURIComponent(url || kw || 'stay');
-            window.open('https://www.youtube.com/results?search_query='+q,'_blank');
-          }
-          function searchAndDownload(query){
-            if(!query || !query.trim()){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#ff5561;font-size:0.85rem">Enter a Spotify URL or search keyword</div>';return}
-            fetch('https://invidious.snopyta.org/api/v1/search?q='+encodeURIComponent(query)+'&page=1')
-            .then(function(r){return r.json()})
-            .then(function(j){
-              var vid=j[0]&&j[0].videoId;
-              if(!vid){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">No result found for: '+escapeHtml(query)+'</div>';return}
-              window.open('/api/yt.js?url='+encodeURIComponent('https://www.youtube.com/watch?v='+vid)+'&format=mp3','_blank');
-            })
-            .catch(function(){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#ff5561;font-size:0.85rem">Search failed</div>';});
-          }
-          function escapeHtml(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-        </script>
 
 
       </section>

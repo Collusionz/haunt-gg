@@ -1350,6 +1350,79 @@
     wireMs();
     wireCp();
     wireDm();
+    wireSpotify();
+  }
+
+  /* ============ SPOTIFY DOWNLOADER ============ */
+  function wireSpotify() {
+    function spSetStatus(html) {
+      var el = $('spPreview');
+      if (el) el.innerHTML = html;
+    }
+
+    function showSpotify() {
+      var u = ($('spUrl') && $('spUrl').value.trim()) || '';
+      var m = u.match(/spotify\.com\/(track|playlist)\/([A-Za-z0-9]+)/);
+      if (!m) {
+        spSetStatus('<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Enter a Spotify track or playlist URL</div>');
+        return;
+      }
+      var embed = 'https://open.spotify.com/embed/' + m[1] + '/' + m[2];
+      spSetStatus('<iframe style="border-radius:12px;width:100%;height:152px;border:none;background:transparent;" src="' + embed + '" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>');
+    }
+
+    function ytSearchFromSpotify() {
+      var url = ($('spUrl') && $('spUrl').value.trim()) || '';
+      var kw = ($('ytKeyword') && $('ytKeyword').value.trim()) || '';
+      var q = encodeURIComponent(url || kw || '');
+      if (!q) { spSetStatus('<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Enter a Spotify URL or keyword first</div>'); return; }
+      window.open('https://www.youtube.com/results?search_query=' + q, '_blank');
+    }
+
+    function searchAndDownload(query) {
+      if (!query || !query.trim()) {
+        spSetStatus('<div style="padding:14px;color:#ff5561;font-size:0.85rem">Enter a Spotify URL or search keyword</div>');
+        return;
+      }
+      spSetStatus('<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Searching YouTube…</div>');
+      fetch('https://invidious.snopyta.org/api/v1/search?q=' + encodeURIComponent(query) + '&page=1')
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          var vid = j[0] && j[0].videoId;
+          if (!vid) {
+            spSetStatus('<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">No result found for: ' + query.replace(/</g,'&lt;') + '</div>');
+            return;
+          }
+          spSetStatus('<div style="padding:14px;color:#9CA3AF;font-size:0.85rem">Opening download for top result…</div>');
+          window.open('/api/yt.js?url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + vid) + '&format=mp3', '_blank');
+        })
+        .catch(function () { spSetStatus('<div style="padding:14px;color:#ff5561;font-size:0.85rem">Search failed — try a different keyword</div>'); });
+    }
+
+    var previewBtn = $('spPreviewBtn');
+    var ytSearchBtn = $('spYtSearchBtn');
+    var dlTopBtn = $('spDlTopBtn');
+    var kwDlBtn = $('spKwDlBtn');
+
+    if (previewBtn) previewBtn.addEventListener('click', showSpotify);
+    if (ytSearchBtn) ytSearchBtn.addEventListener('click', ytSearchFromSpotify);
+    if (dlTopBtn) dlTopBtn.addEventListener('click', function () {
+      var val = ($('spUrl') && $('spUrl').value.trim()) || '';
+      searchAndDownload(val);
+    });
+    if (kwDlBtn) kwDlBtn.addEventListener('click', function () {
+      var val = ($('ytKeyword') && $('ytKeyword').value.trim()) || '';
+      searchAndDownload(val);
+    });
+
+    // Enter key on inputs
+    var spUrlInput = $('spUrl');
+    if (spUrlInput) spUrlInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') showSpotify(); });
+    var kwInput = $('ytKeyword');
+    if (kwInput) kwInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') {
+      var val = kwInput.value.trim();
+      searchAndDownload(val);
+    }});
   }
 
   wire();
