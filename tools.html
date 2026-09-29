@@ -449,18 +449,18 @@
         </div>
 
         <!-- ============ SPOTIFY DOWNLOADER ============ -->
-        <div class="tool-tab" id="tab-sp" style="padding:20px;display:none">
+        <div class="tool-tab" id="tab-sp" style="padding:20px;display:block">
           <h2 style="font-size:1.1rem;font-weight:600;color:#fff;margin-bottom:10px">Spotify Downloader</h2>
           <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
             <input id="spUrl" class="inp" type="text" placeholder="https://open.spotify.com/track/..." style="flex:1;min-width:0;font-size:0.8rem" />
             <button onclick="showSpotify()" style="padding:0 14px;border-radius:12px;border:none;background:#1DB954;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Preview</button>
             <button onclick="ytSearchFromSpotify()" style="padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:0.8rem">YouTube Search</button>
-            <button onclick="searchAndDownload(document.getElementById('spUrl').value.trim()||'stay')" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Download Top YouTube</button>
+            <button onclick="searchAndDownload(document.getElementById('spUrl').value.trim())" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:0.8rem">Download Top YouTube</button>
           </div>
           <div id="spPreview" style="width:100%;min-height:152px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08)"></div>
           <div style="display:flex;gap:8px;margin-top:8px">
             <input id="ytKeyword" class="inp" type="text" placeholder="search keyword (e.g. stay)" style="flex:1;min-width:0;font-size:0.8rem" />
-            <button onclick="searchAndDownload(document.getElementById('ytKeyword').value.trim()||'stay')" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.8rem">YT Search + Download</button>
+            <button onclick="searchAndDownload(document.getElementById('ytKeyword').value.trim())" style="padding:0 14px;border-radius:12px;border:none;background:#ff4655;color:#fff;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;font-size:0.8rem">YT Search + Download</button>
           </div>
         </div>
         <script>
@@ -473,10 +473,12 @@
           }
           function ytSearchFromSpotify(){
             var url=document.getElementById('spUrl').value.trim();
-            var q=encodeURIComponent(url);
+            var kw=document.getElementById('ytKeyword').value.trim();
+            var q=encodeURIComponent(url || kw || 'stay');
             window.open('https://www.youtube.com/results?search_query='+q,'_blank');
           }
           function searchAndDownload(query){
+            if(!query || !query.trim()){document.getElementById('spPreview').innerHTML='<div style="padding:14px;color:#ff5561;font-size:0.85rem">Enter a Spotify URL or search keyword</div>';return}
             fetch('https://invidious.snopyta.org/api/v1/search?q='+encodeURIComponent(query)+'&page=1')
             .then(function(r){return r.json()})
             .then(function(j){
