@@ -1366,12 +1366,18 @@
     }
 
     function download(query) {
-      setStatus('Searching YouTube for "' + query + '"…');
-      // Try multiple Invidious instances in case one is down
-      var instances = [
-        'https://invidious.snopyta.org',
-        'https://vid.puffyan.us',
-        'https://invidious.kavin.rocks'
+  setStatus('Searching YouTube for "' + query + '"…');
+  // Reuse the same /api/yt proxy + ytConvert() flow as the YouTube tab (no Invidious, no CORS)
+  fetch(YT_API + '?url=' + encodeURIComponent('https://www.youtube.com/results?search_query=' + encodeURIComponent(query)) + '&format=mp3')
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var url = (j && (j.url || j.download_url || j.link)) || '';
+      if (!url) { setStatus('No result found for: ' + query, '#ff5561'); return; }
+      $('ytUrl').value = ytId(url) ? 'https://www.youtube.com/watch?v=' + ytId(url) : url;
+      setTimeout(ytConvert, 300);
+    })
+    .catch(function () { setStatus('All search sources failed — try again later.', '#ff5561'); });
+}
       ];
       var tried = 0;
       function tryNext() {
