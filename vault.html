@@ -88,6 +88,7 @@
     .kbd{display:inline-block;padding:1px 5px;border-radius:5px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.07);color:#dfe6ff;font-size:0.68rem;font-family:ui-monospace,Consolas,monospace}
   </style>
 <script src="/scripts/nav.js"></script>
+  <script src="/scripts/toggles.js"></script>
   <script src="/scripts/fx.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
   <script src="/scripts/fx2.js" defer></script>
@@ -196,6 +197,21 @@
 <button class="btn btn-secondary section-jump" data-target="secFriends" style="padding:10px 16px">Acquaintances</button>
           <button class="btn btn-secondary section-jump" data-target="secComments" style="padding:10px 16px">Comments</button>
           <button class="btn btn-secondary section-jump" data-target="secAnalytics" style="padding:10px 16px">Analytics</button>
+        </div>
+
+        <div id="secToggles" class="card" style="margin-bottom:20px">
+          <h2 class="text-lg font-semibold text-white tracking-tight" style="margin-bottom:4px">⚙️ Page Visibility</h2>
+          <p style="font-size:0.8rem;opacity:0.45;margin-bottom:12px">toggle which pages appear in the sidebar navigation</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:10px">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:#fff">Acquaintances</div>
+              <div style="font-size:0.75rem;opacity:0.45">show the acquaintances link in the sidebar</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="toggleAcquaintances" checked style="width:18px;height:18px;accent-color:#5573f4" />
+              <span style="font-size:0.8rem;color:#9CA3AF" id="toggleAcqLabel">Visible</span>
+            </label>
+          </div>
         </div>
 
         <div id="secGallery" class="card" style="margin-bottom:20px">
@@ -1524,13 +1540,50 @@ document.getElementById('unlockBtn').addEventListener('click',function(){
       b.addEventListener('click',function(){document.getElementById(b.dataset.target).scrollIntoView({behavior:'smooth',block:'start'})});
     });
 
+    /* ---------------- PAGE TOGGLES ---------------- */
+    var ACQ_TOGGLE_KEY = 'vaultAcquaintancesEnabled';
+    function initToggles(){
+      var acqEnabled = localStorage.getItem(ACQ_TOGGLE_KEY);
+      // Default to true if not set
+      if (acqEnabled === null) {
+        localStorage.setItem(ACQ_TOGGLE_KEY, 'true');
+        acqEnabled = 'true';
+      }
+      var acqToggle = document.getElementById('toggleAcquaintances');
+      var acqLabel = document.getElementById('toggleAcqLabel');
+      if (acqToggle) {
+        acqToggle.checked = acqEnabled !== 'false';
+        if (acqLabel) {
+          acqLabel.textContent = acqToggle.checked ? 'Visible' : 'Hidden';
+        }
+      }
+    }
+    function handleAcqToggle(checked){
+      localStorage.setItem(ACQ_TOGGLE_KEY, checked ? 'true' : 'false');
+      var acqLabel = document.getElementById('toggleAcqLabel');
+      if (acqLabel) {
+        acqLabel.textContent = checked ? 'Visible' : 'Hidden';
+      }
+      // Broadcast to other tabs
+      try{
+        localStorage.setItem('vaultAcquaintancesEnabled', checked ? 'true' : 'false');
+        localStorage.setItem('vaultSyncTrigger', Date.now());
+      }catch(e){}
+    }
+    var acqToggle = document.getElementById('toggleAcquaintances');
+    if (acqToggle) {
+      acqToggle.addEventListener('change', function(){
+        handleAcqToggle(this.checked);
+      });
+    }
+
 function loadAllLists(){
       renderGalleryList();renderPhraseList();renderProjectList();renderDefaultProjectList();renderFriendList();renderLinkList();
     }
 
     if(isAuthed()){
       if(!sessionStorage.getItem('gbOwnerPass'))sessionStorage.setItem('gbOwnerPass',getPass());
-      show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();refreshCmList()
+      show(false,true);loadAllLists();refreshAnalytics();reconcileFromServer();refreshCmList();initToggles()
     }else{show(true,false)}
 
     try{var _vb=localStorage.getItem(STORAGE.bg);if(_vb){document.querySelectorAll('video').forEach(function(v){var s=v.querySelectorAll('source');for(var i=0;i<s.length;i++)s[i].remove();v.src=_vb;v.load()})}}catch(e){}

@@ -10,247 +10,77 @@
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" />
     <style>
-* {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        *, *::before, *::after { cursor: url('cursor.png') 17 17, auto !important; }
-
-        body {
-            font-family: 'Satoshi', sans-serif;
-            background: #000;
-            color: #e0e0e0;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
-        @media(min-width:768px){.side-nav{display:flex}}
-        .side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
-        .side-nav a:hover{color:rgba(255,255,255,0.7)}
-        .side-nav a.active{color:#fff}
-        .side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
-        .side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
-        .side-nav a.active .nav-line{width:16px;background:#fff}
-        .mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
-        @media(min-width:768px){.mobile-nav{display:none}}
-        .mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
-        .mobile-nav a.active,.mobile-nav a:hover{color:#fff}
-
-.main-content {
-            padding: 40px 60px;
-            padding-left: 120px;
-            padding-bottom: 90px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-        }
-
-        .accent-bar {
-            width: 50px;
-            height: 4px;
-            background: linear-gradient(90deg, #5573f4, #4764ec);
-            border-radius: 2px;
-            margin-bottom: 16px;
-        }
-
-        .friend-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 28px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .friend-card:hover {
-            transform: scale(1.03);
-            border-color: rgba(64, 120, 255, 0.3);
-            box-shadow: 0 0 30px rgba(64, 120, 255, 0.1);
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 16px;
-            flex-shrink: 0;
-        }
-
-        .social-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .social-pill:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .affiliate-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 22px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .affiliate-badge:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .affiliate-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .cta-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 68, 68, 0.4), rgba(64, 120, 255, 0.4), rgba(155, 89, 182, 0.4));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-
-        .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 28px;
-            border-radius: 12px;
-            background: #5865F2;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .cta-btn:hover {
-            background: #4752c4;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.3);
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.4);
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-                margin-bottom: 70px;
-                padding: 20px;
-            }
-}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-        .anim-reveal{animation:fadeInUp 0.5s ease forwards}
-        .anim-delay-1{animation-delay:0.1s;opacity:0}
-        .anim-delay-2{animation-delay:0.2s;opacity:0}
-        .anim-delay-3{animation-delay:0.3s;opacity:0}
-        .anim-delay-4{animation-delay:0.4s;opacity:0}
-        .anim-delay-5{animation-delay:0.5s;opacity:0}
+*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { cursor: url('cursor.png') 17 17, auto !important; }
+body { margin: 0; padding: 0; font-family: 'Satoshi', sans-serif; background: #000; color: #ccd8ec; min-height: 100vh; overflow-x: hidden; }
+.bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.3; pointer-events: none; }
+.side-nav{position:fixed;left:24px;top:50%;z-index:50;transform:translateY(-50%);display:none;flex-direction:column;gap:12px}
+@media(min-width:768px){.side-nav{display:flex}}
+.side-nav a{display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:300;letter-spacing:0.05em;text-decoration:none;transition:color 0.2s;color:rgba(255,255,255,0.4)}
+.side-nav a:hover{color:rgba(255,255,255,0.7)}
+.side-nav a.active{color:#fff}
+.side-nav a .nav-line{height:1px;width:8px;background:rgba(255,255,255,0.4);transition:all 0.2s;flex-shrink:0}
+.side-nav a:hover .nav-line{width:12px;background:rgba(255,255,255,0.7)}
+.side-nav a.active .nav-line{width:16px;background:#fff}
+.mobile-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.05);background:rgba(0,0,0,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex}
+@media(min-width:768px){.mobile-nav{display:none}}
+.mobile-nav a{flex:1;text-align:center;padding:12px 4px;font-size:0.625rem;font-weight:300;letter-spacing:0.05em;color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.2s}
+.mobile-nav a.active,.mobile-nav a:hover{color:#fff}
+.main-content { padding: 40px 60px; padding-left: 120px; padding-bottom: 90px; position: relative; z-index: 10; }
+.glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; }
+.accent-bar { width: 50px; height: 4px; background: linear-gradient(90deg, #5573f4, #4764ec); border-radius: 2px; margin-bottom: 16px; }
+@media (max-width: 768px) { .main-content { margin-left: 0; margin-bottom: 70px; padding: 20px; } }
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim-reveal{animation:fadeInUp 0.5s ease forwards}
+.anim-delay-1{animation-delay:0.1s;opacity:0}
     </style>
 <script src="/scripts/nav.js"></script>
   <script src="/scripts/fx.js" defer></script>
   <script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
   <script src="/scripts/fx2.js" defer></script>
-  </head>
+  <script>
+    // Check if acquaintances page is enabled in vault settings
+    (function() {
+      try {
+        var enabled = localStorage.getItem('vaultAcquaintancesEnabled');
+        if (enabled === 'false') {
+          window.location.href = '/';
+        }
+      } catch(e) {}
+    })();
+  </script>
+</head>
 <body>
 
 <video class="bg-video" autoplay muted loop playsinline>
         <source src="/audio/background.mp4#t=0.001" type="video/mp4">
     </video>
 
-<nav class="side-nav">
+<nav class="side-nav" id="sideNav">
         <a href="/"><span class="nav-line"></span>Home</a>
     <a href="/music"><span class="nav-line"></span>Music</a>
         <a href="/gallery"><span class="nav-line"></span>Gallery</a>
         <a href="/projects"><span class="nav-line"></span>Projects</a>
-        <a href="/acquaintances" class="active"><span class="nav-line"></span>Acquaintances</a>
-    
+        <a href="/acquaintances" class="active" id="navAcq"><span class="nav-line"></span>Acquaintances</a>
+
     <a href="/widgets"><span class="nav-line"></span>Widgets</a>
     <a href="/tools"><span class="nav-line"></span>Tools</a>
     <a href="/valorant"><span class="nav-line"></span>Valorant</a>
         <a href="/links"><span class="nav-line"></span>Links</a>
-        
+
     </nav>
-    <nav class="mobile-nav">
+    <nav class="mobile-nav" id="mobileNav">
 <a href="/">Home</a>
     <a href="/music">Music</a>
         <a href="/gallery">Gallery</a>
         <a href="/projects">Projects</a>
-        <a href="/acquaintances" class="active">Acquaintances</a>
-        
+        <a href="/acquaintances" class="active" id="mobileNavAcq">Acquaintances</a>
+
     <a href="/widgets">Widgets</a>
     <a href="/tools">Tools</a>
     <a href="/valorant">Valorant</a>
         <a href="/links">Links</a>
-        
+
     </nav>
 
     <main class="main-content">
@@ -262,7 +92,7 @@
         </div>
 
 <div style="margin-bottom: 56px;" class="anim-reveal anim-delay-1">
-            <div class="section-title">Acquaintances</div>
+            <div style="font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: rgba(255, 255, 255, 0.4); margin-bottom: 20px;">Acquaintances</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;" id="friendsGrid">
             </div>
         </div>
@@ -280,11 +110,14 @@
                 if(Array.isArray(friends)&&friends.length){
                     friends.forEach(f=>{
                         const card=document.createElement('div');
-                        card.className='friend-card';
+                        card.className='glass-card';
+                        card.style.cssText='padding:28px;transition:all 0.3s ease;cursor:pointer';
+                        card.addEventListener('mouseenter',function(){this.style.transform='scale(1.03)';this.style.borderColor='rgba(64,120,255,0.3)';this.style.boxShadow='0 0 30px rgba(64,120,255,0.1)'});
+                        card.addEventListener('mouseleave',function(){this.style.transform='';this.style.borderColor='';this.style.boxShadow=''});
                         let imgUrl = f.img || '';
                         let dMatch = imgUrl.match(/^https:\/\/cdn\.discordapp\.com\/avatars\/(\d+)\//);
                         if(dMatch) imgUrl = '/api/discord-avatar?id=' + dMatch[1];
-                        card.innerHTML='<div class="avatar" style="overflow:hidden;background:linear-gradient(135deg, '+escA(f.bg1||'#5573f4')+', '+escA(f.bg2||'#4764ec')+');">'+(imgUrl?'<img src="'+escA(imgUrl)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>'+
+                        card.innerHTML='<div style="width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;margin-bottom:16px;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg, '+escA(f.bg1||'#5573f4')+', '+escA(f.bg2||'#4764ec')+');">'+(imgUrl?'<img src="'+escA(imgUrl)+'" style="width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>'+
                         '<h3 style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">'+escA(f.name)+'</h3>'+
                         '<p style="font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 0;">'+escA(f.note||'')+'</p>';
                         grid.appendChild(card);
