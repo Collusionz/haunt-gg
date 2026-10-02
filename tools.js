@@ -1377,26 +1377,6 @@
       setTimeout(ytConvert, 300);
     })
     .catch(function () { setStatus('All search sources failed — try again later.', '#ff5561'); });
-}
-      ];
-      var tried = 0;
-      function tryNext() {
-        if (tried >= instances.length) {
-          setStatus('All search sources failed — try again later.', '#ff5561');
-          return;
-        }
-        var base = instances[tried++];
-        fetch(base + '/api/v1/search?q=' + encodeURIComponent(query) + '&page=1&type=video')
-          .then(function (r) { return r.json(); })
-          .then(function (j) {
-            var vid = Array.isArray(j) && j[0] && j[0].videoId;
-            if (!vid) { tryNext(); return; }
-            setStatus('Found "' + (j[0].title || query) + '" — opening download…');
-            window.open('/api/yt.js?url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + vid) + '&format=mp3', '_blank');
-          })
-          .catch(tryNext);
-      }
-      tryNext();
     }
 
     function run() {
