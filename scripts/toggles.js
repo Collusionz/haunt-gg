@@ -14,6 +14,8 @@
     navLinks.forEach(function(link) {
       if (showAcq) {
         link.style.display = '';
+        link.style.pointerEvents = '';
+        link.style.opacity = '';
       } else {
         link.style.display = 'none';
       }
@@ -23,9 +25,20 @@
   // Run on load
   updateNavVisibility();
 
+  // Poll for changes (for same-page vault updates)
+  var lastValue = localStorage.getItem(ACQ_TOGGLE_KEY);
+  setInterval(function() {
+    var currentValue = localStorage.getItem(ACQ_TOGGLE_KEY);
+    if (currentValue !== lastValue) {
+      lastValue = currentValue;
+      updateNavVisibility();
+    }
+  }, 500);
+
   // Listen for changes from other tabs/windows
   window.addEventListener('storage', function(e) {
     if (e.key === ACQ_TOGGLE_KEY || e.key === 'vaultSyncTrigger') {
+      lastValue = localStorage.getItem(ACQ_TOGGLE_KEY);
       updateNavVisibility();
     }
   });
